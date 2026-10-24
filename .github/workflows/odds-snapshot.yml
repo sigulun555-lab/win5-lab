@@ -57,7 +57,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: テスト（収集コード）
-        run: python -m unittest discover -s main/tests -p "test_collector.py"
+        run: python -m unittest discover -s main/tests -p "test_*.py"
       - name: オッズを保存（通常の収集 + WIN5の照合）
         run: python main/collector/jra_odds_snapshot.py --scope both --out data/odds --window-min "${{ github.event.inputs.window_min || '75' }}"
       - name: 変更があればコミットして追記
