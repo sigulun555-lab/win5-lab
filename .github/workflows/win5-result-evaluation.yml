@@ -1,6 +1,13 @@
 name: win5-result-evaluation
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - "data/win5_joint/**/win5_result.csv"
+      - "scripts/evaluate_win5_predictions.py"
+      - "tests/test_evaluate_win5_predictions.py"
+      - ".github/workflows/win5-result-evaluation.yml"
   workflow_dispatch:
     inputs:
       date:
@@ -21,35 +28,55 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: 評価対象日を特定
+        id: target
+        env:
+          INPUT_DATE: ${{ inputs.date }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          set -euo pipefail
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            RUN_DATE="$INPUT_DATE"
+          else
+            RUN_DATE="$(git diff --name-only HEAD^ HEAD | sed -n 's#^data/win5_joint/\([0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]\)/win5_result\.csv$#\1#p' | head -n 1)"
+            if [ -z "$RUN_DATE" ]; then
+              RUN_DATE="$(find data/win5_joint -mindepth 2 -maxdepth 2 -name win5_result.csv -printf '%h\n' | sed 's#^data/win5_joint/##' | sort -r | head -n 1)"
+            fi
+          fi
+          [[ "$RUN_DATE" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]
+          echo "date=$RUN_DATE" >> "$GITHUB_OUTPUT"
       - name: 入力ファイルを確認
         env:
-          RUN_DATE: ${{ inputs.date }}
+          RUN_DATE: ${{ steps.target.outputs.date }}
         run: |
           set -e
-          [[ "$RUN_DATE" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]
           test -f "data/win5_joint/$RUN_DATE/win5_gpt_v2_scenario.csv"
           test -f "data/win5_joint/$RUN_DATE/win5_result.csv"
       - name: 全テスト
         run: python -m unittest discover -s tests -p "test_*.py" -v
       - name: 結果を評価
         env:
-          RUN_DATE: ${{ inputs.date }}
+          RUN_DATE: ${{ steps.target.outputs.date }}
         run: |
           python scripts/evaluate_win5_predictions.py \
             --predictions "data/win5_joint/$RUN_DATE/win5_gpt_v2_scenario.csv" \
             --results "data/win5_joint/$RUN_DATE/win5_result.csv" \
             --output "reports/win5-result-evaluation-$RUN_DATE.md"
       - name: レポートを保存
+        env:
+          RUN_DATE: ${{ steps.target.outputs.date }}
         run: |
           git config user.name "win5-result-evaluation"
           git config user.email "win5-result-evaluation@users.noreply.github.com"
-          git add "reports/win5-result-evaluation-*.md"
+          git add "reports/win5-result-evaluation-$RUN_DATE.md"
           if git diff --cached --quiet; then
             echo "評価レポートに変更はありません"
             exit 0
           fi
-          git commit -m "Evaluate WIN5 predictions for ${{ inputs.date }}"
+          git commit -m "Evaluate WIN5 predictions for $RUN_DATE"
           git push origin main
