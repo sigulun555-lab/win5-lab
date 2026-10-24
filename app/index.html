@@ -433,6 +433,84 @@
   }
   .opt-summary strong{font-family:"JetBrains Mono",monospace;font-size:18px;margin-left:6px;color:var(--accent);}
   .opt-note{font-size:11.5px;color:var(--ink-soft);margin-top:8px;}
+
+  /* ---------- 共同検証 Claude × GPT ---------- */
+  #compareCard{grid-column:1 / -1;}
+  .side-claude{--side:var(--accent);}
+  .side-gpt{--side:var(--track);}
+  .side-tag{
+    display:inline-block;font-size:11px;font-weight:700;padding:1px 8px;border-radius:10px;
+    border:1px solid var(--side);color:var(--side);white-space:nowrap;
+  }
+  .cmp-bar{display:flex;align-items:end;gap:14px;flex-wrap:wrap;margin-bottom:14px;}
+  .cmp-bar label{display:flex;flex-direction:column;gap:4px;font-size:11px;color:var(--ink-soft);}
+  .cmp-bar select{
+    border:1px solid var(--rule);background:var(--surface-2);color:var(--ink);border-radius:4px;
+    padding:7px 8px;font-size:13px;font-family:"JetBrains Mono",monospace;
+  }
+  .cmp-meta{font-size:11.5px;color:var(--ink-soft);min-width:0;}
+  .cmp-copy{background:var(--surface-2);color:var(--ink);border:1px solid var(--rule);border-radius:4px;padding:7px 12px;font-size:12.5px;cursor:pointer;font-family:inherit;}
+  .cmp-copy:hover{border-color:var(--accent);color:var(--accent);}
+  .cmp-wrap{overflow-x:auto;margin-bottom:16px;}
+  table.cmp-table{width:100%;border-collapse:collapse;font-size:13px;min-width:600px;}
+  table.cmp-table td > div{white-space:nowrap;}
+  table.cmp-table th{
+    text-align:left;font-size:11px;color:var(--ink-soft);font-weight:600;
+    border-bottom:1px solid var(--rule);padding:6px 8px;letter-spacing:.03em;white-space:nowrap;
+  }
+  table.cmp-table th.grp{text-align:center;color:var(--side);border-bottom:2px solid var(--side);}
+  table.cmp-table td{padding:6px 8px;border-bottom:1px solid var(--rule);vertical-align:middle;}
+  table.cmp-table td.num,table.cmp-table th.num{text-align:right;}
+  table.cmp-table tbody tr.pick{cursor:pointer;}
+  table.cmp-table tbody tr.pick:hover td{background:var(--surface-2);}
+  table.cmp-table tbody tr.cur td{background:var(--surface-2);}
+  table.cmp-table tr.differ td{background:var(--negative-soft);}
+  table.cmp-table td.gapcell{font-weight:700;color:var(--negative);}
+  .verdict{font-size:11px;border-radius:10px;padding:2px 8px;white-space:nowrap;}
+  .verdict.ok{background:var(--positive-soft);color:var(--positive);}
+  .verdict.ng{background:var(--negative-soft);color:var(--negative);}
+  .verdict.na{background:var(--surface-2);color:var(--ink-soft);}
+  .fav-mark{font-weight:800;color:var(--side);margin-right:3px;}
+  .cmp-info{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin-bottom:12px;}
+  .cmp-info > div{
+    border:1px solid var(--rule);border-radius:5px;padding:9px 11px;background:var(--surface-2);
+    font-size:12px;color:var(--ink-soft);min-width:0;overflow-wrap:anywhere;
+  }
+  .cmp-info b{color:var(--ink);}
+  .sumcheck{font-family:"JetBrains Mono",monospace;font-size:11.5px;}
+  .sumcheck.ok{color:var(--positive);}
+  .sumcheck.ng{color:var(--negative);}
+  .cmp-talk{
+    border:1px solid var(--rule);border-radius:6px;padding:12px 14px;background:var(--surface-2);margin-bottom:18px;
+    display:grid;gap:8px;
+  }
+  .cmp-talk h3{margin:0;font-family:"Shippori Mincho",serif;font-size:15px;}
+  .cmp-talk .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+  .cmp-talk select,.cmp-talk textarea{
+    border:1px solid var(--rule);background:var(--surface);color:var(--ink);border-radius:4px;
+    padding:6px 8px;font-size:13px;font-family:inherit;
+  }
+  .cmp-talk textarea{width:100%;min-height:72px;resize:vertical;}
+  .cmp-talk button,.cmp-import button{
+    background:var(--ink);color:var(--surface);border:none;border-radius:4px;
+    padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;
+  }
+  .cmp-import{border:1px dashed var(--ink-soft);border-radius:6px;padding:14px;display:grid;gap:8px;}
+  .cmp-import h3{margin:0;font-family:"Shippori Mincho",serif;font-size:15px;}
+  .cmp-import textarea{
+    width:100%;min-height:96px;resize:vertical;border:1px solid var(--rule);border-radius:5px;padding:8px 10px;
+    background:var(--surface-2);color:var(--ink);font-size:12px;font-family:"JetBrains Mono",monospace;
+  }
+  .cmp-import .row{display:flex;gap:14px;align-items:center;flex-wrap:wrap;}
+  .cmp-import label.radio{display:inline-flex;gap:5px;align-items:center;font-size:13px;}
+  .cmp-msg{font-size:12.5px;min-height:1.2em;}
+  .cmp-msg.ok{color:var(--positive);}
+  .cmp-msg.ng{color:var(--negative);}
+  .hint-sm{font-size:11.5px;color:var(--ink-soft);}
+  details.cmp-ev{border:1px solid var(--rule);border-radius:5px;padding:8px 12px;margin-bottom:10px;background:var(--surface-2);}
+  details.cmp-ev summary{cursor:pointer;font-size:13px;}
+  details.cmp-ev ul{margin:8px 0 0;padding-left:18px;font-size:12px;display:grid;gap:4px;}
+  details.cmp-ev li{overflow-wrap:anywhere;}
 </style>
 
 <div class="page">
@@ -442,7 +520,7 @@
       <span class="today" id="todayLabel"></span>
     </div>
     <h1 class="title">WIN5<em>帳</em></h1>
-    <p class="tagline">対象5レースの買い目計算・印による妙味チェック・回収率の記録をひとつにまとめた個人用ノートです。データはこの端末とあなたの領域に保存されます。</p>
+    <p class="tagline">対象5レースの買い目計算・印による妙味チェック・回収率の記録に、ClaudeとGPTの予想比較を加えたノートです。データはあなたの領域に保存されます。</p>
   </header>
 
   <section class="scoreboard" aria-label="通算成績">
@@ -470,6 +548,54 @@
   </p>
 
   <main class="columns">
+    <section class="card" id="compareCard" aria-labelledby="compareTitle">
+      <h2 id="compareTitle">共同検証　Claude × GPT</h2>
+      <p class="card-desc">同じレースについて、ClaudeとGPTの推定1着勝率を並べます。本命や順位がずれたレースは、理由を聞き合って、納得するまで協議します。購入基準は市場本命です。</p>
+
+      <div class="cmp-bar">
+        <label>開催日
+          <select id="cmpDate"></select>
+        </label>
+        <span class="cmp-meta" id="cmpMeta"></span>
+        <button type="button" class="cmp-copy" id="cmpCopyBtn">合体CSVをコピー</button>
+      </div>
+
+      <div class="cmp-wrap" id="cmpSummary"></div>
+
+      <div class="race-tabs" id="cmpTabs"></div>
+      <div id="cmpDetail"></div>
+
+      <div class="cmp-talk" id="cmpTalk">
+        <h3 id="cmpTalkTitle">協議メモ</h3>
+        <div class="row">
+          <label for="cmpTalkStatus" class="hint-sm">状態</label>
+          <select id="cmpTalkStatus">
+            <option value="open">未協議</option>
+            <option value="talking">協議中</option>
+            <option value="agreed">合意</option>
+            <option value="split">不一致のまま</option>
+          </select>
+        </div>
+        <label for="cmpTalkMemo" class="hint-sm">聞いたこと・返事・納得できた点／できなかった点</label>
+        <textarea id="cmpTalkMemo" placeholder="例）GPT：R1は前夜のオッズが根拠 → 公式の最新オッズで取り直してもらう"></textarea>
+        <div class="row">
+          <button type="button" id="cmpTalkSave">協議メモを保存</button>
+          <span class="cmp-msg" id="cmpTalkMsg"></span>
+        </div>
+      </div>
+
+      <div class="cmp-import" id="cmpImport">
+        <h3>予想を入れる（CSVを貼り付け・自動判定）</h3>
+        <label for="cmpPaste" class="hint-sm">GPTのCSV、ClaudeのCSV、両方が入った合体CSVのどれでも、そのまま貼れます。gpt_ や claude_ で始まる勝率の列を見て、自動で振り分けます。CSVを2つ続けて貼ってもかまいません。同じ開催日・同じレースは、最新の貼り付けで上書きされます。</label>
+        <textarea id="cmpPaste" placeholder="date,win5_order,race,horse_no,horse_name,jockey,weight_kg,...,gpt_estimated_win_probability_pct,...,claude_estimated_win_probability_pct,..."></textarea>
+        <div class="row">
+          <button type="button" id="cmpImportBtn">取り込む</button>
+          <span class="cmp-msg" id="cmpImportMsg"></span>
+        </div>
+        <p class="hint-sm" style="margin:0;">発売締切後（結果が出たあと）の予想は、上書きしないでください。結果検証のために残します。</p>
+      </div>
+    </section>
+
     <section class="card" id="formationCard" aria-labelledby="formationTitle">
       <h2 id="formationTitle">① 買い目フォーメーション計算</h2>
       <p class="card-desc">対象5競走それぞれで馬番を選ぶと、組み合わせ点数と投資額（1点100円）を自動計算します。</p>
@@ -1398,6 +1524,7 @@
     claude.use("db").then(function(db){
       if(!db) return;
       state.db = db;
+      connectCompare(db);
 
       db.collection("win5_races").onSnapshot(function(snap){
         if(snap.empty) return;
@@ -1478,6 +1605,475 @@
     }).catch(function(){});
   }
 
+  // ---------- 共同検証 Claude × GPT ----------
+
+  var cmp = { preds:{}, talk:{}, date:null, leg:1 };
+  var TALK_LABEL = {open:"未協議", talking:"協議中", agreed:"合意", split:"不一致のまま"};
+
+  function esc(s){
+    return String(s==null?"":s).replace(/[&<>"']/g, function(c){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c];
+    });
+  }
+  function toNum(v){ var n = parseFloat(v); return isFinite(n) ? n : null; }
+  function isYes(v){ return /^(yes|y|true|○|◎|1)$/i.test(String(v||"").trim()); }
+  function f1(n){ return n==null ? "—" : (Math.round(n*10)/10).toFixed(1); }
+
+  // 印：勝率の高い順に上位3頭へ ◎○▲（機械的に決める）
+  var MARKS = ["◎","○","▲"];
+  function markMap(doc){
+    var m = {};
+    if(!doc) return m;
+    doc.horses.slice().sort(function(a,b){ return (a.rank||99)-(b.rank||99) || a.no-b.no; }).slice(0,3).forEach(function(h,i){ m[h.no] = MARKS[i]; });
+    return m;
+  }
+
+  function parseCsv(text){
+    var rows = [], row = [], f = "", q = false, i, c;
+    text = String(text||"").replace(/^﻿/, "");
+    for(i=0;i<text.length;i++){
+      c = text[i];
+      if(q){
+        if(c==="\""){ if(text[i+1]==="\""){ f += "\""; i++; } else { q = false; } }
+        else { f += c; }
+      } else if(c==="\""){ q = true; }
+      else if(c===","){ row.push(f); f = ""; }
+      else if(c==="\n" || c==="\r"){
+        if(c==="\r" && text[i+1]==="\n") i++;
+        row.push(f); f = "";
+        if(row.length>1 || row[0]!=="") rows.push(row);
+        row = [];
+      } else { f += c; }
+    }
+    if(f!=="" || row.length){ row.push(f); rows.push(row); }
+    return rows;
+  }
+
+  function csvToPreds(text, side){
+    var rows = parseCsv(text);
+    if(rows.length<2) return {error:"行が足りません。見出し行と、馬ごとの行を貼り付けてください。"};
+    var head = rows[0].map(function(h){ return h.trim(); });
+    function col(names){
+      for(var i=0;i<names.length;i++){ var k = head.indexOf(names[i]); if(k>=0) return k; }
+      return -1;
+    }
+    var C = {
+      date:col(["date"]), leg:col(["win5_order","win5_leg","leg"]),
+      race:col(["race"]), raceName:col(["race_name"]), course:col(["course"]), raceNo:col(["race_no"]),
+      no:col(["horse_no"]), name:col(["horse_name"]), jockey:col(["jockey"]), wt:col(["weight_kg"]),
+      odds:col(["win_odds", side+"_win_odds"]), oddsTime:col(["odds_time_jst","odds_time", side+"_odds_time", side+"_odds_time_jst"]), oddsSrc:col(["odds_source", side+"_odds_source"]),
+      prob:col([side+"_estimated_win_probability_pct", side+"_win_prob_pct"]),
+      rank:col([side+"_win_rank", side+"_rank"]),
+      bconf:col([side+"_basic_confidence", side+"_base_conf"]),
+      aconf:col([side+"_adjusted_confidence", side+"_adj_conf"]),
+      rel:col([side+"_estimation_reliability", side+"_reliability"]),
+      relWhy:col([side+"_reliability_reason"]),
+      mfav:col(["market_favorite", side+"_market_favorite"]), afav:col([side+"_analysis_favorite", side+"_analysis_fav"]),
+      info:col([side+"_info_time_jst", side+"_updated_at"]), status:col(["scratch_status","status"]),
+      ev:col([side+"_evidence"]), mult:col([side+"_adjust_factor"]), mprob:col(["market_normalized_probability_pct", side+"_market_prob_pct"])
+    };
+    var need = [["date",C.date],["win5_order",C.leg],["horse_no",C.no],["horse_name",C.name],[side+"_estimated_win_probability_pct",C.prob]];
+    var miss = need.filter(function(x){ return x[1]<0; }).map(function(x){ return x[0]; });
+    if(miss.length) return {error:"必要な列が見つかりません：" + miss.join("、")};
+
+    var groups = {};
+    rows.slice(1).forEach(function(r){
+      function cell(i){ return i>=0 ? String(r[i]==null?"":r[i]).trim() : ""; }
+      var no = parseInt(cell(C.no),10), leg = parseInt(cell(C.leg),10), date = cell(C.date);
+      if(!no || !leg || !date || leg<1 || leg>5) return;
+      var key = date + "_" + leg;
+      var g = groups[key];
+      if(!g){
+        var title = cell(C.race);
+        if(!title && C.raceName>=0) title = (cell(C.course)+cell(C.raceNo)+" "+cell(C.raceName)).trim();
+        g = groups[key] = {date:date, leg:leg, side:side, race:title, horses:[], oddsTime:"", oddsSource:"", info:"", rel:"", relWhy:""};
+      }
+      if(!g.oddsTime) g.oddsTime = cell(C.oddsTime);
+      if(!g.oddsSource) g.oddsSource = cell(C.oddsSrc);
+      if(!g.info) g.info = cell(C.info);
+      var relText = cell(C.rel), relWhy = cell(C.relWhy), relHead = relText;
+      var m = relText.match(/^([高中低])[：:](.*)$/);
+      if(m){ relHead = m[1]; if(!relWhy) relWhy = m[2].trim(); }
+      if(!g.rel && relHead){ g.rel = relHead; g.relWhy = relWhy; }
+      g.horses.push({
+        no:no, name:cell(C.name), jockey:cell(C.jockey), wt:toNum(cell(C.wt)), odds:toNum(cell(C.odds)),
+        prob:toNum(cell(C.prob)), rank:toNum(cell(C.rank)),
+        base:cell(C.bconf), adj:cell(C.aconf),
+        mfav:isYes(cell(C.mfav)), afav:isYes(cell(C.afav)), status:cell(C.status),
+        ev:cell(C.ev), mult:toNum(cell(C.mult)), mprob:toNum(cell(C.mprob))
+      });
+    });
+    var docs = Object.keys(groups).map(function(k){ return groups[k]; });
+    if(!docs.length) return {error:"馬の行を読み取れませんでした。見出しと内容を確認してください。"};
+    docs.forEach(function(d){
+      d.horses.sort(function(a,b){ return a.no-b.no; });
+      var ordered = d.horses.slice().sort(function(a,b){ return (b.prob||0)-(a.prob||0) || a.no-b.no; });
+      ordered.forEach(function(h,i){ if(h.rank==null) h.rank = i+1; });
+    });
+    docs.sort(function(a,b){ return a.date<b.date ? -1 : a.date>b.date ? 1 : a.leg-b.leg; });
+    return {docs:docs};
+  }
+
+  function predId(d){ return d.date + "_" + d.side + "_" + d.leg; }
+
+  function savePreds(docs){
+    if(!state.db) return Promise.reject(new Error("no-db"));
+    var now = new Date().toISOString();
+    return Promise.all(docs.map(function(d){
+      d.savedAt = now;
+      return state.db.doc("win5_pred/" + predId(d)).set(d);
+    }));
+  }
+
+  function getPred(date, side, leg){ return cmp.preds[date + "_" + side + "_" + leg] || null; }
+
+  function favOf(doc){
+    if(!doc || !doc.horses || !doc.horses.length) return null;
+    var byFlag = doc.horses.filter(function(h){ return h.afav; });
+    if(byFlag.length) return byFlag[0];
+    return doc.horses.slice().sort(function(a,b){ return (a.rank||99)-(b.rank||99); })[0];
+  }
+  function marketFavOf(doc){
+    if(!doc) return null;
+    var byFlag = doc.horses.filter(function(h){ return h.mfav; });
+    if(byFlag.length) return byFlag[0];
+    var withOdds = doc.horses.filter(function(h){ return h.odds>0; });
+    if(!withOdds.length) return null;
+    return withOdds.sort(function(a,b){ return a.odds-b.odds; })[0];
+  }
+  function sumProb(doc){
+    return doc.horses.reduce(function(s,h){ return s + (h.prob||0); }, 0);
+  }
+  function raceTitle(date, leg){
+    var c = getPred(date,"claude",leg), g = getPred(date,"gpt",leg);
+    return (c && c.race) || (g && g.race) || ("R" + leg);
+  }
+
+  function cmpDates(){
+    var seen = {};
+    Object.keys(cmp.preds).forEach(function(k){ seen[cmp.preds[k].date] = true; });
+    return Object.keys(seen).sort().reverse();
+  }
+
+  function legStats(date, leg){
+    var c = getPred(date,"claude",leg), g = getPred(date,"gpt",leg);
+    var out = {claude:c, gpt:g, cFav:favOf(c), gFav:favOf(g), maxGap:null, rankGaps:0};
+    if(c && g){
+      var gm = {};
+      g.horses.forEach(function(h){ gm[h.no] = h; });
+      c.horses.forEach(function(h){
+        var o = gm[h.no];
+        if(!o || h.prob==null || o.prob==null) return;
+        var gap = o.prob - h.prob;
+        if(!out.maxGap || Math.abs(gap) > Math.abs(out.maxGap.gap)) out.maxGap = {gap:gap, name:h.name, no:h.no};
+        if(h.rank!=null && o.rank!=null && Math.abs(o.rank-h.rank)>=2) out.rankGaps++;
+      });
+    }
+    return out;
+  }
+
+  function renderCompare(){
+    var dates = cmpDates();
+    var sel = document.getElementById("cmpDate");
+    var summary = document.getElementById("cmpSummary");
+    if(!dates.length){
+      sel.innerHTML = "";
+      document.getElementById("cmpMeta").textContent = "";
+      summary.innerHTML = "<p class=\"empty-note\">まだ予想が入っていません。下のボックスにCSVを貼り付けると、ここにClaudeとGPTが並びます。</p>";
+      document.getElementById("cmpTabs").innerHTML = "";
+      document.getElementById("cmpDetail").innerHTML = "";
+      renderTalk();
+      return;
+    }
+    if(dates.indexOf(cmp.date) < 0) cmp.date = dates[0];
+    sel.innerHTML = dates.map(function(d){ return "<option value=\"" + esc(d) + "\"" + (d===cmp.date?" selected":"") + ">" + esc(d) + "</option>"; }).join("");
+
+    var haveC = 0, haveG = 0;
+    for(var l=1;l<=5;l++){ if(getPred(cmp.date,"claude",l)) haveC++; if(getPred(cmp.date,"gpt",l)) haveG++; }
+    document.getElementById("cmpMeta").textContent = "Claude " + haveC + "/5レース、GPT " + haveG + "/5レース入力済み";
+
+    var html = "<table class=\"cmp-table\"><thead><tr><th>レース</th>" +
+      "<th><span class=\"side-tag side-claude\">Claude</span> 印</th>" +
+      "<th><span class=\"side-tag side-gpt\">GPT</span> 印</th>" +
+      "<th>判定</th><th>勝率差が最大の馬</th><th class=\"num\">順位が2以上違う馬</th><th>協議</th></tr></thead><tbody>";
+    for(var leg=1; leg<=5; leg++){
+      var s = legStats(cmp.date, leg);
+      var verdict;
+      if(s.cFav && s.gFav){
+        var cm0 = markMap(s.claude), gm0 = markMap(s.gpt), same = true;
+        Object.keys(cm0).forEach(function(k){ if(gm0[k]!==cm0[k]) same = false; });
+        Object.keys(gm0).forEach(function(k){ if(cm0[k]!==gm0[k]) same = false; });
+        if(s.cFav.no!==s.gFav.no) verdict = "<span class=\"verdict ng\">◎が違う</span>";
+        else if(same) verdict = "<span class=\"verdict ok\">◎○▲一致</span>";
+        else verdict = "<span class=\"verdict na\">◎一致・○▲に違い</span>";
+      } else {
+        verdict = "<span class=\"verdict na\">未入力あり</span>";
+      }
+      function marksCell(doc){
+        if(!doc) return "—";
+        var mm = markMap(doc);
+        return doc.horses.filter(function(h){ return mm[h.no]; })
+          .sort(function(a,b){ return MARKS.indexOf(mm[a.no]) - MARKS.indexOf(mm[b.no]); })
+          .map(function(h){ return "<div><span class=\"fav-mark\">" + mm[h.no] + "</span><span class=\"num\">" + h.no + "</span> " + esc(h.name) + " <span class=\"num\">" + f1(h.prob) + "%</span></div>"; }).join("");
+      }
+      var talkDoc = cmp.talk[cmp.date + "_" + leg];
+      var talkLabel = TALK_LABEL[(talkDoc && talkDoc.status) || "open"] || "未協議";
+      html += "<tr class=\"pick" + (leg===cmp.leg ? " cur" : "") + "\" data-leg=\"" + leg + "\">" +
+        "<td>R" + leg + " " + esc(raceTitle(cmp.date, leg)) + "</td>" +
+        "<td class=\"side-claude\">" + marksCell(s.claude) + "</td><td class=\"side-gpt\">" + marksCell(s.gpt) + "</td><td>" + verdict + "</td>" +
+        "<td>" + (s.maxGap ? esc(s.maxGap.name) + " <span class=\"num\">" + (s.maxGap.gap>0?"+":"") + f1(s.maxGap.gap) + "pt</span>" : "—") + "</td>" +
+        "<td class=\"num\">" + (s.claude && s.gpt ? s.rankGaps : "—") + "</td>" +
+        "<td>" + esc(talkLabel) + "</td></tr>";
+    }
+    html += "</tbody></table>";
+    summary.innerHTML = html;
+    summary.querySelectorAll("tr.pick").forEach(function(tr){
+      tr.addEventListener("click", function(){
+        cmp.leg = parseInt(tr.getAttribute("data-leg"),10);
+        renderCompare();
+      });
+    });
+
+    var tabs = document.getElementById("cmpTabs");
+    tabs.innerHTML = "";
+    for(var t=1;t<=5;t++){
+      (function(n){
+        var b = document.createElement("button");
+        b.type = "button";
+        b.textContent = "R" + n;
+        b.className = n===cmp.leg ? "active" : "";
+        b.addEventListener("click", function(){ cmp.leg = n; renderCompare(); });
+        tabs.appendChild(b);
+      })(t);
+    }
+    renderCmpDetail();
+    renderTalk();
+  }
+
+  function sideInfoBlock(doc, side, label){
+    if(!doc) return "<div class=\"side-" + side + "\"><span class=\"side-tag side-" + side + "\">" + label + "</span> 未入力</div>";
+    var sum = sumProb(doc), ok = Math.abs(sum-100) <= 0.15;
+    var mf = marketFavOf(doc), af = favOf(doc);
+    return "<div class=\"side-" + side + "\"><span class=\"side-tag side-" + side + "\">" + label + "</span> " +
+      "<span class=\"sumcheck " + (ok?"ok":"ng") + "\">勝率合計 " + f1(sum) + "% " + (ok?"✓":"要確認") + "</span><br>" +
+      "オッズ：<b>" + esc(doc.oddsTime || "未取得") + "</b>" + (doc.oddsSource ? "（" + esc(doc.oddsSource) + "）" : "") + "<br>" +
+      "予想の取得時刻：<b>" + esc(doc.info || "未記録") + "</b><br>" +
+      "市場本命：<b>" + (mf ? mf.no + " " + esc(mf.name) : "—") + "</b>　分析本命：<b>" + (af ? af.no + " " + esc(af.name) : "—") + "</b><br>" +
+      "推定の信頼性：<b>" + esc(doc.rel || "—") + "</b>" + (doc.relWhy ? "（" + esc(doc.relWhy) + "）" : "") +
+      "</div>";
+  }
+
+  function renderCmpDetail(){
+    var wrap = document.getElementById("cmpDetail");
+    var c = getPred(cmp.date,"claude",cmp.leg), g = getPred(cmp.date,"gpt",cmp.leg);
+    if(!c && !g){
+      wrap.innerHTML = "<p class=\"empty-note\">R" + cmp.leg + "は、まだどちらの予想も入っていません。</p>";
+      return;
+    }
+    var html = "<div class=\"cmp-info\">" + sideInfoBlock(c,"claude","Claude") + sideInfoBlock(g,"gpt","GPT") + "</div>";
+
+    var nos = {};
+    [c,g].forEach(function(d){ if(d) d.horses.forEach(function(h){ nos[h.no] = true; }); });
+    var list = Object.keys(nos).map(function(n){ return parseInt(n,10); }).sort(function(a,b){ return a-b; });
+    var cm = {}, gm = {};
+    if(c) c.horses.forEach(function(h){ cm[h.no] = h; });
+    if(g) g.horses.forEach(function(h){ gm[h.no] = h; });
+    var cmk = markMap(c), gmk = markMap(g);
+
+    function sideCells(h, mk, side){
+      if(!h) return "<td>—</td><td class=\"num\">—</td><td class=\"num\">—</td><td class=\"num\">—</td><td>—</td>";
+      return "<td class=\"side-" + side + "\"><span class=\"fav-mark\">" + (mk[h.no] || "") + "</span></td>" +
+        "<td class=\"num\">" + f1(h.odds) + "</td>" +
+        "<td class=\"num\">" + f1(h.prob) + "</td>" +
+        "<td class=\"num\">" + (h.rank!=null ? h.rank : "—") + "</td>" +
+        "<td>" + esc(h.base || "—") + (h.adj && h.adj!==h.base ? "→" + esc(h.adj) : "") + "</td>";
+    }
+
+    html += "<div class=\"cmp-wrap\"><table class=\"cmp-table\"><thead>" +
+      "<tr><th rowspan=\"2\">馬番</th><th rowspan=\"2\">馬名</th><th rowspan=\"2\">騎手 / 斤量</th>" +
+      "<th class=\"grp side-claude\" colspan=\"5\">Claude</th><th class=\"grp side-gpt\" colspan=\"5\">GPT</th>" +
+      "<th class=\"num\" rowspan=\"2\">勝率差<br>GPT−Claude</th><th class=\"num\" rowspan=\"2\">順位差</th></tr>" +
+      "<tr><th>印</th><th class=\"num\">単勝</th><th class=\"num\">勝率%</th><th class=\"num\">順位</th><th>信頼度</th>" +
+      "<th>印</th><th class=\"num\">単勝</th><th class=\"num\">勝率%</th><th class=\"num\">順位</th><th>信頼度</th></tr></thead><tbody>";
+    list.forEach(function(no){
+      var ch = cm[no], gh = gm[no], base = ch || gh;
+      var gap = (ch && gh && ch.prob!=null && gh.prob!=null) ? gh.prob - ch.prob : null;
+      var rgap = (ch && gh && ch.rank!=null && gh.rank!=null) ? gh.rank - ch.rank : null;
+      var differ = (gap!=null && Math.abs(gap)>=2) || (rgap!=null && Math.abs(rgap)>=2) || (ch && gh && (cmk[no]||"")!==(gmk[no]||""));
+      html += "<tr class=\"" + (differ ? "differ" : "") + "\">" +
+        "<td class=\"num\">" + no + "</td><td>" + esc(base.name) + "</td>" +
+        "<td>" + esc(base.jockey) + (base.wt!=null ? " / <span class=\"num\">" + base.wt + "</span>" : "") + "</td>" +
+        sideCells(ch, cmk, "claude") + sideCells(gh, gmk, "gpt") +
+        "<td class=\"num" + (gap!=null && Math.abs(gap)>=2 ? " gapcell" : "") + "\">" + (gap!=null ? (gap>0?"+":"") + f1(gap) : "—") + "</td>" +
+        "<td class=\"num" + (rgap!=null && Math.abs(rgap)>=2 ? " gapcell" : "") + "\">" + (rgap!=null ? (rgap>0?"+":"") + rgap : "—") + "</td></tr>";
+    });
+    html += "</tbody></table></div><p class=\"hint-sm\">赤い行は、勝率が2pt以上、順位が2以上、または印が違う馬です。印は、その側の勝率が高い順の上位3頭（◎○▲）。2着・3着は的中として扱いません。</p>";
+    html += evidenceBlock(c, "claude", "Claude") + evidenceBlock(g, "gpt", "GPT");
+    wrap.innerHTML = html;
+  }
+
+  function evidenceBlock(doc, side, label){
+    if(!doc) return "";
+    var items = doc.horses.filter(function(h){ return h.ev; }).sort(function(a,b){
+      return Math.abs((b.prob||0)-(b.mprob||0)) - Math.abs((a.prob||0)-(a.mprob||0)) || a.no-b.no;
+    });
+    if(!items.length) return "";
+    var shown = items.slice(0,8);
+    return "<details class=\"cmp-ev side-" + side + "\"><summary><span class=\"side-tag side-" + side + "\">" + label + "</span> 調整の根拠（市場確率からの変更）</summary>" +
+      "<p class=\"hint-sm\">根拠は公式出馬表の近走データ。倍率は未検証の仮説で、結果を貯めて確かめます。</p><ul>" +
+      shown.map(function(h){
+        return "<li><b>" + h.no + " " + esc(h.name) + "</b> 市場 <span class=\"num\">" + f1(h.mprob) + "</span>→<span class=\"num\">" + f1(h.prob) + "%</span>" +
+          (h.mult!=null ? "（×" + h.mult + "）" : "") + "：" + esc(h.ev) + "</li>";
+      }).join("") + "</ul>" + (items.length>shown.length ? "<p class=\"hint-sm\">ほか " + (items.length-shown.length) + " 頭は変更が小さいため省略。</p>" : "") + "</details>";
+  }
+
+  function renderTalk(){
+    var title = document.getElementById("cmpTalkTitle");
+    var statusEl = document.getElementById("cmpTalkStatus");
+    var memoEl = document.getElementById("cmpTalkMemo");
+    var hasDate = !!cmp.date;
+    statusEl.disabled = !hasDate; memoEl.disabled = !hasDate;
+    document.getElementById("cmpTalkSave").disabled = !hasDate;
+    if(!hasDate){ title.textContent = "協議メモ"; return; }
+    title.textContent = "協議メモ　R" + cmp.leg + "（" + cmp.date + "）";
+    var key = cmp.date + "_" + cmp.leg;
+    var d = cmp.talk[key];
+    if(document.activeElement !== memoEl){ memoEl.value = d && d.memo ? d.memo : ""; }
+    statusEl.value = (d && d.status) || "open";
+  }
+
+  function setMsg(id, text, ok){
+    var el = document.getElementById(id);
+    el.textContent = text;
+    el.className = "cmp-msg" + (text ? (ok ? " ok" : " ng") : "");
+  }
+
+  document.getElementById("cmpDate").addEventListener("change", function(ev){
+    cmp.date = ev.target.value;
+    renderCompare();
+  });
+
+  document.getElementById("cmpTalkSave").addEventListener("click", function(){
+    if(!state.db || !cmp.date){ setMsg("cmpTalkMsg", "保存できません（データベースに接続できていません）。", false); return; }
+    var key = cmp.date + "_" + cmp.leg;
+    var data = {
+      date: cmp.date, leg: cmp.leg,
+      status: document.getElementById("cmpTalkStatus").value,
+      memo: document.getElementById("cmpTalkMemo").value,
+      savedAt: new Date().toISOString()
+    };
+    state.db.doc("win5_talk/" + key).set(data).then(function(){
+      setMsg("cmpTalkMsg", "保存しました。", true);
+    }).catch(function(){
+      setMsg("cmpTalkMsg", "保存できませんでした。もう一度お試しください。", false);
+    });
+  });
+
+  function importAny(text){
+    var blocks = String(text||"").replace(/^﻿/, "").split(/\r?\n(?=﻿?date,)/).filter(function(b){ return b.trim(); });
+    var docs = [], errors = [];
+    blocks.forEach(function(block){
+      var head = (parseCsv(block.split(/\r?\n/)[0] || "")[0] || []).map(function(h){ return h.trim(); });
+      var sides = ["gpt","claude"].filter(function(sd){
+        return head.indexOf(sd + "_estimated_win_probability_pct")>=0 || head.indexOf(sd + "_win_prob_pct")>=0;
+      });
+      if(!sides.length){ errors.push("gpt_ または claude_ で始まる勝率の列が見つかりません。"); return; }
+      sides.forEach(function(sd){
+        var r = csvToPreds(block, sd);
+        if(r.error){ errors.push(r.error); return; }
+        r.docs.forEach(function(d){ docs.push(d); });
+      });
+    });
+    return {docs:docs, errors:errors};
+  }
+
+  document.getElementById("cmpImportBtn").addEventListener("click", function(){
+    var text = document.getElementById("cmpPaste").value;
+    if(!text.trim()){ setMsg("cmpImportMsg", "CSVが空です。見出し行つきで貼り付けてください。", false); return; }
+    var res = importAny(text);
+    if(!res.docs.length){ setMsg("cmpImportMsg", res.errors[0] || "読み取れませんでした。", false); return; }
+    var count = {gpt:{legs:0,horses:0}, claude:{legs:0,horses:0}};
+    res.docs.forEach(function(d){ count[d.side].legs++; count[d.side].horses += d.horses.length; });
+    var parts = [];
+    ["gpt","claude"].forEach(function(sd){
+      if(count[sd].legs) parts.push((sd==="gpt"?"GPT":"Claude") + " " + count[sd].legs + "レース・" + count[sd].horses + "頭");
+    });
+    var bad = res.docs.filter(function(d){ return Math.abs(sumProb(d)-100) > 0.15; })
+      .map(function(d){ return (d.side==="gpt"?"GPT":"Claude") + " R" + d.leg + "（合計" + f1(sumProb(d)) + "%）"; });
+    savePreds(res.docs).then(function(){
+      var dates = res.docs.map(function(d){ return d.date; }).sort();
+      cmp.date = dates[dates.length-1];
+      setMsg("cmpImportMsg",
+        "取り込みました：" + parts.join("、") + "。" +
+        (bad.length ? "勝率の合計が100%でない：" + bad.join("、") : "勝率の合計は各レース100%です。") +
+        (res.errors.length ? "（読み取れなかった部分があります）" : ""), bad.length===0 && !res.errors.length);
+      document.getElementById("cmpPaste").value = "";
+    }).catch(function(){
+      setMsg("cmpImportMsg", "保存できませんでした（データベースに接続できていません）。", false);
+    });
+  });
+
+  function csvCell(v){
+    var t = v==null ? "" : String(v);
+    return /[",\n\r]/.test(t) ? "\"" + t.replace(/"/g, "\"\"") + "\"" : t;
+  }
+
+  function buildJointCsv(date){
+    var keys = ["win_odds","odds_time","market_favorite","market_prob_pct","estimated_win_probability_pct","adjust_factor","win_rank","basic_confidence","adjusted_confidence","estimation_reliability","reliability_reason","analysis_favorite","evidence","info_time_jst"];
+    var head = ["date","win5_order","race","horse_no","horse_name","jockey","weight_kg"];
+    ["claude","gpt"].forEach(function(sd){ keys.forEach(function(k){ head.push(sd + "_" + k); }); });
+    var lines = [head.join(",")];
+    for(var leg=1; leg<=5; leg++){
+      var c = getPred(date,"claude",leg), g = getPred(date,"gpt",leg);
+      if(!c && !g) continue;
+      var cm = {}, gm = {}, seen = {};
+      if(c) c.horses.forEach(function(h){ cm[h.no] = h; seen[h.no] = true; });
+      if(g) g.horses.forEach(function(h){ gm[h.no] = h; seen[h.no] = true; });
+      Object.keys(seen).map(function(n){ return parseInt(n,10); }).sort(function(a,b){ return a-b; }).forEach(function(no){
+        var base = cm[no] || gm[no];
+        var row = [date, leg, (c && c.race) || (g && g.race) || "", no, base.name, base.jockey, base.wt];
+        [[c,cm],[g,gm]].forEach(function(pair){
+          var d = pair[0], h = pair[1][no];
+          if(!d || !h){ keys.forEach(function(){ row.push(""); }); return; }
+          var mf = marketFavOf(d), af = favOf(d);
+          row.push(h.odds, d.oddsTime || "", (mf && mf.no===no) ? "Yes" : "No", h.mprob, h.prob, h.mult, h.rank, h.base, h.adj,
+            d.rel || "", d.relWhy || "", (af && af.no===no) ? "Yes" : "No", h.ev || "", d.info || "");
+        });
+        lines.push(row.map(csvCell).join(","));
+      });
+    }
+    return lines.join("\n");
+  }
+
+  document.getElementById("cmpCopyBtn").addEventListener("click", function(){
+    if(!cmp.date){ setMsg("cmpImportMsg", "コピーする予想がまだありません。", false); return; }
+    var csv = buildJointCsv(cmp.date);
+    function fallback(){
+      document.getElementById("cmpPaste").value = csv;
+      setMsg("cmpImportMsg", "コピーできなかったので、下の欄に出しました。全選択してコピーしてください（取り込みは押さないでください）。", false);
+    }
+    try{
+      navigator.clipboard.writeText(csv).then(function(){
+        setMsg("cmpImportMsg", cmp.date + " の合体CSVをコピーしました。", true);
+      }).catch(fallback);
+    } catch(e){ fallback(); }
+  });
+
+  function connectCompare(db){
+    db.collection("win5_pred").onSnapshot(function(snap){
+      var map = {};
+      snap.docs.forEach(function(d){ map[d.id] = d.data(); });
+      cmp.preds = map;
+      renderCompare();
+    }, function(){});
+    db.collection("win5_talk").onSnapshot(function(snap){
+      var map = {};
+      snap.docs.forEach(function(d){ map[d.id] = d.data(); });
+      cmp.talk = map;
+      renderCompare();
+    }, function(){});
+  }
+
   // ---------- init ----------
 
   document.getElementById("fDate").valueAsDate = new Date();
@@ -1485,6 +2081,7 @@
   document.getElementById("todayLabel").textContent = new Date().toLocaleDateString("ja-JP",{year:"numeric",month:"long",day:"numeric",weekday:"short"});
 
   renderAll();
+  renderCompare();
   connectDb();
 })();
 </script>
