@@ -92,3 +92,12 @@
 - `.github/workflows/win5-result-evaluation.yml` を追加。Actionsの手動実行時に開催日（YYYY-MM-DD）を入力し、V2予想CSVと結果CSVを検証・評価して、開催日付きレポートを保存する仕組み。
 - この新しい手動評価ワークフロー自体は追加直後で、まだ実行結果を確認していない。初回はActions画面で `win5-result-evaluation` を選び、日付 `2026-10-24` で手動実行し、成功を確認する。
 - 旧run `40075139688` は修正前のテスト期待値が原因で失敗。修正後のrunが成功しているため、旧失敗は履歴として残す。
+
+
+## 2026-10-24 開催日別V2連携を修正
+
+- `.github/workflows/win5-v2-scenario.yml` を修正し、ルートの `win5_gpt_primary.csv` ではなく、手動入力した開催日の `data/win5_joint/YYYY-MM-DD/win5_gpt_v2_scenario.csv` を入力・出力に使用するよう変更。
+- 日付形式を検証し、対象日のCSVが存在しない場合は早い段階で停止する。V1列を保持したまま、同じ開催日別ファイルのV2確率列を再計算する。
+- 変更コミット `a5ad2c3304dbc0caed80250e2941116d313f4810`。
+- このworkflowの変更は手動実行のみで、現時点では修正後のV2 workflow実行結果は未確認。初回はActionsから `win5-v2-scenario` を選び、対象日とalphaを入力して成功を確認する。
+- なお、V1確率自体の自動生成、締切前データ取得とV1固定の完全自動化はまだ別タスク。
