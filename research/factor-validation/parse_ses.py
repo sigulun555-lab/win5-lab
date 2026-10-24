@@ -29,7 +29,8 @@ def parse_file(fn):
             jk=re.sub(r'^[▲△☆◇★\s]+','',txt(cell('jockey'))); tr_=txt(cell('trainer'))
             cor={}
             for ttl,v in re.findall(r'<li title="(\d)コーナー通過順位">(\d+)</li>',cell('corner')): cor[int(ttl)]=int(v)
-            rows.append(dict(jockey=jk,trainer=tr_,c3=cor.get(3),c4=cor.get(4),c1=cor.get(1),c2=cor.get(2),place=int(place) if place.isdigit() else None,place_raw=place,num=int(num) if num.isdigit() else None,hid=hid,name=name,age=txt(cell('age')),
+            ft=re.search(r'\d+\.\d',txt(cell('f_time')))
+            rows.append(dict(f3=float(ft.group(0)) if ft else None,jockey=jk,trainer=tr_,c3=cor.get(3),c4=cor.get(4),c1=cor.get(1),c2=cor.get(2),place=int(place) if place.isdigit() else None,place_raw=place,num=int(num) if num.isdigit() else None,hid=hid,name=name,age=txt(cell('age')),
                 wt=float(wt.group(0)) if wt else None,pop=int(pop.group(0)) if pop else None,bw=int(hw.group(1)) if hw else None,time=txt(cell('time'))))
         out.append(dict(date=str(date),venue=venue,rn=rn,surface=surface,going=going,weather=txt(wx.group(1)) if wx else None,cat=txt(cat.group(1)) if cat else '',cls=txt(cls.group(1)) if cls else '',
                         name=txt(rname.group(1)) if rname else '',dist=dist,detail=detail,rows=rows))
