@@ -1,0 +1,53 @@
+name: win5-v1-freeze
+
+on:
+  workflow_dispatch:
+    inputs:
+      date:
+        description: "開催日（YYYY-MM-DD）"
+        required: true
+        default: "2026-10-25"
+      deadline:
+        description: "JRA公式WIN5締切時刻（日本時間 HH:MM）"
+        required: true
+        default: "14:45"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: win5-v1-freeze
+  cancel-in-progress: false
+
+jobs:
+  freeze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: 全テスト
+        run: python -m unittest discover -s tests -p "test_*.py" -v
+      - name: V1を締切前スナップショットとして固定
+        env:
+          RUN_DATE: ${{ inputs.date }}
+          DEADLINE: ${{ inputs.deadline }}
+        run: |
+          set -euo pipefail
+          [[ "$RUN_DATE" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]
+          [[ "$DEADLINE" =~ ^([01][0-9]|2[0-3]):[0-5][0-9]$ ]]
+          python scripts/freeze_win5_v1.py \
+            --input "data/win5_joint/$RUN_DATE/win5_joint.csv" \
+            --output "data/win5_joint/$RUN_DATE/win5_gpt_v1_frozen.csv" \
+            --deadline "$DEADLINE"
+      - name: 固定したV1を保存
+        env:
+          RUN_DATE: ${{ inputs.date }}
+        run: |
+          git config user.name "win5-v1-freeze"
+          git config user.email "win5-v1-freeze@users.noreply.github.com"
+          git add "data/win5_joint/$RUN_DATE/win5_gpt_v1_frozen.csv"
+          git commit -m "Freeze WIN5 V1 forecast for $RUN_DATE"
+          git push origin main
