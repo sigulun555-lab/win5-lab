@@ -1316,12 +1316,12 @@
     if(honmei.analysisMark==="◎" && honmeiProbPercent!=null){
       honmeiProb = Math.max(0, Math.min(100, honmeiProbPercent))/100;
     } else {
-      honmeiProb = 1/honmei.odds; // 人気逆転で繰り上がった馬は市場の真の勝率を使う
+      honmeiProb = (honmei.prob>0 ? honmei.prob/100 : 1/honmei.odds); // 人気逆転で繰り上がった馬は、データの勝率（なければ1÷オッズ）を使う
     }
     var result = { "◎": { horse:honmei, prob: honmeiProb } };
 
-    if(taikou && taikou.odds>0){ result["○"] = { horse:taikou, prob: 1/taikou.odds }; }
-    if(tanAna && tanAna.odds>0){ result["▲"] = { horse:tanAna, prob: 1/tanAna.odds }; }
+    if(taikou && taikou.odds>0){ result["○"] = { horse:taikou, prob: (taikou.prob>0 ? taikou.prob/100 : 1/taikou.odds) }; }
+    if(tanAna && tanAna.odds>0){ result["▲"] = { horse:tanAna, prob: (tanAna.prob>0 ? tanAna.prob/100 : 1/tanAna.odds) }; }
 
     var sumOthers = (result["○"]?result["○"].prob:0) + (result["▲"]?result["▲"].prob:0);
     var maxOthers = Math.max(0, 1 - honmeiProb);
@@ -1554,15 +1554,15 @@
                 if(raceData.horses && Array.isArray(raceData.horses)){
                   if(fs.honmei){
                     var h1 = raceData.horses.find(function(h){return h.num === fs.honmei;});
-                    horses.push({num: fs.honmei, name: h1 ? h1.name : "", odds: h1 ? h1.odds : null, analysisMark: "◎", selected: true});
+                    horses.push({num: fs.honmei, name: h1 ? h1.name : "", odds: h1 ? h1.odds : null, prob: h1 ? h1.prob : null, analysisMark: "◎", selected: true});
                   }
                   if(fs.taikou){
                     var h2 = raceData.horses.find(function(h){return h.num === fs.taikou;});
-                    horses.push({num: fs.taikou, name: h2 ? h2.name : "", odds: h2 ? h2.odds : null, analysisMark: "○", selected: true});
+                    horses.push({num: fs.taikou, name: h2 ? h2.name : "", odds: h2 ? h2.odds : null, prob: h2 ? h2.prob : null, analysisMark: "○", selected: true});
                   }
                   if(fs.tan_ana){
                     var h3 = raceData.horses.find(function(h){return h.num === fs.tan_ana;});
-                    horses.push({num: fs.tan_ana, name: h3 ? h3.name : "", odds: h3 ? h3.odds : null, analysisMark: "▲", selected: true});
+                    horses.push({num: fs.tan_ana, name: h3 ? h3.name : "", odds: h3 ? h3.odds : null, prob: h3 ? h3.prob : null, analysisMark: "▲", selected: true});
                   }
                 }
               }
