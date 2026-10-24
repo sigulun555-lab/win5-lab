@@ -1,7 +1,10 @@
 name: odds-snapshot
 
-# 競馬開催日に、これから発走するレースの単勝オッズ（JRA公式の出馬表）を10分ごとに保存する。
-# 保存先は main ではなく、別ブランチ odds-data（追記のみ）。
+# 競馬開催日に、単勝オッズ（JRA公式の出馬表）を10分ごとに保存する。保存先は main ではなく、別ブランチ odds-data（追記のみ）。
+#   odds/<日付>.jsonl       ：これから発走するレースを1レース1行（通常の収集）
+#   odds/win5/<日付>.jsonl  ：JRA公式の対象5レースを照合できたときだけ、5レース1組（WIN5）
+#   odds/logs/<日付>.jsonl  ：取得元・取得時刻・対象レース一覧・照合結果・保存結果のログ
+# 照合できなかった（欠落・余分・重複・順番違い）ときは、収集の手順が失敗（赤）になり、理由がログに残る。
 on:
   schedule:
     # JST 08:00〜16:59 の土・日・月（祝日の月曜に備える）。UTC表記。
@@ -17,7 +20,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: odds-snapshot
+  group: odds-data-writer
   cancel-in-progress: false
 
 jobs:
@@ -40,9 +43,12 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: オッズを保存
-        run: python main/collector/jra_odds_snapshot.py --out data/odds --window-min "${{ github.event.inputs.window_min || '75' }}"
+      - name: テスト（収集コード）
+        run: python -m unittest discover -s main/tests -p "test_collector.py"
+      - name: オッズを保存（通常の収集 + WIN5の照合）
+        run: python main/collector/jra_odds_snapshot.py --scope both --out data/odds --window-min "${{ github.event.inputs.window_min || '75' }}"
       - name: 変更があればコミットして追記
+        if: always()
         run: |
           cd data
           git config user.name "odds-snapshot"

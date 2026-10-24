@@ -10,7 +10,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: win5-morning-snapshot
+  group: odds-data-writer
   cancel-in-progress: false
 
 jobs:
@@ -40,6 +40,7 @@ jobs:
             --out data/odds
 
       - name: 変更があれば保存
+        if: always()
         run: |
           cd data
           git config user.name "win5-morning-snapshot"
@@ -50,4 +51,4 @@ jobs:
             exit 0
           fi
           git commit -m "WIN5 morning odds snapshot"
-          git push origin odds-data
+          for i in 1 2 3; do git push origin odds-data && break || { git pull --rebase origin odds-data; sleep 3; }; done
