@@ -17,6 +17,7 @@ on:
     branches: [main]
     paths:
       - "collector/**"
+      - "scripts/**"
       - "tests/**"
       - ".github/workflows/odds-snapshot.yml"
   schedule:
