@@ -1,0 +1,53 @@
+name: odds-snapshot
+
+# 競馬開催日に、これから発走するレースの単勝オッズ（JRA公式の出馬表）を10分ごとに保存する。
+# 保存先は main ではなく、別ブランチ odds-data（追記のみ）。
+on:
+  schedule:
+    # JST 08:00〜16:59 の土・日・月（祝日の月曜に備える）。UTC表記。
+    - cron: "*/10 23 * * 5,6,0"
+    - cron: "*/10 0-7 * * 6,0,1"
+  workflow_dispatch:
+    inputs:
+      window_min:
+        description: "今から何分以内に発走するレースを取るか"
+        default: "75"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: odds-snapshot
+  cancel-in-progress: false
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: main
+      - name: データ用ブランチ(odds-data)を用意
+        run: |
+          set -e
+          REMOTE="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          if git ls-remote --exit-code --heads "$REMOTE" odds-data >/dev/null 2>&1; then
+            git clone --depth 1 --branch odds-data "$REMOTE" data
+          else
+            mkdir data && cd data && git init -q -b odds-data && git remote add origin "$REMOTE"
+          fi
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: オッズを保存
+        run: python main/collector/jra_odds_snapshot.py --out data/odds --window-min "${{ github.event.inputs.window_min || '75' }}"
+      - name: 変更があればコミットして追記
+        run: |
+          cd data
+          git config user.name "odds-snapshot"
+          git config user.email "odds-snapshot@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then echo "新しいオッズはありません。"; exit 0; fi
+          git commit -q -m "odds snapshot $(TZ=Asia/Tokyo date '+%Y-%m-%d %H:%M JST')"
+          for i in 1 2 3; do git push origin odds-data && break || { git pull --rebase origin odds-data; sleep 3; }; done
