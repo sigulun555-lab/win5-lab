@@ -48,6 +48,9 @@ jobs:
             RUN_DATE="$INPUT_DATE"
           else
             RUN_DATE="$(git diff --name-only HEAD^ HEAD | sed -n 's#^data/win5_joint/\([0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]\)/win5_gpt_v2_scenario\.csv$#\1#p' | head -n 1)"
+            if [ -z "$RUN_DATE" ]; then
+              RUN_DATE="$(find data/win5_joint -mindepth 2 -maxdepth 2 -name win5_gpt_v2_scenario.csv -printf '%h\n' | sed 's#^data/win5_joint/##' | sort -r | head -n 1)"
+            fi
           fi
           [[ "$RUN_DATE" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]
           echo "date=$RUN_DATE" >> "$GITHUB_OUTPUT"
