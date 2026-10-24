@@ -59,4 +59,4 @@
 
 ## 再現
 
-`crawl.py`（JRAの結果ページを取得）→ `parse_ses.py`（解析）→ `model.py`（検証）。`model.py` の分割は、環境変数 `SPLIT=A|B|C`（`model2.py` 相当の分割を使う場合）で切り替えました。取得したHTMLは大きいので、リポジトリには入れていません。
+`crawl.py`（JRAの結果ページを取得）→ `parse_ses.py`（解析）→ `model.py`（検証）。`model.py` は、環境変数 `SPLIT=A|B|C` で期間の分け方を切り替えます（結果は `result_split*.json`）。取得したHTMLは大きいので、リポジトリには入れていません。

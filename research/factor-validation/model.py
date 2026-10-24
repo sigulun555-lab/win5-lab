@@ -41,7 +41,9 @@ for h,l in byh.items():
                 elif dw<=-2: f['wt_down']=1
         s.update(f)
 # ---- design
-TRAIN=(datetime.date(2026,4,1),datetime.date(2026,8,31)); TEST=(datetime.date(2026,9,1),datetime.date(2026,10,24))
+import os
+sp=os.environ.get('SPLIT','A')
+TRAIN,TEST={'A':((datetime.date(2026,4,1),datetime.date(2026,8,31)),(datetime.date(2026,9,1),datetime.date(2026,10,24))),'B':((datetime.date(2026,4,1),datetime.date(2026,7,31)),(datetime.date(2026,8,1),datetime.date(2026,10,24))),'C':((datetime.date(2026,6,1),datetime.date(2026,10,24)),(datetime.date(2026,4,1),datetime.date(2026,5,31)))}[sp]
 def build(lo,hi):
     ss=[s for s in starts if lo<=s['date']<=hi]
     ss.sort(key=lambda s:s['rid'])
@@ -125,4 +127,4 @@ for s in starts:
     if s['date']>=TRAIN[0]: allw[s['pop']][0]+=s['win']; allw[s['pop']][1]+=1
 res['pop_winrate']={k:[v[0],v[1],v[0]/v[1]] for k,v in sorted(allw.items())}
 print('\n人気別の1着率(4月以降):',{k:round(v[2]*100,1) for k,v in list(res['pop_winrate'].items())[:6]})
-json.dump(res,open('model_result.json','w'),ensure_ascii=False,indent=1)
+json.dump(res,open('model_result_%s.json'%sp,'w'),ensure_ascii=False,indent=1)
