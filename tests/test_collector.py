@@ -126,6 +126,20 @@ class Verify(unittest.TestCase):
     def test_official_unavailable(self):
         self.assertFalse(c.verify_win5(None, W5)["ok"])
 
+    def test_official_list_with_only_four_races_is_rejected(self):
+        bad_official = dict(self.OFF)
+        bad_official["races"] = self.OFF["races"][:4]
+        v = c.verify_win5(bad_official, W5)
+        self.assertFalse(v["ok"])
+        self.assertTrue(any("5レースではない" in issue for issue in v["issues"]))
+
+    def test_official_duplicate_race_is_rejected(self):
+        bad_official = dict(self.OFF)
+        bad_official["races"] = self.OFF["races"] + [dict(self.OFF["races"][0])]
+        v = c.verify_win5(bad_official, W5)
+        self.assertFalse(v["ok"])
+        self.assertTrue(any("重複" in issue for issue in v["issues"]))
+
 
 class Run(unittest.TestCase):
     def read(self, p):
