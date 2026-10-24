@@ -7,7 +7,7 @@ JRAのWIN5（指定5レースの1着をすべて当てる馬券）について�
 | 場所 | 内容 |
 |---|---|
 | `rules/win5-prompt.md` | WIN5予想の手順 STEP1〜11（版 de2c6eb9c814） |
-| `rules/win5-joint-validation.md` | GPT・Claude共同検証ルール（WIN5-JOINT-v1.0、暫定運用つき） |
+| `rules/win5-joint-validation.md` | GPT・Claude共同検証ルール（WIN5-JOINT-v1.2、暫定運用つき） |
 | `app/index.html` | WIN5帳の画面。買い目計算・予想メモ・収支帳・バックテストに、Claude × GPT の比較表示を加えたもの |
 | `win5_gpt_primary.csv` | GPTの一次予想（2026-10-24、全72頭） |
 | `data/win5_joint/<日付>/win5_claude.csv` | Claudeの予想（全馬） |
