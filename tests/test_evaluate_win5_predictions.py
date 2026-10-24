@@ -34,7 +34,7 @@ class EvaluateWin5Tests(unittest.TestCase):
                 w = csv.DictWriter(f, fieldnames=["win5_order", "race", "winner_no"]); w.writeheader(); w.writerows(winners)
             got = evaluate(pred, result)
             self.assertEqual(got["summary"]["v1"]["top1_hits"], 5)
-            self.assertEqual(got["summary"]["v2"]["top1_hits"], 0)
+            self.assertEqual(got["summary"]["v2"]["top1_hits"], 5)
             self.assertEqual(len(got["races"]), 5)
 
     def test_rejects_missing_winner(self):
