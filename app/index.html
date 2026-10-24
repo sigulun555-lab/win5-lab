@@ -1607,7 +1607,7 @@
 
   // ---------- 共同検証 Claude × GPT ----------
 
-  var cmp = { preds:{}, talk:{}, date:null, leg:1 };
+  var cmp = { preds:{}, talk:{}, handoff:{}, date:null, leg:1 };
   var TALK_LABEL = {open:"未協議", talking:"協議中", agreed:"合意", split:"不一致のまま"};
 
   function esc(s){
@@ -1794,12 +1794,22 @@
 
     var html = "<table class=\"cmp-table\"><thead><tr><th>レース</th>" +
       "<th><span class=\"side-tag side-claude\">Claude</span> 印</th>" +
-      "<th><span class=\"side-tag side-gpt\">GPT</span> 印</th>" +
+      "<th><span class=\"side-tag side-gpt\">GPT</span> 印（CSV）</th>" +
+      "<th><span class=\"side-tag side-gpt\">GPT</span> 引き継ぎ（暫定・確率なし）</th>" +
       "<th>判定</th><th>勝率差が最大の馬</th><th class=\"num\">順位が2以上違う馬</th><th>協議</th></tr></thead><tbody>";
     for(var leg=1; leg<=5; leg++){
       var s = legStats(cmp.date, leg);
       var verdict;
-      if(s.cFav && s.gFav){
+      var ho = cmp.handoff[cmp.date + "_" + leg];
+      if(ho && s.cFav){
+        var cm1 = markMap(s.claude), cNos = Object.keys(cm1).filter(function(k){ return cm1[k]!=="◎"; }).map(Number).sort();
+        var hNos = (ho.taikou || []).map(function(x){ return x.no; }).sort();
+        var sameT = cNos.length===hNos.length && cNos.every(function(v,i){ return v===hNos[i]; });
+        if(!ho.honmei || s.cFav.no!==ho.honmei.no) verdict = "<span class=\"verdict ng\">◎が違う</span>";
+        else if(sameT) verdict = "<span class=\"verdict ok\">◎・対抗とも一致</span>";
+        else verdict = "<span class=\"verdict na\">◎一致・対抗に違い</span>";
+        verdict += "<div class=\"hint-sm\">引き継ぎ基準</div>";
+      } else if(s.cFav && s.gFav){
         var cm0 = markMap(s.claude), gm0 = markMap(s.gpt), same = true;
         Object.keys(cm0).forEach(function(k){ if(gm0[k]!==cm0[k]) same = false; });
         Object.keys(gm0).forEach(function(k){ if(cm0[k]!==gm0[k]) same = false; });
@@ -1816,16 +1826,22 @@
           .sort(function(a,b){ return MARKS.indexOf(mm[a.no]) - MARKS.indexOf(mm[b.no]); })
           .map(function(h){ return "<div><span class=\"fav-mark\">" + mm[h.no] + "</span><span class=\"num\">" + h.no + "</span> " + esc(h.name) + " <span class=\"num\">" + f1(h.prob) + "%</span></div>"; }).join("");
       }
+      function handoffCell(h){
+        if(!h) return "—";
+        return "<div><span class=\"fav-mark\">◎</span><span class=\"num\">" + h.honmei.no + "</span> " + esc(h.honmei.name) + "</div>" +
+          "<div>対抗 " + (h.taikou || []).map(function(x){ return "<span class=\"num\">" + x.no + "</span> " + esc(x.name); }).join("、") + "</div>" +
+          (h.refOdds ? "<div class=\"hint-sm\">参考オッズ " + esc(h.refOdds) + "（過去の値）</div>" : "");
+      }
       var talkDoc = cmp.talk[cmp.date + "_" + leg];
       var talkLabel = TALK_LABEL[(talkDoc && talkDoc.status) || "open"] || "未協議";
       html += "<tr class=\"pick" + (leg===cmp.leg ? " cur" : "") + "\" data-leg=\"" + leg + "\">" +
         "<td>R" + leg + " " + esc(raceTitle(cmp.date, leg)) + "</td>" +
-        "<td class=\"side-claude\">" + marksCell(s.claude) + "</td><td class=\"side-gpt\">" + marksCell(s.gpt) + "</td><td>" + verdict + "</td>" +
+        "<td class=\"side-claude\">" + marksCell(s.claude) + "</td><td class=\"side-gpt\">" + marksCell(s.gpt) + "</td><td class=\"side-gpt\">" + handoffCell(ho) + "</td><td>" + verdict + "</td>" +
         "<td>" + (s.maxGap ? esc(s.maxGap.name) + " <span class=\"num\">" + (s.maxGap.gap>0?"+":"") + f1(s.maxGap.gap) + "pt</span>" : "—") + "</td>" +
         "<td class=\"num\">" + (s.claude && s.gpt ? s.rankGaps : "—") + "</td>" +
         "<td>" + esc(talkLabel) + "</td></tr>";
     }
-    html += "</tbody></table>";
+    html += "</tbody></table><p class=\"hint-sm\">判定は、GPTの引き継ぎ（暫定・確率なし・取得時刻不明）があるレースは、それを基準にします。勝率や順位の比較（下の詳細表）は、GPTのCSV（11:06取得）のままです。</p>";
     summary.innerHTML = html;
     summary.querySelectorAll("tr.pick").forEach(function(tr){
       tr.addEventListener("click", function(){
@@ -2065,6 +2081,12 @@
       var map = {};
       snap.docs.forEach(function(d){ map[d.id] = d.data(); });
       cmp.preds = map;
+      renderCompare();
+    }, function(){});
+    db.collection("win5_gpt_handoff").onSnapshot(function(snap){
+      var map = {};
+      snap.docs.forEach(function(d){ map[d.id] = d.data(); });
+      cmp.handoff = map;
       renderCompare();
     }, function(){});
     db.collection("win5_talk").onSnapshot(function(snap){
