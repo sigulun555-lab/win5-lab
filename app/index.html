@@ -1670,7 +1670,7 @@
       relWhy:col([side+"_reliability_reason"]),
       mfav:col(["market_favorite", side+"_market_favorite"]), afav:col([side+"_analysis_favorite", side+"_analysis_fav"]),
       info:col([side+"_info_time_jst", side+"_updated_at"]), status:col(["scratch_status","status"]),
-      ev:col([side+"_evidence"]), mult:col([side+"_adjust_factor"]), mprob:col(["market_normalized_probability_pct", side+"_market_prob_pct"])
+      ev:col([side+"_evidence"]), val:col([side+"_adjust_validation"]), mult:col([side+"_adjust_factor"]), mprob:col(["market_normalized_probability_pct", side+"_market_prob_pct"])
     };
     var need = [["date",C.date],["win5_order",C.leg],["horse_no",C.no],["horse_name",C.name],[side+"_estimated_win_probability_pct",C.prob]];
     var miss = need.filter(function(x){ return x[1]<0; }).map(function(x){ return x[0]; });
@@ -1700,7 +1700,7 @@
         prob:toNum(cell(C.prob)), rank:toNum(cell(C.rank)),
         base:cell(C.bconf), adj:cell(C.aconf),
         mfav:isYes(cell(C.mfav)), afav:isYes(cell(C.afav)), status:cell(C.status),
-        ev:cell(C.ev), mult:toNum(cell(C.mult)), mprob:toNum(cell(C.mprob))
+        ev:cell(C.ev), val:cell(C.val), mult:toNum(cell(C.mult)), mprob:toNum(cell(C.mprob))
       });
     });
     var docs = Object.keys(groups).map(function(k){ return groups[k]; });
@@ -1860,6 +1860,7 @@
       "予想の取得時刻：<b>" + esc(doc.info || "未記録") + "</b><br>" +
       "市場本命：<b>" + (mf ? mf.no + " " + esc(mf.name) : "—") + "</b>　分析本命：<b>" + (af ? af.no + " " + esc(af.name) : "—") + "</b><br>" +
       "推定の信頼性：<b>" + esc(doc.rel || "—") + "</b>" + (doc.relWhy ? "（" + esc(doc.relWhy) + "）" : "") +
+      (doc.horses[0] && doc.horses[0].val ? "<br>補正の検証：" + esc(doc.horses[0].val) : "") +
       "</div>";
   }
 
@@ -2019,7 +2020,7 @@
   }
 
   function buildJointCsv(date){
-    var keys = ["win_odds","odds_time","market_favorite","market_prob_pct","estimated_win_probability_pct","adjust_factor","win_rank","basic_confidence","adjusted_confidence","estimation_reliability","reliability_reason","analysis_favorite","evidence","info_time_jst"];
+    var keys = ["win_odds","odds_time","market_favorite","market_prob_pct","estimated_win_probability_pct","adjust_factor","win_rank","basic_confidence","adjusted_confidence","estimation_reliability","reliability_reason","analysis_favorite","evidence","adjust_validation","info_time_jst"];
     var head = ["date","win5_order","race","horse_no","horse_name","jockey","weight_kg"];
     ["claude","gpt"].forEach(function(sd){ keys.forEach(function(k){ head.push(sd + "_" + k); }); });
     var lines = [head.join(",")];
@@ -2037,7 +2038,7 @@
           if(!d || !h){ keys.forEach(function(){ row.push(""); }); return; }
           var mf = marketFavOf(d), af = favOf(d);
           row.push(h.odds, d.oddsTime || "", (mf && mf.no===no) ? "Yes" : "No", h.mprob, h.prob, h.mult, h.rank, h.base, h.adj,
-            d.rel || "", d.relWhy || "", (af && af.no===no) ? "Yes" : "No", h.ev || "", d.info || "");
+            d.rel || "", d.relWhy || "", (af && af.no===no) ? "Yes" : "No", h.ev || "", h.val || "", d.info || "");
         });
         lines.push(row.map(csvCell).join(","));
       });
