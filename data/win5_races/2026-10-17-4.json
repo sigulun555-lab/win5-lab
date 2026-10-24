@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-17",
+  "final_selection": {
+    "honmei": 14,
+    "taikou": 6,
+    "tan_ana": 7
+  },
+  "horses": [
+    {
+      "name": "メイショウコマチ",
+      "num": 14,
+      "odds": 4.2
+    },
+    {
+      "name": "エルフストラック",
+      "num": 6,
+      "odds": 5.4
+    },
+    {
+      "name": "エリカサファイア",
+      "num": 7,
+      "odds": 7.3
+    }
+  ],
+  "race_name": "トルマリンステークス(京都11R)",
+  "race_num": 4,
+  "winning_probability": 24
+}

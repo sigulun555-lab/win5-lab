@@ -1,0 +1,37 @@
+{
+  "date": "2026-09-27",
+  "final_selection": {
+    "honmei": 7,
+    "taikou": 3,
+    "tan_ana": 2
+  },
+  "horses": [
+    {
+      "mark": "◎",
+      "name": "リサナウト",
+      "num": 7,
+      "odds": 1.6
+    },
+    {
+      "mark": "○",
+      "name": "シルバーウィル",
+      "num": 3,
+      "odds": 4.9
+    },
+    {
+      "mark": "▲",
+      "name": "シルクドマルス",
+      "num": 2,
+      "odds": 8.6
+    }
+  ],
+  "market_analysis": "14:01時点(発走24分前)の最新オッズ。1番人気(1.6倍→推定62.5%)の⑦リサナウトを◎に維持。2位③(20.4%)と大差で信頼度A。ただし⑦の馬体重が+10kgと大幅増で仕上がりの緩みを少し警戒し、推定より低めの58%に補正。",
+  "note": "馬体重:⑦+10kg、③+4kg、②+4kg。大きな変化は⑦のみ。",
+  "race_name": "サフラン賞",
+  "race_num": 1,
+  "race_number": "9R",
+  "track": "中山",
+  "track_condition": "芝:稍重",
+  "weather": "曇",
+  "winning_probability": 58
+}

@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-12",
+  "final_selection": {
+    "honmei": 9,
+    "taikou": 1,
+    "tan_ana": 18
+  },
+  "horses": [
+    {
+      "name": "マルガイオフトレイル",
+      "num": 9,
+      "odds": 4.6
+    },
+    {
+      "name": "ダイヤモンドノット",
+      "num": 1,
+      "odds": 6
+    },
+    {
+      "name": "エリカエクスプレス",
+      "num": 18,
+      "odds": 7
+    }
+  ],
+  "race_name": "MBS賞スワンS(京都11R・GⅡ)",
+  "race_num": 5,
+  "winning_probability": 22
+}

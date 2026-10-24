@@ -1,0 +1,37 @@
+{
+  "date": "2026-09-27",
+  "final_selection": {
+    "honmei": 1,
+    "taikou": 10,
+    "tan_ana": 13
+  },
+  "horses": [
+    {
+      "mark": "◎",
+      "name": "ダノンセンチュリー",
+      "num": 1,
+      "odds": 4.8
+    },
+    {
+      "mark": "○",
+      "name": "サブマリーナ",
+      "num": 10,
+      "odds": 5.7
+    },
+    {
+      "mark": "▲",
+      "name": "インヴォーグ",
+      "num": 13,
+      "odds": 7.4
+    }
+  ],
+  "market_analysis": "14:02時点で人気が逆転。①ダノンセンチュリーが1人気(4.8倍→20.8%)に上がり、◎を⑩から入れ替え。⑩サブマリーナ(5.7倍→17.5%)との差は3pt程度で依然拮抗、信頼度C。",
+  "note": "前回(23:47)は⑩が1人気だったが逆転。拮抗レースなので複数流し推奨。",
+  "race_name": "ポートアイランドS",
+  "race_num": 4,
+  "race_number": "11R",
+  "track": "阪神",
+  "track_condition": "芝:良",
+  "weather": "雨",
+  "winning_probability": 19
+}

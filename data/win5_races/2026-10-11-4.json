@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-11",
+  "final_selection": {
+    "honmei": 13,
+    "taikou": 1,
+    "tan_ana": 5
+  },
+  "horses": [
+    {
+      "name": "メルカントゥール",
+      "num": 13,
+      "odds": 2.6
+    },
+    {
+      "name": "モックモック",
+      "num": 1,
+      "odds": 4.9
+    },
+    {
+      "name": "タガノバビロン",
+      "num": 5,
+      "odds": 5.6
+    }
+  ],
+  "race_name": "太秦ステークス(京都11R)",
+  "race_num": 4,
+  "winning_probability": 38
+}

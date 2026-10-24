@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-18",
+  "final_selection": {
+    "honmei": 9,
+    "taikou": 4,
+    "tan_ana": 10
+  },
+  "horses": [
+    {
+      "name": "ホウショウルカス",
+      "num": 9,
+      "odds": 3.1
+    },
+    {
+      "name": "ショーダンサー",
+      "num": 4,
+      "odds": 4.2
+    },
+    {
+      "name": "マハートマーベル",
+      "num": 10,
+      "odds": 5.7
+    }
+  ],
+  "race_name": "聚楽第特別(京都10R)",
+  "race_num": 2,
+  "winning_probability": 32
+}

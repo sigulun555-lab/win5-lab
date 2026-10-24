@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-18",
+  "final_selection": {
+    "honmei": 3,
+    "taikou": 10,
+    "tan_ana": 5
+  },
+  "horses": [
+    {
+      "name": "シィドウメテオ",
+      "num": 3,
+      "odds": 4.4
+    },
+    {
+      "name": "ケリフレッドアスク",
+      "num": 10,
+      "odds": 4.6
+    },
+    {
+      "name": "カニキュル",
+      "num": 5,
+      "odds": 4.9
+    }
+  ],
+  "race_name": "新潟犘馬ステークス(新潟11R)",
+  "race_num": 3,
+  "winning_probability": 23
+}

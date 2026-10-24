@@ -1,0 +1,37 @@
+{
+  "date": "2026-10-04",
+  "final_selection": {
+    "honmei": 5,
+    "taikou": 8,
+    "tan_ana": 10
+  },
+  "horses": [
+    {
+      "mark": "◎",
+      "name": "オンザムービー",
+      "num": 5,
+      "odds": 2.7
+    },
+    {
+      "mark": "○",
+      "name": "ルグランヴァン",
+      "num": 8,
+      "odds": 4.6
+    },
+    {
+      "mark": "▲",
+      "name": "トクシーカイザー",
+      "num": 10,
+      "odds": 7.9
+    }
+  ],
+  "market_analysis": "更新(13:58時点ライブオッズ)。順位(5→1番、8→2番、10→3番)に変化はなく、朝からの入れ替えをそのまま維持。",
+  "note": "直前オッズの大きな変動を反映して印を入れ替え。確実に当てる3レースの中で最も自信度が低い。",
+  "race_name": "赤富士ステークス",
+  "race_num": 3,
+  "race_number": "10R",
+  "track": "東京",
+  "track_condition": "ダート:良",
+  "weather": "曇",
+  "winning_probability": 27
+}

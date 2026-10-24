@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-12",
+  "final_selection": {
+    "honmei": 11,
+    "taikou": 1,
+    "tan_ana": 7
+  },
+  "horses": [
+    {
+      "name": "レッドバンデ",
+      "num": 11,
+      "odds": 1.7
+    },
+    {
+      "name": "バドリナート",
+      "num": 1,
+      "odds": 6.3
+    },
+    {
+      "name": "マルチバレンタインガール",
+      "num": 7,
+      "odds": 11.1
+    }
+  ],
+  "race_name": "昇仙峡ステーキス(東京10R)",
+  "race_num": 2,
+  "winning_probability": 59
+}

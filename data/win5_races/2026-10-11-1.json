@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-11",
+  "final_selection": {
+    "honmei": 9,
+    "taikou": 12,
+    "tan_ana": 4
+  },
+  "horses": [
+    {
+      "name": "クレパスキュラー",
+      "num": 9,
+      "odds": 2.8
+    },
+    {
+      "name": "マルガイエラルディーク",
+      "num": 12,
+      "odds": 4.2
+    },
+    {
+      "name": "エーデルヴェーグ",
+      "num": 4,
+      "odds": 5.5
+    }
+  ],
+  "race_name": "鷹巣山特別(東京9R)",
+  "race_num": 1,
+  "winning_probability": 36
+}

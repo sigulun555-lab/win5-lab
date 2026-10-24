@@ -1,0 +1,50 @@
+{
+  "betting_recommendations": {
+    "ana_100": [
+      "6-8"
+    ],
+    "honsen_600": [
+      "8-1",
+      "8-6"
+    ],
+    "osae_300": [
+      "1-6"
+    ]
+  },
+  "date": "2026-09-26",
+  "final_selection": {
+    "honmei": 8,
+    "taikou": 1,
+    "tan_ana": 6
+  },
+  "horses": [
+    {
+      "mark": "◎",
+      "name": "ユイノエスポワール",
+      "num": 8,
+      "odds": 2.5
+    },
+    {
+      "mark": "○",
+      "name": "ナイトパイロット",
+      "num": 1,
+      "odds": 4.2
+    },
+    {
+      "mark": "▲",
+      "name": "ウンディーネ",
+      "num": 6,
+      "odds": 7.1
+    }
+  ],
+  "market_analysis": "割安馬確認、本命⑧が安定性高し",
+  "note": "雨対応で確度微調整",
+  "race_name": "ヤマボウシ賞",
+  "race_num": 1,
+  "race_number": "9R",
+  "timestamp": "2026-09-26",
+  "track": "阪神",
+  "track_condition": "ダート:良",
+  "weather": "雨",
+  "winning_probability": 38
+}

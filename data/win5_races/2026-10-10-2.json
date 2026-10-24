@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-10",
+  "final_selection": {
+    "honmei": 11,
+    "taikou": 6,
+    "tan_ana": 2
+  },
+  "horses": [
+    {
+      "name": "マーゴットラヴミー",
+      "num": 11,
+      "odds": 3.7
+    },
+    {
+      "name": "エルハーベン",
+      "num": 6,
+      "odds": 4.5
+    },
+    {
+      "name": "ノボリリア",
+      "num": 2,
+      "odds": 4.8
+    }
+  ],
+  "race_name": "宇治川特別(京都10R)",
+  "race_num": 2,
+  "winning_probability": 27
+}

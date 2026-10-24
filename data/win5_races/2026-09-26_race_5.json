@@ -1,0 +1,49 @@
+{
+  "betting_recommendations": {
+    "ana_100": [
+      "1-6"
+    ],
+    "honsen_600": [
+      "6-10"
+    ],
+    "osae_300": [
+      "10-6"
+    ]
+  },
+  "date": "2026-09-26",
+  "final_selection": {
+    "honmei": 6,
+    "taikou": 10,
+    "tan_ana": 1
+  },
+  "horses": [
+    {
+      "mark": "◎",
+      "name": "ギュルヴィ",
+      "num": 6,
+      "odds": 5.1
+    },
+    {
+      "mark": "○",
+      "name": "サイモンザナドゥ",
+      "num": 10,
+      "odds": 8.4
+    },
+    {
+      "mark": "▲",
+      "name": "ジューンアヲニヨシ",
+      "num": 1,
+      "odds": 12.6
+    }
+  ],
+  "market_analysis": "ギュルヴィ大幅割安（連対率82%↔5.1倍）、ラムジェット割高（連対率29%で1番人気は過度評価）。差し馬ギュルヴィが2000mダート雨で最適。WIN5最終レース確度最高。",
+  "note": "出走表分析に基づき本命・対抗・単穴を修正。ギュルヴィ確度45%に上方修正。",
+  "race_name": "シリウスステークス GⅢ",
+  "race_num": 5,
+  "race_number": "11R",
+  "timestamp": "2026-09-26",
+  "track": "阪神",
+  "track_condition": "ダート:良",
+  "weather": "雨",
+  "winning_probability": 45
+}

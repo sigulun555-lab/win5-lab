@@ -1,0 +1,37 @@
+{
+  "date": "2026-09-27",
+  "final_selection": {
+    "honmei": 9,
+    "taikou": 13,
+    "tan_ana": 15
+  },
+  "horses": [
+    {
+      "mark": "◎",
+      "name": "スターアニス",
+      "num": 9,
+      "odds": 3.5
+    },
+    {
+      "mark": "○",
+      "name": "パンジャタワー",
+      "num": 13,
+      "odds": 4.7
+    },
+    {
+      "mark": "▲",
+      "name": "フリッカージャブ",
+      "num": 15,
+      "odds": 7
+    }
+  ],
+  "market_analysis": "14:03時点の最新オッズ。1番人気(3.5倍→推定28.6%)を維持。2位⑲との差は7pt程度で信頼度B。",
+  "note": "順位・選手に変化なし。",
+  "race_name": "スプリンターズス GⅠ",
+  "race_num": 5,
+  "race_number": "11R",
+  "track": "中山",
+  "track_condition": "芝:稍重",
+  "weather": "曇",
+  "winning_probability": 28
+}

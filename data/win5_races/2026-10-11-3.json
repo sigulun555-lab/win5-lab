@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-11",
+  "final_selection": {
+    "honmei": 15,
+    "taikou": 7,
+    "tan_ana": 8
+  },
+  "horses": [
+    {
+      "name": "ヤマニンアストロン",
+      "num": 15,
+      "odds": 4
+    },
+    {
+      "name": "カルパ",
+      "num": 7,
+      "odds": 4.5
+    },
+    {
+      "name": "セギレエルビエント",
+      "num": 8,
+      "odds": 6.4
+    }
+  ],
+  "race_name": "テレビ静岡賞(東京10R)",
+  "race_num": 3,
+  "winning_probability": 25
+}

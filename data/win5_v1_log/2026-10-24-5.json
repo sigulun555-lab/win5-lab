@@ -1,0 +1,160 @@
+{
+  "basis": "市場正規化のみ(定性分析未実施)",
+  "date": "2026-10-24",
+  "final_selection": {
+    "honmei": 9,
+    "taikou": 6,
+    "tan_ana": 7
+  },
+  "horses": [
+    {
+      "adj_conf": "D",
+      "base_conf": "D",
+      "claude_prob": 6.5,
+      "claude_rank": 4,
+      "market_prob": 6.5,
+      "name": "タプティ",
+      "num": 1,
+      "odds": 12,
+      "reliability": "低"
+    },
+    {
+      "adj_conf": "D",
+      "base_conf": "D",
+      "claude_prob": 2.3,
+      "claude_rank": 9,
+      "market_prob": 2.3,
+      "name": "マリアンデール",
+      "num": 2,
+      "odds": 34.8,
+      "reliability": "低"
+    },
+    {
+      "adj_conf": "D",
+      "base_conf": "D",
+      "claude_prob": 0.9,
+      "claude_rank": 10,
+      "market_prob": 0.9,
+      "name": "ファミーリエ",
+      "num": 3,
+      "odds": 89.6,
+      "reliability": "低"
+    },
+    {
+      "adj_conf": "D",
+      "base_conf": "D",
+      "claude_prob": 6.2,
+      "claude_rank": 6,
+      "market_prob": 6.2,
+      "name": "ピコベリー",
+      "num": 4,
+      "odds": 12.6,
+      "reliability": "低"
+    },
+    {
+      "adj_conf": "D",
+      "base_conf": "D",
+      "claude_prob": 6.5,
+      "claude_rank": 5,
+      "market_prob": 6.5,
+      "name": "シティオブドリーム",
+      "num": 5,
+      "odds": 12.1,
+      "reliability": "低"
+    },
+    {
+      "adj_conf": "C",
+      "base_conf": "C",
+      "claude_prob": 19.6,
+      "claude_rank": 2,
+      "market_prob": 19.6,
+      "name": "リスグロワール",
+      "num": 6,
+      "odds": 4,
+      "reliability": "低"
+    },
+    {
+      "adj_conf": "C",
+      "base_conf": "C",
+      "claude_prob": 10.4,
+      "claude_rank": 3,
+      "market_prob": 10.4,
+      "name": "ホウオウプレマ",
+      "num": 7,
+      "odds": 7.5,
+      "reliability": "低"
+    },
+    {
+      "adj_conf": "D",
+      "base_conf": "D",
+      "claude_prob": 0.5,
+      "claude_rank": 13,
+      "market_prob": 0.5,
+      "name": "ベストプラージュ",
+      "num": 8,
+      "odds": 156.9,
+      "reliability": "低"
+    },
+    {
+      "adj_conf": "A",
+      "base_conf": "A",
+      "claude_prob": 37.3,
+      "claude_rank": 1,
+      "market_prob": 37.3,
+      "name": "プルヴィナル",
+      "num": 9,
+      "odds": 2.1,
+      "reliability": "低"
+    },
+    {
+      "adj_conf": "D",
+      "base_conf": "D",
+      "claude_prob": 3.2,
+      "claude_rank": 8,
+      "market_prob": 3.2,
+      "name": "ジーティーキャリー",
+      "num": 10,
+      "odds": 24.6,
+      "reliability": "低"
+    },
+    {
+      "adj_conf": "D",
+      "base_conf": "D",
+      "claude_prob": 0.7,
+      "claude_rank": 11,
+      "market_prob": 0.7,
+      "name": "カナデルペガサス",
+      "num": 11,
+      "odds": 104.6,
+      "reliability": "低"
+    },
+    {
+      "adj_conf": "D",
+      "base_conf": "D",
+      "claude_prob": 0.7,
+      "claude_rank": 12,
+      "market_prob": 0.7,
+      "name": "サトノスプレマシー",
+      "num": 12,
+      "odds": 104.6,
+      "reliability": "低"
+    },
+    {
+      "adj_conf": "D",
+      "base_conf": "D",
+      "claude_prob": 5.1,
+      "claude_rank": 7,
+      "market_prob": 5.1,
+      "name": "ローズサルーテ",
+      "num": 13,
+      "odds": 15.3,
+      "reliability": "低"
+    }
+  ],
+  "odds_timestamp": "2026-10-23 19:00 JST 中間オッズ",
+  "race_name": "アルテミスS(G3)",
+  "race_num": 5,
+  "racecourse": "東京",
+  "rule_version": "win5-prompt de2c6eb9c814",
+  "version": "V1"
+}

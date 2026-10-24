@@ -1,0 +1,50 @@
+{
+  "betting_recommendations": {
+    "ana_100": [
+      "10-8"
+    ],
+    "honsen_600": [
+      "8-10",
+      "8-3"
+    ],
+    "osae_300": [
+      "10-3"
+    ]
+  },
+  "date": "2026-09-26",
+  "final_selection": {
+    "honmei": 8,
+    "taikou": 10,
+    "tan_ana": 3
+  },
+  "horses": [
+    {
+      "mark": "◎",
+      "name": "インパクトシー",
+      "num": 8,
+      "odds": 3.8
+    },
+    {
+      "mark": "○",
+      "name": "ウォータークラーク",
+      "num": 10,
+      "odds": 8.9
+    },
+    {
+      "mark": "▲",
+      "name": "ソルトブリーズ",
+      "num": 3,
+      "odds": 6.7
+    }
+  ],
+  "market_analysis": "本命⑧が力量上位、穴③のチャンス活かし",
+  "note": "重馬場で信頼度低下",
+  "race_name": "秋風ステークス",
+  "race_num": 4,
+  "race_number": "11R",
+  "timestamp": "2026-09-26",
+  "track": "中山",
+  "track_condition": "芝:重",
+  "weather": "曇",
+  "winning_probability": 22
+}

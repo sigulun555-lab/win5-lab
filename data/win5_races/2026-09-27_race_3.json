@@ -1,0 +1,37 @@
+{
+  "date": "2026-09-27",
+  "final_selection": {
+    "honmei": 7,
+    "taikou": 10,
+    "tan_ana": 9
+  },
+  "horses": [
+    {
+      "mark": "◎",
+      "name": "ドナルンバ",
+      "num": 7,
+      "odds": 4.7
+    },
+    {
+      "mark": "○",
+      "name": "サンライズバブル",
+      "num": 10,
+      "odds": 5.5
+    },
+    {
+      "mark": "▲",
+      "name": "ルージュボヤージュ",
+      "num": 9,
+      "odds": 7
+    }
+  ],
+  "market_analysis": "14:02時点の最新オッズ。⑦(1人気→4.7倍→21.3%)と⑩(2人気→5.5倍→18.2%)の順位は変わらず、⑨(3人気→7.0倍→14.3%)との順位入れ替え。上位拮抗のため信頼度Cを維持。",
+  "note": "18頭フルゲートで上位3頭が拮抗。複数流し推奨。",
+  "race_name": "茨城新聞杯",
+  "race_num": 3,
+  "race_number": "10R",
+  "track": "中山",
+  "track_condition": "芝:稍重",
+  "weather": "曇",
+  "winning_probability": 20
+}

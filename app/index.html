@@ -1,0 +1,1492 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>WIN5帳</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;600;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+  :root{
+    --bg:#f4efe2;
+    --surface:#fffdf8;
+    --surface-2:#ece3cd;
+    --ink:#201a12;
+    --ink-soft:#6b6152;
+    --rule:#d8cdb3;
+    --accent:#a3752a;
+    --accent-ink:#fffaf0;
+    --track:#2f5d3a;
+    --track-ink:#f2f7f0;
+    --positive:#2f6d3f;
+    --positive-soft:#e1ecdf;
+    --negative:#a3352b;
+    --negative-soft:#f5e1de;
+    --shadow:rgba(40,30,10,0.16);
+    color-scheme: light dark;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#121309;
+      --surface:#1b1c14;
+      --surface-2:#242519;
+      --ink:#efe9d8;
+      --ink-soft:#a89d84;
+      --rule:#39371f;
+      --accent:#e0ac48;
+      --accent-ink:#231803;
+      --track:#74b382;
+      --track-ink:#0b1a0f;
+      --positive:#7bc98c;
+      --positive-soft:#1c3423;
+      --negative:#e2897c;
+      --negative-soft:#3a201c;
+      --shadow:rgba(0,0,0,0.5);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#121309;
+    --surface:#1b1c14;
+    --surface-2:#242519;
+    --ink:#efe9d8;
+    --ink-soft:#a89d84;
+    --rule:#39371f;
+    --accent:#e0ac48;
+    --accent-ink:#231803;
+    --track:#74b382;
+    --track-ink:#0b1a0f;
+    --positive:#7bc98c;
+    --positive-soft:#1c3423;
+    --negative:#e2897c;
+    --negative-soft:#3a201c;
+    --shadow:rgba(0,0,0,0.5);
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  .num{font-family:"JetBrains Mono","SF Mono",Consolas,monospace;font-variant-numeric:tabular-nums;}
+
+  .page{max-width:1180px;margin:0 auto;padding:28px 20px 64px;}
+
+  /* ---------- masthead ---------- */
+  .masthead{
+    border-bottom:3px double var(--ink);
+    padding-bottom:18px;
+    margin-bottom:22px;
+  }
+  .masthead-top{
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;
+    margin-bottom:10px;
+  }
+  .eyebrow{
+    font-size:12px;letter-spacing:.14em;color:var(--ink-soft);
+    text-transform:uppercase;
+  }
+  .today{font-size:12px;color:var(--ink-soft);font-family:"JetBrains Mono",monospace;}
+  .title{
+    font-family:"Shippori Mincho",serif;
+    font-weight:800;
+    font-size:clamp(38px,7vw,64px);
+    margin:0 0 8px;
+    letter-spacing:.02em;
+    text-wrap:balance;
+  }
+  .title em{
+    font-style:normal;
+    color:var(--accent);
+  }
+  .tagline{
+    margin:0;
+    max-width:56ch;
+    color:var(--ink-soft);
+    font-size:15px;
+  }
+
+  /* ---------- scoreboard ---------- */
+  .scoreboard{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    background:var(--surface-2);
+    border:1px solid var(--rule);
+    border-radius:4px;
+    margin-bottom:16px;
+    overflow-x:auto;
+  }
+  .score-tile{
+    padding:16px 18px;
+    border-left:1px solid var(--rule);
+    min-width:130px;
+  }
+  .score-tile:first-child{border-left:none;}
+  .score-label{
+    display:block;font-size:11px;letter-spacing:.08em;color:var(--ink-soft);margin-bottom:6px;
+  }
+  .score-value{
+    display:block;font-family:"JetBrains Mono",monospace;font-variant-numeric:tabular-nums;
+    font-size:clamp(18px,2.6vw,26px);font-weight:700;
+  }
+  .score-value.positive{color:var(--positive);}
+  .score-value.negative{color:var(--negative);}
+
+  .sample-banner{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+    background:var(--positive-soft);
+    border:1px solid var(--positive);
+    color:var(--ink);
+    font-size:13px;
+    padding:9px 14px;border-radius:4px;margin-bottom:24px;
+  }
+  .sample-banner button{
+    background:none;border:1px solid currentColor;border-radius:3px;padding:4px 10px;
+    font-size:12px;cursor:pointer;color:inherit;font-family:inherit;
+  }
+
+  /* ---------- layout columns ---------- */
+  .columns{
+    display:grid;
+    grid-template-columns:1.15fr 1fr;
+    gap:20px;
+  }
+  #ledgerCard{grid-column:1 / -1;}
+  @media (max-width:900px){
+    .columns{grid-template-columns:1fr;}
+  }
+
+  .card{
+    background:var(--surface);
+    border:1px solid var(--rule);
+    border-radius:6px;
+    padding:20px 22px 24px;
+    box-shadow:0 1px 2px var(--shadow);
+  }
+  .card h2{
+    font-family:"Shippori Mincho",serif;
+    font-size:19px;
+    margin:0 0 4px;
+    display:flex;align-items:baseline;gap:8px;
+  }
+  .card-desc{
+    margin:0 0 16px;font-size:13px;color:var(--ink-soft);max-width:60ch;
+  }
+
+  /* ---------- formation ---------- */
+  .race-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+    gap:10px;
+    margin-bottom:16px;
+  }
+  .race-block{
+    border:1px solid var(--rule);
+    border-radius:5px;
+    padding:10px;
+    background:var(--surface-2);
+  }
+  .race-block h3{
+    margin:0 0 8px;font-size:12px;letter-spacing:.04em;color:var(--ink-soft);font-weight:600;
+    display:flex;justify-content:space-between;align-items:center;
+  }
+  .race-block h3 .pt{font-family:"JetBrains Mono",monospace;color:var(--ink);}
+  .chip-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;min-height:30px;}
+  .chip{
+    position:relative;
+    display:inline-flex;align-items:center;gap:5px;
+    border-radius:14px;
+    padding:3px 9px 3px 4px;
+    font-size:12px;
+    border:1.5px solid transparent;
+    cursor:pointer;
+    background:var(--surface);
+    color:var(--ink);
+    transition:transform .12s ease;
+  }
+  .chip:hover{transform:translateY(-1px);}
+  .chip.selected{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb, var(--accent) 25%, transparent);}
+  .chip .badge{
+    width:18px;height:18px;border-radius:50%;
+    display:inline-flex;align-items:center;justify-content:center;
+    font-size:10px;font-weight:700;font-family:"JetBrains Mono",monospace;
+    border:1px solid rgba(0,0,0,.15);
+    flex:none;
+  }
+  .chip .mark-tag{
+    font-weight:800;font-size:12px;line-height:1;flex:none;
+  }
+  .chip .share{
+    font-size:10.5px;color:var(--ink-soft);font-family:"JetBrains Mono",monospace;flex:none;
+  }
+  .race-marks .share{
+    color:var(--ink-soft);font-family:"JetBrains Mono",monospace;font-size:11px;
+  }
+  .race-marks .share:before{content:" / ";}
+  .chip .rm{
+    border:none;background:none;color:var(--ink-soft);cursor:pointer;font-size:12px;padding:0 0 0 2px;line-height:1;
+  }
+  .race-marks{
+    font-size:11.5px;color:var(--ink-soft);margin-bottom:10px;display:flex;flex-direction:column;gap:4px;
+  }
+  .race-marks b{font-weight:800;margin-right:3px;}
+  .race-marks .empty{font-style:normal;}
+  .race-marks .cmt{color:var(--ink-soft);}
+  .race-marks .cmt:before{content:"― ";}
+  .add-horse{display:flex;gap:6px;}
+  .add-horse input{
+    width:52px;border:1px solid var(--rule);border-radius:4px;padding:4px 6px;font-size:12px;
+    background:var(--surface);color:var(--ink);font-family:"JetBrains Mono",monospace;
+  }
+  .add-horse button{
+    border:1px solid var(--rule);background:var(--surface);color:var(--ink);border-radius:4px;
+    padding:4px 9px;font-size:12px;cursor:pointer;
+  }
+  .add-horse button:hover{border-color:var(--accent);color:var(--accent);}
+
+  .formation-total{
+    display:flex;gap:22px;flex-wrap:wrap;
+    border-top:1px dashed var(--rule);
+    padding-top:14px;
+    font-size:14px;
+  }
+  .formation-total strong{
+    font-family:"JetBrains Mono",monospace;font-size:19px;margin-left:6px;color:var(--accent);
+  }
+  .formation-total.warn strong{color:var(--negative);}
+  .formation-total .warn-note{color:var(--negative);font-size:12px;}
+
+  /* ---------- mark section ---------- */
+  .race-tabs{display:flex;gap:4px;margin-bottom:12px;flex-wrap:wrap;}
+  .race-tabs button{
+    border:1px solid var(--rule);background:var(--surface-2);color:var(--ink-soft);
+    border-radius:4px 4px 0 0;padding:6px 12px;font-size:12px;cursor:pointer;font-family:inherit;
+  }
+  .race-tabs button.active{background:var(--surface);color:var(--ink);border-bottom-color:var(--surface);font-weight:700;}
+
+  #pasteArea{
+    width:100%;min-height:64px;resize:vertical;
+    border:1px solid var(--rule);border-radius:5px;padding:8px 10px;
+    background:var(--surface-2);color:var(--ink);font-size:12.5px;font-family:"JetBrains Mono",monospace;
+    margin-bottom:8px;
+  }
+  .paste-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px;}
+  .paste-actions button{
+    background:var(--track);color:var(--track-ink);border:none;border-radius:4px;
+    padding:7px 14px;font-size:13px;cursor:pointer;font-weight:700;
+  }
+  .paste-actions .hint{font-size:11.5px;color:var(--ink-soft);}
+
+  #markTableWrap{overflow-x:auto;}
+  table.mark-table{width:100%;min-width:520px;border-collapse:collapse;font-size:13px;margin-bottom:12px;}
+  table.mark-table td:last-child input{min-width:140px;}
+  table.mark-table th{
+    text-align:left;font-size:11px;color:var(--ink-soft);font-weight:600;
+    border-bottom:1px solid var(--rule);padding:5px 6px;letter-spacing:.03em;
+  }
+  table.mark-table td{padding:5px 6px;border-bottom:1px solid var(--rule);vertical-align:middle;}
+  table.mark-table tr.value-hit{background:var(--positive-soft);}
+  table.mark-table input[type="text"],
+  table.mark-table input[type="number"]{
+    width:100%;border:1px solid transparent;background:transparent;color:var(--ink);
+    font-family:inherit;font-size:13px;padding:3px 4px;border-radius:3px;
+  }
+  table.mark-table input[type="number"]{font-family:"JetBrains Mono",monospace;width:64px;}
+  table.mark-table input:hover,table.mark-table input:focus{border-color:var(--rule);background:var(--surface);outline:none;}
+  table.mark-table select{
+    border:1px solid var(--rule);background:var(--surface);color:var(--ink);border-radius:3px;
+    font-size:14px;padding:2px 4px;
+  }
+  .value-flag{font-size:11px;background:var(--accent);color:var(--accent-ink);padding:2px 6px;border-radius:10px;white-space:nowrap;}
+  .empty-note{color:var(--ink-soft);font-size:12.5px;padding:10px 0;}
+
+  #applyToFormation{
+    background:none;border:1px solid var(--accent);color:var(--accent);border-radius:4px;
+    padding:7px 14px;font-size:13px;cursor:pointer;font-weight:700;
+  }
+  #applyToFormation:hover{background:var(--accent);color:var(--accent-ink);}
+
+  /* ---------- ledger ---------- */
+  .ledger-form{
+    display:grid;grid-template-columns:repeat(6,1fr);gap:8px;align-items:end;margin-bottom:18px;
+  }
+  .ledger-form label{display:flex;flex-direction:column;gap:4px;font-size:11px;color:var(--ink-soft);}
+  .ledger-form input,.ledger-form select{
+    border:1px solid var(--rule);background:var(--surface-2);color:var(--ink);border-radius:4px;
+    padding:7px 8px;font-size:13px;font-family:inherit;
+  }
+  .ledger-form input[type="number"]{font-family:"JetBrains Mono",monospace;}
+  .ledger-form button{
+    grid-column:span 1;background:var(--ink);color:var(--surface);border:none;border-radius:4px;
+    padding:9px 10px;font-size:13px;font-weight:700;cursor:pointer;height:36px;
+  }
+  @media (max-width:760px){ .ledger-form{grid-template-columns:repeat(2,1fr);} }
+
+  .chart-wrap{margin-bottom:20px;overflow-x:auto;}
+  .chart-wrap svg{display:block;min-width:520px;width:100%;height:auto;}
+  .chart-legend{display:flex;gap:16px;font-size:11.5px;color:var(--ink-soft);margin-top:4px;}
+  .chart-legend span{display:inline-flex;align-items:center;gap:5px;}
+  .chart-legend i{width:10px;height:10px;border-radius:2px;display:inline-block;}
+
+  .table-wrap{overflow-x:auto;}
+  table.ledger-table{width:100%;border-collapse:collapse;font-size:13px;min-width:640px;}
+  table.ledger-table th{
+    text-align:left;font-size:11px;color:var(--ink-soft);border-bottom:1px solid var(--rule);
+    padding:6px 8px;letter-spacing:.03em;
+  }
+  table.ledger-table td{padding:7px 8px;border-bottom:1px solid var(--rule);}
+  table.ledger-table td.num,table.ledger-table th.num{text-align:right;}
+  table.ledger-table tr:hover td{background:var(--surface-2);}
+  .tag-hit{background:var(--positive-soft);color:var(--positive);border-radius:10px;padding:2px 8px;font-size:11px;}
+  .tag-miss{background:var(--negative-soft);color:var(--negative);border-radius:10px;padding:2px 8px;font-size:11px;}
+  .row-del{border:none;background:none;color:var(--ink-soft);cursor:pointer;font-size:13px;}
+  .row-del:hover{color:var(--negative);}
+
+  .foot-note{
+    margin-top:30px;border-top:1px solid var(--rule);padding-top:14px;
+    font-size:11.5px;color:var(--ink-soft);max-width:80ch;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .chip, .score-value{transition:none;}
+  }
+
+  /* ---------- backtest ---------- */
+  #backtestCard{grid-column:1 / -1;}
+  .bt-section{margin-bottom:24px;}
+  .bt-section:last-child{margin-bottom:0;}
+  .bt-section h3{
+    font-family:"Shippori Mincho",serif;font-size:15px;margin:0 0 10px;
+    padding-bottom:6px;border-bottom:1px solid var(--rule);
+  }
+  .sim-controls{display:flex;align-items:end;gap:12px;flex-wrap:wrap;margin-bottom:14px;}
+  .sim-controls label{display:flex;flex-direction:column;gap:4px;font-size:11px;color:var(--ink-soft);}
+  .sim-controls input{
+    border:1px solid var(--rule);background:var(--surface-2);color:var(--ink);border-radius:4px;
+    padding:7px 8px;font-size:13px;font-family:"JetBrains Mono",monospace;width:120px;
+  }
+  .sim-controls button{
+    background:var(--track);color:var(--track-ink);border:none;border-radius:4px;
+    padding:8px 16px;font-size:13px;cursor:pointer;font-weight:700;height:34px;
+  }
+  .bt-race-probs{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-bottom:14px;}
+  .bt-race-prob{
+    border:1px solid var(--rule);border-radius:5px;padding:8px 10px;background:var(--surface-2);
+  }
+  .bt-race-prob .lbl{font-size:11px;color:var(--ink-soft);display:block;margin-bottom:4px;}
+  .bt-race-prob .horse{font-size:13px;font-weight:700;margin-bottom:2px;}
+  .bt-race-prob input{
+    width:100%;border:1px solid var(--rule);background:var(--surface);color:var(--ink);
+    border-radius:3px;padding:4px 6px;font-size:13px;font-family:"JetBrains Mono",monospace;
+  }
+  .sim-result-grid{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-top:12px;
+  }
+  .sim-tile{
+    border:1px solid var(--rule);border-radius:5px;padding:12px 14px;background:var(--surface-2);text-align:center;
+  }
+  .sim-tile .v{font-family:"JetBrains Mono",monospace;font-size:22px;font-weight:700;color:var(--accent);display:block;}
+  .sim-tile .l{font-size:11px;color:var(--ink-soft);margin-top:4px;display:block;}
+  .sim-bar-wrap{margin-top:14px;}
+  .sim-bar-row{display:flex;align-items:center;gap:8px;font-size:11.5px;margin-bottom:4px;}
+  .sim-bar-row .bl{width:56px;flex:none;color:var(--ink-soft);font-family:"JetBrains Mono",monospace;}
+  .sim-bar-track{flex:1;background:var(--surface-2);border-radius:3px;height:14px;overflow:hidden;border:1px solid var(--rule);}
+  .sim-bar-fill{height:100%;background:var(--track);}
+  .sim-bar-row .bv{width:80px;flex:none;text-align:right;font-family:"JetBrains Mono",monospace;color:var(--ink-soft);}
+
+  .bt-record-form{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:14px;
+    border:1px solid var(--rule);border-radius:6px;padding:14px;background:var(--surface-2);
+  }
+  .bt-record-form label{display:flex;flex-direction:column;gap:4px;font-size:11px;color:var(--ink-soft);}
+  .bt-record-form input{
+    border:1px solid var(--rule);background:var(--surface);color:var(--ink);border-radius:4px;
+    padding:7px 8px;font-size:13px;font-family:"JetBrains Mono",monospace;
+  }
+  .bt-record-form .full{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap;}
+  .bt-record-form button{
+    background:var(--ink);color:var(--surface);border:none;border-radius:4px;
+    padding:9px 16px;font-size:13px;font-weight:700;cursor:pointer;
+  }
+  table.bt-table{width:100%;border-collapse:collapse;font-size:12.5px;min-width:640px;}
+  table.bt-table th{
+    text-align:left;font-size:11px;color:var(--ink-soft);border-bottom:1px solid var(--rule);
+    padding:6px 8px;letter-spacing:.03em;
+  }
+  table.bt-table td{padding:6px 8px;border-bottom:1px solid var(--rule);}
+  table.bt-table td.num{text-align:right;font-family:"JetBrains Mono",monospace;}
+  .bt-table-wrap{overflow-x:auto;}
+
+  .opt-race-row{
+    display:flex;align-items:center;gap:10px;padding:8px 10px;border-bottom:1px solid var(--rule);
+    font-size:13px;flex-wrap:wrap;
+  }
+  .opt-race-row:last-child{border-bottom:none;}
+  .opt-race-row .rl{width:110px;flex:none;color:var(--ink-soft);font-size:12px;}
+  .opt-race-row .picks{display:flex;gap:6px;flex-wrap:wrap;}
+  .opt-pick{
+    display:inline-flex;align-items:center;gap:4px;border:1px solid var(--rule);border-radius:12px;
+    padding:2px 9px;font-size:12px;background:var(--surface-2);
+  }
+  .opt-pick .m{font-weight:800;color:var(--accent);}
+  .opt-summary{
+    display:flex;gap:22px;flex-wrap:wrap;border-top:1px dashed var(--rule);padding-top:12px;margin-top:4px;font-size:14px;
+  }
+  .opt-summary strong{font-family:"JetBrains Mono",monospace;font-size:18px;margin-left:6px;color:var(--accent);}
+  .opt-note{font-size:11.5px;color:var(--ink-soft);margin-top:8px;}
+</style>
+
+<div class="page">
+  <header class="masthead">
+    <div class="masthead-top">
+      <span class="eyebrow">重勝式馬券 記録ツール</span>
+      <span class="today" id="todayLabel"></span>
+    </div>
+    <h1 class="title">WIN5<em>帳</em></h1>
+    <p class="tagline">対象5レースの買い目計算・印による妙味チェック・回収率の記録をひとつにまとめた個人用ノートです。データはこの端末とあなたの領域に保存されます。</p>
+  </header>
+
+  <section class="scoreboard" aria-label="通算成績">
+    <div class="score-tile">
+      <span class="score-label">通算回収率</span>
+      <span class="score-value num" id="statRecovery">—</span>
+    </div>
+    <div class="score-tile">
+      <span class="score-label">累計投資額</span>
+      <span class="score-value num" id="statCost">¥0</span>
+    </div>
+    <div class="score-tile">
+      <span class="score-label">累計払戻額</span>
+      <span class="score-value num" id="statPayout">¥0</span>
+    </div>
+    <div class="score-tile">
+      <span class="score-label">的中 / 挑戦</span>
+      <span class="score-value num" id="statHits">0 / 0</span>
+    </div>
+  </section>
+
+  <p class="sample-banner" id="sampleBanner" hidden>
+    <span>サンプルデータを表示しています。買い目や収支を入力すると、自動的にあなたの記録に切り替わります。</span>
+    <button id="clearSample" type="button">サンプルを消してはじめる</button>
+  </p>
+
+  <main class="columns">
+    <section class="card" id="formationCard" aria-labelledby="formationTitle">
+      <h2 id="formationTitle">① 買い目フォーメーション計算</h2>
+      <p class="card-desc">対象5競走それぞれで馬番を選ぶと、組み合わせ点数と投資額（1点100円）を自動計算します。</p>
+      <div class="race-grid" id="raceGrid"></div>
+      <div class="formation-total" id="formationTotal">
+        <div>総点数 <strong class="num" id="totalPoints">0</strong>点</div>
+        <div>投資額 <strong class="num" id="totalCost">¥0</strong></div>
+      </div>
+    </section>
+
+    <section class="card" id="markCard" aria-labelledby="markTitle">
+      <h2 id="markTitle">② 予想メモ・妙味チェック</h2>
+      <p class="card-desc">出馬表やオッズをコピーして貼り付けると自動で表になります。印（◎○▲△×）をつけて、オッズが示す確率とのズレ＝妙味を確認できます。</p>
+      <div class="race-tabs" id="raceTabs"></div>
+      <textarea id="pasteArea" placeholder="例）&#10;1 サクラユタカオー 2.4&#10;2 タイキシャトル 8.1&#10;3 メジロパーマー 15.3"></textarea>
+      <div class="paste-actions">
+        <button id="parseBtn" type="button">貼り付けを解析</button>
+        <span class="hint">馬番・馬名・オッズを含む行を自動で読み取ります（読み取り後に修正できます）</span>
+      </div>
+      <div id="markTableWrap"></div>
+      <button id="applyToFormation" type="button">×以外の印をこのレースの買い目に反映</button>
+    </section>
+
+    <section class="card" id="ledgerCard" aria-labelledby="ledgerTitle">
+      <h2 id="ledgerTitle">③ 収支帳</h2>
+      <p class="card-desc">開催ごとの投資額・払戻金を記録し、回収率の推移を確認します。</p>
+      <form class="ledger-form" id="ledgerForm">
+        <label>開催日
+          <input type="date" id="fDate" required>
+        </label>
+        <label>競馬場
+          <select id="fCourse">
+            <option>札幌</option><option>函館</option><option>福島</option><option>新潟</option>
+            <option selected>東京</option><option>中山</option><option>中京</option><option>京都</option>
+            <option>阪神</option><option>小倉</option>
+          </select>
+        </label>
+        <label>点数
+          <input type="number" id="fPoints" min="1" step="1" placeholder="例）18" required>
+        </label>
+        <label>払戻金（円）
+          <input type="number" id="fPayout" min="0" step="1" placeholder="0">
+        </label>
+        <label>メモ
+          <input type="text" id="fMemo" placeholder="任意">
+        </label>
+        <button type="submit">記録する</button>
+      </form>
+
+      <div class="chart-wrap">
+        <svg id="chart" viewBox="0 0 720 240" role="img" aria-label="投資累計と払戻累計の推移"></svg>
+        <div class="chart-legend">
+          <span><i style="background:var(--track)"></i>投資累計</span>
+          <span><i style="background:var(--accent)"></i>払戻累計</span>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table class="ledger-table">
+          <thead>
+            <tr>
+              <th>開催日</th><th>競馬場</th><th class="num">点数</th><th class="num">投資額</th>
+              <th class="num">払戻金</th><th class="num">収支</th><th class="num">回収率</th><th>結果</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="ledgerBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card" id="backtestCard" aria-labelledby="backtestTitle">
+      <h2 id="backtestTitle">④ バックテスト・的中率シミュレーション</h2>
+      <p class="card-desc">各レースの勝つ確率からWIN5全体の理論的中率をシミュレーションし、実際の結果を記録して実績と照合します。</p>
+
+      <div class="bt-section">
+        <h3>理論シミュレーション（モンテカルロ試行）</h3>
+        <div class="bt-race-probs" id="btRaceProbs"></div>
+        <div class="sim-controls">
+          <label>試行回数
+            <input type="number" id="simTrials" value="10000" min="100" max="200000" step="100">
+          </label>
+          <button type="button" id="runSimBtn">シミュレーション実行</button>
+        </div>
+        <div id="simResult"></div>
+      </div>
+
+      <div class="bt-section">
+        <h3>予算内・的中率最大化（◎/◎○/◎○▲ 自動探索）</h3>
+        <p class="card-desc" style="margin-bottom:10px;">各レースで「◎のみ」「◎○」「◎○▲」の3パターンから選んだ場合の全243通りの組み合わせを計算し、指定した予算内で最も的中確率が高い組み合わせを表示します。○▲の確率はオッズと◎の勝つ確率から自動推定します。</p>
+        <div class="sim-controls">
+          <label>予算（円）
+            <input type="number" id="optBudget" value="1000" min="100" max="50000" step="100">
+          </label>
+          <button type="button" id="runOptBtn">最適組み合わせを探索</button>
+        </div>
+        <div id="optResult"></div>
+      </div>
+
+      <div class="bt-section">
+        <h3>結果記録・実績照合</h3>
+        <p class="card-desc" style="margin-bottom:10px;">開催日ごとに、各レースの本命が実際に勝ったかを○×で記録します。積み重ねるほど実績の的中率が正確になります。</p>
+        <form class="bt-record-form" id="btRecordForm">
+          <label>開催日
+            <input type="date" id="btDate" required>
+          </label>
+          <label>R1的中
+            <input type="checkbox" id="btR1">
+          </label>
+          <label>R2的中
+            <input type="checkbox" id="btR2">
+          </label>
+          <label>R3的中
+            <input type="checkbox" id="btR3">
+          </label>
+          <label>R4的中
+            <input type="checkbox" id="btR4">
+          </label>
+          <label>R5的中
+            <input type="checkbox" id="btR5">
+          </label>
+          <div class="full">
+            <button type="submit">記録する</button>
+            <span class="hint" style="font-size:11.5px;color:var(--ink-soft);align-self:center;">チェックが入ったレースは「本命が勝った」ことを意味します</span>
+          </div>
+        </form>
+
+        <div class="sim-result-grid" id="btStats"></div>
+
+        <div class="bt-table-wrap" style="margin-top:14px;">
+          <table class="bt-table">
+            <thead>
+              <tr><th>開催日</th><th class="num">R1</th><th class="num">R2</th><th class="num">R3</th><th class="num">R4</th><th class="num">R5</th><th class="num">レース単位的中</th><th>WIN5全体</th><th></th></tr>
+            </thead>
+            <tbody id="btBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot-note">
+    <p>WIN5（勝馬投票法における重勝式勝馬投票券）は、指定された5競走すべての1着馬を当てる方式で、的中者がいない場合は次回開催へキャリーオーバーされます。1点100円。本ツールは購入代行・自動購入は行わない、個人の記録・計算補助のためのノートです。的中を保証するものではありません。</p>
+  </footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var FRAME_COLORS = [
+    {bg:"#ffffff", fg:"#161616", bd:"rgba(0,0,0,.35)"}, // 1 白
+    {bg:"#161616", fg:"#ffffff", bd:"rgba(0,0,0,.35)"}, // 2 黒
+    {bg:"#d0332b", fg:"#ffffff", bd:"rgba(0,0,0,.15)"}, // 3 赤
+    {bg:"#1c5fc4", fg:"#ffffff", bd:"rgba(0,0,0,.15)"}, // 4 青
+    {bg:"#e8c73c", fg:"#171308", bd:"rgba(0,0,0,.15)"}, // 5 黄
+    {bg:"#2f8a4e", fg:"#ffffff", bd:"rgba(0,0,0,.15)"}, // 6 緑
+    {bg:"#e07a2c", fg:"#171308", bd:"rgba(0,0,0,.15)"}, // 7 橙
+    {bg:"#e77fae", fg:"#171308", bd:"rgba(0,0,0,.15)"}  // 8 桃
+  ];
+  function frameColor(num){
+    var waku = Math.min(8, Math.ceil(num/2));
+    return FRAME_COLORS[waku-1];
+  }
+
+  var MARK_OPTIONS = ["","◎","○","▲","△","×"];
+  var MARK_WEIGHT = {"◎":5,"○":3,"▲":2,"△":1,"×":0,"":1};
+  var MARK_COLOR = {"◎":"var(--accent)","○":"var(--track)","▲":"var(--ink)","△":"var(--ink-soft)","×":"var(--negative)"};
+  var MARK_ORDER = {"◎":0,"○":1,"▲":2,"△":3,"×":4};
+
+  function uid(){ return Math.random().toString(36).slice(2,10)+Date.now().toString(36); }
+  function yen(n){ return "¥" + Math.round(n||0).toLocaleString("ja-JP"); }
+  function pct(n){ return (Math.round(n*10)/10).toLocaleString("ja-JP") + "%"; }
+
+  function emptyRaces(){
+    var races = [];
+    for(var i=0;i<5;i++){ races.push({label:"第"+(i+1)+"競走", horses:[]}); }
+    return races;
+  }
+
+  function sampleRaces(){
+    return [
+      {label:"第1競走", horses:[
+        {num:1,name:"アサヒカゲロウ",odds:2.4,mark:"◎",selected:true},
+        {num:4,name:"コウテイセン",odds:6.8,mark:"○",selected:true},
+        {num:7,name:"ハルノヒカリ",odds:14.2,mark:"",selected:false}
+      ]},
+      {label:"第2競走", horses:[
+        {num:2,name:"ミナトウイング",odds:3.1,mark:"◎",selected:true}
+      ]},
+      {label:"第3競走", horses:[
+        {num:3,name:"クロガネブレイズ",odds:5.5,mark:"○",selected:true},
+        {num:6,name:"トキノフウセツ",odds:9.9,mark:"▲",selected:true},
+        {num:8,name:"セイランドリーム",odds:38.4,mark:"△",selected:true}
+      ]},
+      {label:"第4競走", horses:[
+        {num:5,name:"リュウノコハク",odds:4.0,mark:"◎",selected:true}
+      ]},
+      {label:"第5競走", horses:[
+        {num:1,name:"フユノオリオン",odds:7.2,mark:"○",selected:true},
+        {num:2,name:"ゴウケツマル",odds:11.6,mark:"▲",selected:true},
+        {num:7,name:"シンリョクノカゼ",odds:21.0,mark:"△",selected:true}
+      ]}
+    ];
+  }
+
+  function sampleLedger(){
+    return [
+      {id:uid(), date:"2026-07-19", course:"中京", points:8,  cost:800,  payout:0,      memo:""},
+      {id:uid(), date:"2026-07-26", course:"中京", points:12, cost:1200, payout:0,      memo:""},
+      {id:uid(), date:"2026-08-02", course:"小倉", points:6,  cost:600,  payout:0,      memo:""},
+      {id:uid(), date:"2026-08-09", course:"小倉", points:9,  cost:900,  payout:1740,   memo:"3頭的中止まり"},
+      {id:uid(), date:"2026-08-16", course:"新潟", points:16, cost:1600, payout:0,      memo:""},
+      {id:uid(), date:"2026-08-23", course:"新潟", points:10, cost:1000, payout:0,      memo:""},
+      {id:uid(), date:"2026-08-30", course:"札幌", points:8,  cost:800,  payout:284650, memo:"キャリーオーバー的中"}
+    ];
+  }
+
+  var state = {
+    races: sampleRaces(),
+    ledger: sampleLedger(),
+    activeTab: 0,
+    usingSample: true,
+    db: null,
+    racePredictions: [38,15,35,22,45],
+    backtestRecords: []
+  };
+
+  // ---------- rendering ----------
+
+  function renderAll(){
+    renderStats();
+    renderRaces();
+    renderTabs();
+    renderMarkTable();
+    renderLedgerTable();
+    renderChart();
+    renderBtRaceProbs();
+    renderBtStats();
+    renderBtTable();
+    document.getElementById("sampleBanner").hidden = !state.usingSample;
+  }
+
+  function renderStats(){
+    var cost = 0, payout = 0, hits = 0;
+    state.ledger.forEach(function(e){
+      cost += Number(e.cost)||0;
+      payout += Number(e.payout)||0;
+      if((Number(e.payout)||0) > 0) hits++;
+    });
+    document.getElementById("statCost").textContent = yen(cost);
+    document.getElementById("statPayout").textContent = yen(payout);
+    document.getElementById("statHits").textContent = hits + " / " + state.ledger.length;
+    var recoveryEl = document.getElementById("statRecovery");
+    if(cost>0){
+      var recovery = payout/cost*100;
+      recoveryEl.textContent = pct(recovery);
+      recoveryEl.className = "score-value num " + (recovery>=100?"positive":"negative");
+    } else {
+      recoveryEl.textContent = "—";
+      recoveryEl.className = "score-value num";
+    }
+  }
+
+  function raceCount(race){ return race.horses.filter(function(h){return h.selected;}).length; }
+
+  function computeSelectedShares(race, raceIdx){
+    var selected = race.horses.filter(function(h){ return h.selected && h.odds>0; });
+    var map = {};
+    if(selected.length<2) return map;
+
+    // ◎○▲がすべて選択されていて勝つ確率が設定されている場合は、
+    // ④バックテストと同じ「オッズ通りの真の勝率」推定を使い、表示を一致させる。
+    if(raceIdx!=null && state.racePredictions[raceIdx]!=null){
+      var probs = estimateRaceMarkProbs(race, state.racePredictions[raceIdx]);
+      if(probs){
+        var allMarked = selected.every(function(h){ return h.mark==="◎"||h.mark==="○"||h.mark==="▲"; });
+        if(allMarked){
+          var ok = true;
+          selected.forEach(function(h){
+            if(probs[h.mark]) map[h.num] = probs[h.mark].prob; else ok = false;
+          });
+          if(ok) return map;
+        }
+      }
+    }
+
+    // フォールバック：印なしの馬を含む場合など、従来のオッズ単純正規化（あくまで参考値）
+    var totalInv = 0;
+    selected.forEach(function(h){ totalInv += 1/h.odds; });
+    if(totalInv<=0) return map;
+    selected.forEach(function(h){ map[h.num] = (1/h.odds)/totalInv; });
+    return map;
+  }
+
+  function renderRaces(){
+    var wrap = document.getElementById("raceGrid");
+    wrap.innerHTML = "";
+    state.races.forEach(function(race, ri){
+      var block = document.createElement("div");
+      block.className = "race-block";
+
+      var h3 = document.createElement("h3");
+      h3.innerHTML = "<span>"+race.label+"</span><span class=\"pt\">"+raceCount(race)+"頭</span>";
+      block.appendChild(h3);
+
+      var shares = computeSelectedShares(race, ri);
+
+      var marksLine = document.createElement("div");
+      marksLine.className = "race-marks";
+      var markedHorses = race.horses.filter(function(h){return h.mark;}).sort(function(a,b){
+        return (MARK_ORDER[a.mark]!=null?MARK_ORDER[a.mark]:9) - (MARK_ORDER[b.mark]!=null?MARK_ORDER[b.mark]:9);
+      });
+      if(markedHorses.length){
+        marksLine.innerHTML = markedHorses.map(function(h){
+          var share = (h.selected && shares[h.num]!=null) ? "<span class=\"share\">"+pct(shares[h.num]*100)+"</span>" : "";
+          return "<span><b style=\"color:"+(MARK_COLOR[h.mark]||"var(--ink)")+"\">"+h.mark+"</b>"+h.num+" "+(h.name||("馬番"+h.num))+share+
+            (h.comment ? "<span class=\"cmt\">"+h.comment+"</span>" : "")+"</span>";
+        }).join("");
+      } else {
+        marksLine.innerHTML = "<span class=\"empty\">印はまだありません（②で付けられます）</span>";
+      }
+      block.appendChild(marksLine);
+
+      var chipRow = document.createElement("div");
+      chipRow.className = "chip-row";
+      race.horses.slice().sort(function(a,b){return a.num-b.num;}).forEach(function(h){
+        var chip = document.createElement("span");
+        chip.className = "chip" + (h.selected ? " selected" : "");
+        var fc = frameColor(h.num);
+        chip.innerHTML =
+          "<span class=\"badge\" style=\"background:"+fc.bg+";color:"+fc.fg+";border-color:"+fc.bd+"\">"+h.num+"</span>"+
+          (h.mark ? "<span class=\"mark-tag\" style=\"color:"+(MARK_COLOR[h.mark]||"var(--ink)")+"\">"+h.mark+"</span>" : "")+
+          "<span>"+(h.name||("馬番"+h.num))+"</span>"+
+          (h.selected && shares[h.num]!=null ? "<span class=\"share\">"+pct(shares[h.num]*100)+"</span>" : "")+
+          "<button type=\"button\" class=\"rm\" title=\"削除\">&times;</button>";
+        chip.addEventListener("click", function(ev){
+          if(ev.target.classList.contains("rm")){
+            race.horses = race.horses.filter(function(x){return x!==h;});
+          } else {
+            h.selected = !h.selected;
+          }
+          renderRaces(); renderMarkTable(); saveFormation();
+        });
+        chipRow.appendChild(chip);
+      });
+      block.appendChild(chipRow);
+
+      var addRow = document.createElement("div");
+      addRow.className = "add-horse";
+      addRow.innerHTML = "<input type=\"number\" min=\"1\" max=\"18\" placeholder=\"馬番\"><button type=\"button\">追加</button>";
+      var input = addRow.querySelector("input");
+      addRow.querySelector("button").addEventListener("click", function(){
+        var n = parseInt(input.value,10);
+        if(!n || n<1 || n>18) return;
+        var exists = race.horses.some(function(h){return h.num===n;});
+        if(!exists){ race.horses.push({num:n,name:"",odds:null,mark:"",selected:true}); }
+        input.value="";
+        renderRaces(); renderMarkTable(); saveFormation();
+      });
+      block.appendChild(addRow);
+
+      wrap.appendChild(block);
+    });
+
+    var totalEl = document.getElementById("formationTotal");
+    var totalPoints = 1, missing = false;
+    state.races.forEach(function(r){
+      var c = raceCount(r);
+      if(c===0) missing = true;
+      totalPoints *= (c||0);
+    });
+    if(missing) totalPoints = 0;
+    document.getElementById("totalPoints").textContent = totalPoints.toLocaleString("ja-JP");
+    document.getElementById("totalCost").textContent = yen(totalPoints*100);
+    totalEl.classList.toggle("warn", missing);
+    var existingNote = totalEl.querySelector(".warn-note");
+    if(missing && !existingNote){
+      var note = document.createElement("div");
+      note.className = "warn-note";
+      note.textContent = "各競走で最低1頭選んでください";
+      totalEl.appendChild(note);
+    } else if(!missing && existingNote){
+      existingNote.remove();
+    }
+  }
+
+  function renderTabs(){
+    var wrap = document.getElementById("raceTabs");
+    wrap.innerHTML = "";
+    state.races.forEach(function(race, i){
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = race.label;
+      btn.className = i===state.activeTab ? "active" : "";
+      btn.addEventListener("click", function(){ state.activeTab = i; renderTabs(); renderMarkTable(); });
+      wrap.appendChild(btn);
+    });
+  }
+
+  function computeShares(horses){
+    var totalMarkW = 0;
+    horses.forEach(function(h){ totalMarkW += (MARK_WEIGHT[h.mark] != null ? MARK_WEIGHT[h.mark] : 1); });
+    if(totalMarkW<=0) totalMarkW = 1;
+    var withOdds = horses.filter(function(h){ return h.odds>0; });
+    var totalInv = 0;
+    withOdds.forEach(function(h){ totalInv += 1/h.odds; });
+    if(totalInv<=0) totalInv = 1;
+    return horses.map(function(h){
+      var mw = (MARK_WEIGHT[h.mark] != null ? MARK_WEIGHT[h.mark] : 1);
+      var markShare = mw/totalMarkW;
+      var oddsShare = (h.odds>0) ? (1/h.odds)/totalInv : null;
+      var value = (oddsShare!=null) ? (markShare - oddsShare) : null;
+      return {h:h, markShare:markShare, oddsShare:oddsShare, value:value};
+    });
+  }
+
+  function renderMarkTable(){
+    var race = state.races[state.activeTab];
+    var wrap = document.getElementById("markTableWrap");
+    if(!race.horses.length){
+      wrap.innerHTML = "<p class=\"empty-note\">まだ馬が登録されていません。オッズ表を貼り付けて解析するか、①のフォーメーションで馬番を追加してください。</p>";
+      return;
+    }
+    var rows = computeShares(race.horses).sort(function(a,b){ return a.h.num-b.h.num; });
+    var selShares = computeSelectedShares(race, state.activeTab);
+    var html = "<table class=\"mark-table\"><thead><tr>"+
+      "<th>馬番</th><th>馬名</th><th>オッズ</th><th>印</th><th>想定シェア</th><th>勝つ確率(推定)</th><th>妙味</th><th>コメント</th>"+
+      "</tr></thead><tbody>";
+    rows.forEach(function(row){
+      var h = row.h;
+      var fc = frameColor(h.num);
+      var flag = (row.value!=null && row.value>0.08 && h.mark!=="×")
+        ? "<span class=\"value-flag\">妙味あり</span>" : "";
+      html += "<tr data-num=\""+h.num+"\" class=\""+(flag?"value-hit":"")+"\">"+
+        "<td><span class=\"badge\" style=\"display:inline-flex;width:20px;height:20px;border-radius:50%;align-items:center;justify-content:center;font-size:11px;font-weight:700;font-family:'JetBrains Mono',monospace;background:"+fc.bg+";color:"+fc.fg+";border:1px solid "+fc.bd+"\">"+h.num+"</span></td>"+
+        "<td><input type=\"text\" data-field=\"name\" value=\""+(h.name||"").replace(/\"/g,"&quot;")+"\"></td>"+
+        "<td><input type=\"number\" step=\"0.1\" min=\"1\" data-field=\"odds\" value=\""+(h.odds!=null?h.odds:"")+"\"></td>"+
+        "<td><select data-field=\"mark\">"+MARK_OPTIONS.map(function(m){
+          return "<option value=\""+m+"\""+(h.mark===m?" selected":"")+">"+(m||"（なし）")+"</option>";
+        }).join("")+"</select></td>"+
+        "<td class=\"num\">"+(row.oddsShare!=null ? pct(row.oddsShare*100) : "—")+"</td>"+
+        "<td class=\"num\">"+(h.selected && selShares[h.num]!=null ? pct(selShares[h.num]*100) : "—")+"</td>"+
+        "<td>"+flag+"</td>"+
+        "<td><input type=\"text\" data-field=\"comment\" placeholder=\"一言コメント\" value=\""+(h.comment||"").replace(/\"/g,"&quot;")+"\"></td>"+
+        "</tr>";
+    });
+    html += "</tbody></table>";
+    wrap.innerHTML = html;
+
+    wrap.querySelectorAll("tr[data-num]").forEach(function(tr){
+      var num = parseInt(tr.getAttribute("data-num"),10);
+      var horse = race.horses.find(function(h){return h.num===num;});
+      tr.querySelectorAll("[data-field]").forEach(function(input){
+        input.addEventListener("input", function(){
+          var field = input.getAttribute("data-field");
+          if(field==="odds"){ horse.odds = input.value===""?null:parseFloat(input.value); }
+          else { horse[field] = input.value; }
+          state.usingSample = false;
+          saveFormation();
+          if(field==="mark" || field==="odds"){ renderMarkTable(); }
+        });
+      });
+    });
+  }
+
+  document.getElementById("applyToFormation").addEventListener("click", function(){
+    var race = state.races[state.activeTab];
+    race.horses.forEach(function(h){ h.selected = (h.mark && h.mark!=="×"); });
+    state.usingSample = false;
+    renderRaces(); renderMarkTable(); saveFormation();
+  });
+
+  document.getElementById("parseBtn").addEventListener("click", function(){
+    var text = document.getElementById("pasteArea").value;
+    var parsed = parsePasteText(text);
+    if(!parsed.length) return;
+    var race = state.races[state.activeTab];
+    parsed.forEach(function(p){
+      var existing = race.horses.find(function(h){return h.num===p.num;});
+      if(existing){
+        if(p.name) existing.name = p.name;
+        if(p.odds!=null) existing.odds = p.odds;
+      } else {
+        race.horses.push({num:p.num, name:p.name, odds:p.odds, mark:"", selected:false});
+      }
+    });
+    state.usingSample = false;
+    renderRaces(); renderMarkTable(); saveFormation();
+  });
+
+  function parsePasteText(text){
+    var lines = text.split(/\r?\n/).map(function(l){return l.trim();}).filter(Boolean);
+    var out = [];
+    lines.forEach(function(line){
+      var numMatch = line.match(/^(\d{1,2})\D/) || line.match(/^(\d{1,2})$/);
+      if(!numMatch) return;
+      var num = parseInt(numMatch[1],10);
+      if(num<1 || num>18) return;
+      var oddsMatch = line.match(/(\d{1,3}\.\d{1,2})/);
+      var rest = line.slice(numMatch[1].length);
+      if(oddsMatch) rest = rest.replace(oddsMatch[0],"");
+      rest = rest.replace(/[\t,、]+/g," ").replace(/\s+/g," ").trim();
+      out.push({num:num, name:rest, odds: oddsMatch ? parseFloat(oddsMatch[1]) : null});
+    });
+    return out;
+  }
+
+  // ---------- ledger ----------
+
+  function renderLedgerTable(){
+    var body = document.getElementById("ledgerBody");
+    var rows = state.ledger.slice().sort(function(a,b){ return a.date<b.date?1:-1; });
+    body.innerHTML = "";
+    rows.forEach(function(e){
+      var balance = (Number(e.payout)||0) - (Number(e.cost)||0);
+      var recovery = (Number(e.cost)>0) ? (Number(e.payout)||0)/Number(e.cost)*100 : null;
+      var tr = document.createElement("tr");
+      tr.innerHTML =
+        "<td>"+e.date+"</td>"+
+        "<td>"+e.course+"</td>"+
+        "<td class=\"num\">"+Number(e.points).toLocaleString("ja-JP")+"</td>"+
+        "<td class=\"num\">"+yen(e.cost)+"</td>"+
+        "<td class=\"num\">"+yen(e.payout)+"</td>"+
+        "<td class=\"num\" style=\"color:"+(balance>=0?"var(--positive)":"var(--negative)")+"\">"+(balance>=0?"+":"")+yen(balance).replace("¥","¥")+"</td>"+
+        "<td class=\"num\">"+(recovery!=null?pct(recovery):"—")+"</td>"+
+        "<td>"+((Number(e.payout)||0)>0 ? "<span class=\"tag-hit\">的中</span>" : "<span class=\"tag-miss\">不的中</span>")+"</td>"+
+        "<td><button type=\"button\" class=\"row-del\" title=\"削除\">&times;</button></td>";
+      tr.querySelector(".row-del").addEventListener("click", function(){
+        removeLedgerEntry(e.id);
+      });
+      body.appendChild(tr);
+    });
+  }
+
+  function renderChart(){
+    var svg = document.getElementById("chart");
+    var W=720,H=240,padL=64,padR=20,padT=16,padB=34;
+    var entries = state.ledger.slice().sort(function(a,b){ return a.date<b.date?-1:1; });
+    if(!entries.length){
+      svg.innerHTML = "<text x=\"20\" y=\"120\" fill=\"var(--ink-soft)\" font-size=\"13\">記録がまだありません</text>";
+      return;
+    }
+    var cumCost=0, cumPayout=0;
+    var costPts=[], payoutPts=[];
+    entries.forEach(function(e){
+      cumCost += Number(e.cost)||0;
+      cumPayout += Number(e.payout)||0;
+      costPts.push(cumCost); payoutPts.push(cumPayout);
+    });
+    var maxV = Math.max.apply(null, costPts.concat(payoutPts), 1) * 1.1;
+    var n = entries.length;
+    function x(i){ return n===1 ? (padL+ (W-padL-padR)/2) : padL + (W-padL-padR)*i/(n-1); }
+    function y(v){ return H-padB - (H-padT-padB)*(v/maxV); }
+
+    var ticks = 4, gridSvg="";
+    for(var t=0;t<=ticks;t++){
+      var v = maxV*t/ticks;
+      var yy = y(v);
+      gridSvg += "<line x1=\""+padL+"\" x2=\""+(W-padR)+"\" y1=\""+yy+"\" y2=\""+yy+"\" stroke=\"var(--rule)\" stroke-width=\"1\"/>";
+      gridSvg += "<text x=\""+(padL-8)+"\" y=\""+(yy+4)+"\" text-anchor=\"end\" font-size=\"10\" fill=\"var(--ink-soft)\" font-family=\"JetBrains Mono, monospace\">"+Math.round(v).toLocaleString("ja-JP")+"</text>";
+    }
+
+    function pathFor(pts){
+      return pts.map(function(v,i){ return (i===0?"M":"L")+x(i).toFixed(1)+","+y(v).toFixed(1); }).join(" ");
+    }
+    function dotsFor(pts, color){
+      return pts.map(function(v,i){
+        var r = (i===pts.length-1) ? 4.5 : 2.5;
+        return "<circle cx=\""+x(i).toFixed(1)+"\" cy=\""+y(v).toFixed(1)+"\" r=\""+r+"\" fill=\""+color+"\"/>";
+      }).join("");
+    }
+
+    var lastRecovery = costPts[n-1]>0 ? (payoutPts[n-1]/costPts[n-1]*100) : null;
+    var labelSvg = "";
+    if(lastRecovery!=null){
+      labelSvg = "<text x=\""+(x(n-1)-4)+"\" y=\""+(y(payoutPts[n-1])-10)+"\" text-anchor=\"end\" font-size=\"11\" font-weight=\"700\" fill=\"var(--accent)\" font-family=\"JetBrains Mono, monospace\">"+pct(lastRecovery)+"</text>";
+    }
+
+    var dateLabel = "<text x=\""+padL+"\" y=\""+(H-10)+"\" font-size=\"10\" fill=\"var(--ink-soft)\">"+entries[0].date+"</text>"+
+      "<text x=\""+(W-padR)+"\" y=\""+(H-10)+"\" text-anchor=\"end\" font-size=\"10\" fill=\"var(--ink-soft)\">"+entries[n-1].date+"</text>";
+
+    svg.innerHTML =
+      gridSvg +
+      "<path d=\""+pathFor(costPts)+"\" fill=\"none\" stroke=\"var(--track)\" stroke-width=\"2\"/>" +
+      dotsFor(costPts, "var(--track)") +
+      "<path d=\""+pathFor(payoutPts)+"\" fill=\"none\" stroke=\"var(--accent)\" stroke-width=\"2.5\"/>" +
+      dotsFor(payoutPts, "var(--accent)") +
+      labelSvg + dateLabel;
+  }
+
+  document.getElementById("ledgerForm").addEventListener("submit", function(ev){
+    ev.preventDefault();
+    var points = parseInt(document.getElementById("fPoints").value,10) || 0;
+    var entry = {
+      id: uid(),
+      date: document.getElementById("fDate").value,
+      course: document.getElementById("fCourse").value,
+      points: points,
+      cost: points*100,
+      payout: parseInt(document.getElementById("fPayout").value,10) || 0,
+      memo: document.getElementById("fMemo").value
+    };
+    if(state.usingSample){ state.ledger = []; state.usingSample = false; }
+    state.ledger.push(entry);
+    saveLedgerEntry(entry);
+    renderStats(); renderLedgerTable(); renderChart();
+    document.getElementById("sampleBanner").hidden = true;
+    ev.target.reset();
+    document.getElementById("fCourse").value = entry.course;
+  });
+
+  function removeLedgerEntry(id){
+    state.ledger = state.ledger.filter(function(e){ return e.id!==id; });
+    if(state.db){ state.db.collection("ledger").doc(id).delete().catch(function(){}); }
+    renderStats(); renderLedgerTable(); renderChart();
+  }
+
+  document.getElementById("clearSample").addEventListener("click", function(){
+    state.races = emptyRaces();
+    state.ledger = [];
+    state.usingSample = false;
+    document.getElementById("sampleBanner").hidden = true;
+    renderAll();
+    saveFormation();
+  });
+
+  // ---------- backtest ----------
+
+  function renderBtRaceProbs(){
+    var wrap = document.getElementById("btRaceProbs");
+    wrap.innerHTML = "";
+    for(var i=0;i<5;i++){
+      var race = state.races[i] || {label:"第"+(i+1)+"競走", horses:[]};
+      var honmei = race.horses.find(function(h){ return h.mark==="◎"; });
+      var box = document.createElement("div");
+      box.className = "bt-race-prob";
+      box.innerHTML =
+        "<span class=\"lbl\">"+race.label+"</span>"+
+        "<div class=\"horse\">"+(honmei ? ("◎"+honmei.num+" "+(honmei.name||"")) : "（本命未設定）")+"</div>"+
+        "<input type=\"number\" min=\"1\" max=\"99\" step=\"1\" data-idx=\""+i+"\" value=\""+(state.racePredictions[i]!=null?state.racePredictions[i]:"")+"\" placeholder=\"勝つ確率%\">";
+      wrap.appendChild(box);
+    }
+    wrap.querySelectorAll("input[data-idx]").forEach(function(input){
+      input.addEventListener("input", function(){
+        var idx = parseInt(input.getAttribute("data-idx"),10);
+        state.racePredictions[idx] = input.value===""?null:parseFloat(input.value);
+      });
+    });
+  }
+
+  function runMonteCarloSim(){
+    var probs = state.racePredictions.map(function(p){ return (p==null?0:p)/100; });
+    var trials = parseInt(document.getElementById("simTrials").value,10) || 10000;
+    trials = Math.max(100, Math.min(200000, trials));
+
+    var fullHitCount = 0;
+    var raceHitCounts = [0,0,0,0,0];
+    var hitDist = [0,0,0,0,0,0]; // 0〜5レース的中の分布
+
+    for(var t=0;t<trials;t++){
+      var hitsThisTrial = 0;
+      for(var r=0;r<5;r++){
+        if(Math.random() < probs[r]){
+          raceHitCounts[r]++;
+          hitsThisTrial++;
+        }
+      }
+      hitDist[hitsThisTrial]++;
+      if(hitsThisTrial===5) fullHitCount++;
+    }
+
+    var theoreticalProb = probs.reduce(function(a,b){ return a*b; }, 1);
+
+    var resultEl = document.getElementById("simResult");
+    var html = "<div class=\"sim-result-grid\">"+
+      "<div class=\"sim-tile\"><span class=\"v\">"+fullHitCount.toLocaleString("ja-JP")+" / "+trials.toLocaleString("ja-JP")+"</span><span class=\"l\">5レース全的中（試行）</span></div>"+
+      "<div class=\"sim-tile\"><span class=\"v\">"+pct(fullHitCount/trials*100)+"</span><span class=\"l\">シミュレーション的中率</span></div>"+
+      "<div class=\"sim-tile\"><span class=\"v\">"+pct(theoreticalProb*100)+"</span><span class=\"l\">理論値（掛け算）</span></div>"+
+      "<div class=\"sim-tile\"><span class=\"v\">"+(fullHitCount>0 ? Math.round(trials/fullHitCount).toLocaleString("ja-JP") : "―")+"</span><span class=\"l\">概算：約何回に1回</span></div>"+
+      "</div>";
+
+    html += "<div class=\"sim-bar-wrap\"><div style=\"font-size:11px;color:var(--ink-soft);margin-bottom:6px;\">各レース単体の的中率（試行ベース）</div>";
+    for(var r2=0;r2<5;r2++){
+      var raceP = raceHitCounts[r2]/trials*100;
+      html += "<div class=\"sim-bar-row\"><span class=\"bl\">R"+(r2+1)+"</span><span class=\"sim-bar-track\"><span class=\"sim-bar-fill\" style=\"width:"+raceP+"%\"></span></span><span class=\"bv\">"+pct(raceP)+"</span></div>";
+    }
+    html += "</div>";
+
+    html += "<div class=\"sim-bar-wrap\"><div style=\"font-size:11px;color:var(--ink-soft);margin:12px 0 6px;\">同時的中数の分布（0〜5レース）</div>";
+    for(var d=0;d<=5;d++){
+      var dp = hitDist[d]/trials*100;
+      html += "<div class=\"sim-bar-row\"><span class=\"bl\">"+d+"レース</span><span class=\"sim-bar-track\"><span class=\"sim-bar-fill\" style=\"width:"+dp+"%;background:"+(d===5?"var(--accent)":"var(--track)")+"\"></span></span><span class=\"bv\">"+pct(dp)+"</span></div>";
+    }
+    html += "</div>";
+
+    resultEl.innerHTML = html;
+  }
+
+  document.getElementById("runSimBtn").addEventListener("click", runMonteCarloSim);
+
+  // ---------- combination optimizer (◎/◎○/◎○▲) ----------
+
+  function estimateRaceMarkProbs(race, honmeiProbPercent){
+    // ◎(表示上の本命)は必ず「そのレースで最も勝つ確率が高い馬」になるよう、
+    // connectDb側でオッズが最も低い馬に◎を振り直し済み（horses配列はオッズ順にソート済み）。
+    // ◎の確率は、それがSTEP16分析でも本命だった馬（analysisMark==="◎"）ならユーザー設定値
+    // （STEP19の分析結果）を採用し、人気逆転で対抗・単穴だった馬が◎に繰り上がった場合は
+    // オッズ通りの市場勝率（100/オッズ）を採用する。
+    // ○▲は常にオッズ通りの真の勝率をそのまま使う。
+    // ◎＋○＋▲の合計が100%を超えることはあり得ない（同じレースで1頭しか勝てないため）
+    // ので、超過した場合のみ○▲側を比例縮小して帳尻を合わせる。
+    var honmei = race.horses.find(function(h){ return h.mark==="◎"; });
+    var taikou = race.horses.find(function(h){ return h.mark==="○"; });
+    var tanAna = race.horses.find(function(h){ return h.mark==="▲"; });
+    if(!honmei || !(honmei.odds>0)) return null;
+
+    var honmeiProb;
+    if(honmei.analysisMark==="◎" && honmeiProbPercent!=null){
+      honmeiProb = Math.max(0, Math.min(100, honmeiProbPercent))/100;
+    } else {
+      honmeiProb = 1/honmei.odds; // 人気逆転で繰り上がった馬は市場の真の勝率を使う
+    }
+    var result = { "◎": { horse:honmei, prob: honmeiProb } };
+
+    if(taikou && taikou.odds>0){ result["○"] = { horse:taikou, prob: 1/taikou.odds }; }
+    if(tanAna && tanAna.odds>0){ result["▲"] = { horse:tanAna, prob: 1/tanAna.odds }; }
+
+    var sumOthers = (result["○"]?result["○"].prob:0) + (result["▲"]?result["▲"].prob:0);
+    var maxOthers = Math.max(0, 1 - honmeiProb);
+    if(sumOthers > maxOthers && sumOthers > 0){
+      var scale = maxOthers/sumOthers;
+      if(result["○"]) result["○"].prob *= scale;
+      if(result["▲"]) result["▲"].prob *= scale;
+    }
+    return result;
+  }
+
+  function buildRaceOptions(){
+    var raceOptions = [];
+    for(var i=0;i<5;i++){
+      var race = state.races[i];
+      if(!race){ raceOptions.push(null); continue; }
+      var probs = estimateRaceMarkProbs(race, state.racePredictions[i]);
+      if(!probs || !probs["◎"]){ raceOptions.push(null); continue; }
+
+      var pHonmei = probs["◎"].prob;
+      var pTaikou = probs["○"] ? probs["○"].prob : 0;
+      var pTanAna = probs["▲"] ? probs["▲"].prob : 0;
+
+      var opts = [{points:1, prob:pHonmei, marks:["◎"], horses:[probs["◎"].horse]}];
+      if(probs["○"]){
+        opts.push({points:2, prob:pHonmei+pTaikou, marks:["◎","○"], horses:[probs["◎"].horse, probs["○"].horse]});
+      }
+      if(probs["○"] && probs["▲"]){
+        opts.push({points:3, prob:pHonmei+pTaikou+pTanAna, marks:["◎","○","▲"], horses:[probs["◎"].horse, probs["○"].horse, probs["▲"].horse]});
+      }
+      raceOptions.push(opts);
+    }
+    return raceOptions;
+  }
+
+  function findOptimalCombination(budgetYen){
+    var raceOptions = buildRaceOptions();
+    if(raceOptions.some(function(o){ return !o; })) return {error:"missing"};
+
+    var maxPoints = Math.floor(budgetYen/100);
+    if(maxPoints<1) return {error:"budget"};
+
+    var best = null;
+    var choices = new Array(5);
+    function recurse(idx, points, prob){
+      if(points>maxPoints) return; // prune
+      if(idx===5){
+        if(!best || prob>best.prob){
+          best = {points:points, prob:prob, choices:choices.slice()};
+        }
+        return;
+      }
+      raceOptions[idx].forEach(function(opt){
+        choices[idx] = opt;
+        recurse(idx+1, points*opt.points, prob*opt.prob);
+      });
+    }
+    recurse(0, 1, 1);
+    if(!best) return {error:"budget"};
+    return best;
+  }
+
+  function runOptimizer(){
+    var budget = parseInt(document.getElementById("optBudget").value,10) || 1000;
+    var result = findOptimalCombination(budget);
+    var el = document.getElementById("optResult");
+
+    if(result.error==="missing"){
+      el.innerHTML = "<p class=\"empty-note\">◎○▲すべてにオッズと勝つ確率が設定されているレースが必要です。①②で馬情報を、上の入力欄で各レースの勝つ確率を設定してください。</p>";
+      return;
+    }
+    if(result.error==="budget"){
+      el.innerHTML = "<p class=\"empty-note\">予算が小さすぎます（最低100円＝1点必要）。</p>";
+      return;
+    }
+
+    var html = "<div style=\"border:1px solid var(--rule);border-radius:6px;overflow:hidden;margin-top:10px;\">";
+    result.choices.forEach(function(opt, i){
+      html += "<div class=\"opt-race-row\"><span class=\"rl\">"+(state.races[i]?state.races[i].label:("R"+(i+1)))+"</span><span class=\"picks\">"+
+        opt.horses.map(function(h,j){
+          return "<span class=\"opt-pick\"><span class=\"m\">"+opt.marks[j]+"</span>"+h.num+" "+(h.name||"")+"</span>";
+        }).join("")+
+        "</span></div>";
+    });
+    html += "</div>";
+
+    html += "<div class=\"opt-summary\">"+
+      "<div>総点数 <strong>"+result.points+"</strong>点</div>"+
+      "<div>投資額 <strong>"+yen(result.points*100)+"</strong></div>"+
+      "<div>的中確率 <strong>"+pct(result.prob*100)+"</strong></div>"+
+      "<div>概算 <strong>約"+(result.prob>0?Math.round(1/result.prob).toLocaleString("ja-JP"):"―")+"</strong>回に1回</div>"+
+      "</div>";
+    html += "<p class=\"opt-note\">予算"+yen(budget)+"以内で試した全組み合わせの中から、最も的中確率が高いものを表示しています。○▲の勝つ確率はオッズと◎の設定値から自動推定した参考値です。</p>";
+
+    el.innerHTML = html;
+  }
+
+  document.getElementById("runOptBtn").addEventListener("click", runOptimizer);
+
+  function renderBtStats(){
+    var el = document.getElementById("btStats");
+    var records = state.backtestRecords;
+    if(!records.length){
+      el.innerHTML = "<p class=\"empty-note\">まだ記録がありません。下のフォームから開催ごとの的中結果を記録してください。</p>";
+      return;
+    }
+    var total = records.length;
+    var fullHits = records.filter(function(r){
+      return r.r1 && r.r2 && r.r3 && r.r4 && r.r5;
+    }).length;
+    var raceHitTotals = [0,0,0,0,0];
+    records.forEach(function(r){
+      ["r1","r2","r3","r4","r5"].forEach(function(k,i){ if(r[k]) raceHitTotals[i]++; });
+    });
+    var html =
+      "<div class=\"sim-tile\"><span class=\"v\">"+fullHits+" / "+total+"</span><span class=\"l\">WIN5全的中（実績）</span></div>"+
+      "<div class=\"sim-tile\"><span class=\"v\">"+pct(total>0?fullHits/total*100:0)+"</span><span class=\"l\">実績的中率</span></div>";
+    raceHitTotals.forEach(function(c,i){
+      html += "<div class=\"sim-tile\"><span class=\"v\">"+pct(total>0?c/total*100:0)+"</span><span class=\"l\">R"+(i+1)+" 本命的中率（実績）</span></div>";
+    });
+    el.innerHTML = html;
+  }
+
+  function renderBtTable(){
+    var body = document.getElementById("btBody");
+    var rows = state.backtestRecords.slice().sort(function(a,b){ return a.date<b.date?1:-1; });
+    body.innerHTML = "";
+    rows.forEach(function(r){
+      var raceHits = ["r1","r2","r3","r4","r5"].filter(function(k){return r[k];}).length;
+      var fullHit = raceHits===5;
+      var tr = document.createElement("tr");
+      tr.innerHTML =
+        "<td>"+r.date+"</td>"+
+        "<td class=\"num\">"+(r.r1?"○":"×")+"</td>"+
+        "<td class=\"num\">"+(r.r2?"○":"×")+"</td>"+
+        "<td class=\"num\">"+(r.r3?"○":"×")+"</td>"+
+        "<td class=\"num\">"+(r.r4?"○":"×")+"</td>"+
+        "<td class=\"num\">"+(r.r5?"○":"×")+"</td>"+
+        "<td class=\"num\">"+raceHits+" / 5</td>"+
+        "<td>"+(fullHit ? "<span class=\"tag-hit\">全的中</span>" : "<span class=\"tag-miss\">不的中</span>")+"</td>"+
+        "<td><button type=\"button\" class=\"row-del\" title=\"削除\">&times;</button></td>";
+      tr.querySelector(".row-del").addEventListener("click", function(){
+        removeBacktestEntry(r.id);
+      });
+      body.appendChild(tr);
+    });
+  }
+
+  document.getElementById("btRecordForm").addEventListener("submit", function(ev){
+    ev.preventDefault();
+    var entry = {
+      id: document.getElementById("btDate").value || uid(),
+      date: document.getElementById("btDate").value,
+      r1: document.getElementById("btR1").checked,
+      r2: document.getElementById("btR2").checked,
+      r3: document.getElementById("btR3").checked,
+      r4: document.getElementById("btR4").checked,
+      r5: document.getElementById("btR5").checked,
+      predicted: state.racePredictions.slice()
+    };
+    state.backtestRecords = state.backtestRecords.filter(function(r){ return r.id !== entry.id; });
+    state.backtestRecords.push(entry);
+    saveBacktestEntry(entry);
+    renderBtStats(); renderBtTable();
+    ev.target.reset();
+  });
+
+  function removeBacktestEntry(id){
+    state.backtestRecords = state.backtestRecords.filter(function(e){ return e.id!==id; });
+    if(state.db){ state.db.collection("win5_backtest").doc(id).delete().catch(function(){}); }
+    renderBtStats(); renderBtTable();
+  }
+
+  function saveBacktestEntry(entry){
+    if(!state.db) return;
+    var data = {};
+    Object.keys(entry).forEach(function(k){ if(k!=="id") data[k]=entry[k]; });
+    state.db.collection("win5_backtest").doc(entry.id).set(data).catch(function(){});
+  }
+
+  // ---------- persistence ----------
+
+  var saveTimer = null;
+  function saveFormation(){
+    if(!state.db) return;
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(function(){
+      state.db.doc("formation/current").set({races: state.races}).catch(function(){});
+    }, 500);
+  }
+  function saveLedgerEntry(entry){
+    if(!state.db) return;
+    var data = {};
+    Object.keys(entry).forEach(function(k){ if(k!=="id") data[k]=entry[k]; });
+    state.db.collection("ledger").doc(entry.id).set(data).catch(function(){});
+  }
+
+  function connectDb(){
+    if(typeof claude === "undefined" || !claude.use){ return; }
+    claude.use("db").then(function(db){
+      if(!db) return;
+      state.db = db;
+
+      db.collection("win5_races").onSnapshot(function(snap){
+        if(snap.empty) return;
+        var races = snap.docs.map(function(d){ return d.data(); });
+        var latestDate = null;
+        var latestRaces = {};
+        races.forEach(function(r){
+          if(!latestDate || r.date > latestDate){
+            latestDate = r.date;
+            latestRaces = {};
+          }
+          if(r.date === latestDate){
+            latestRaces[r.race_num] = r;
+          }
+        });
+
+        if(latestDate && Object.keys(latestRaces).length > 0){
+          state.usingSample = false;
+          state.races = [];
+          state.racePredictions = [null,null,null,null,null];
+          for(var i = 1; i <= 5; i++){
+            var raceData = latestRaces[i];
+            if(raceData){
+              var horses = [];
+              if(raceData.final_selection){
+                var fs = raceData.final_selection;
+                if(raceData.horses && Array.isArray(raceData.horses)){
+                  if(fs.honmei){
+                    var h1 = raceData.horses.find(function(h){return h.num === fs.honmei;});
+                    horses.push({num: fs.honmei, name: h1 ? h1.name : "", odds: h1 ? h1.odds : null, analysisMark: "◎", selected: true});
+                  }
+                  if(fs.taikou){
+                    var h2 = raceData.horses.find(function(h){return h.num === fs.taikou;});
+                    horses.push({num: fs.taikou, name: h2 ? h2.name : "", odds: h2 ? h2.odds : null, analysisMark: "○", selected: true});
+                  }
+                  if(fs.tan_ana){
+                    var h3 = raceData.horses.find(function(h){return h.num === fs.tan_ana;});
+                    horses.push({num: fs.tan_ana, name: h3 ? h3.name : "", odds: h3 ? h3.odds : null, analysisMark: "▲", selected: true});
+                  }
+                }
+              }
+              // ◎（本命）は必ず「そのレースで最も勝つ確率が高い馬」になるよう、
+              // 表示用の印(mark)はオッズが低い（＝市場が示す勝率が高い）順に振り直す。
+              // STEP16で分析上つけた印（本命=期待値重視の推奨）は analysisMark に残す。
+              horses.sort(function(a,b){ return (a.odds==null?Infinity:a.odds) - (b.odds==null?Infinity:b.odds); });
+              var dispMarks = ["◎","○","▲","△","×"];
+              horses.forEach(function(h, idx){ h.mark = dispMarks[idx] || "△"; });
+
+              state.races.push({
+                label: raceData.race_name || ("第"+(i)+"競走"),
+                horses: horses
+              });
+              if(typeof raceData.winning_probability === "number"){
+                state.racePredictions[i-1] = raceData.winning_probability;
+              }
+            } else {
+              state.races.push({label: "第"+(i)+"競走", horses: []});
+            }
+          }
+          renderRaces(); renderTabs(); renderMarkTable(); renderBtRaceProbs();
+          document.getElementById("sampleBanner").hidden = true;
+        }
+      }, function(){});
+
+      db.collection("win5_backtest").onSnapshot(function(snap){
+        if(snap.empty) return;
+        state.backtestRecords = snap.docs.map(function(d){ return Object.assign({id:d.id}, d.data()); });
+        renderBtStats(); renderBtTable();
+      }, function(){});
+
+      db.collection("ledger").onSnapshot(function(snap){
+        if(snap.empty) return;
+        state.usingSample = false;
+        state.ledger = snap.docs.map(function(d){ return Object.assign({id:d.id}, d.data()); });
+        renderStats(); renderLedgerTable(); renderChart();
+        document.getElementById("sampleBanner").hidden = true;
+      }, function(){});
+    }).catch(function(){});
+  }
+
+  // ---------- init ----------
+
+  document.getElementById("fDate").valueAsDate = new Date();
+  document.getElementById("btDate").valueAsDate = new Date();
+  document.getElementById("todayLabel").textContent = new Date().toLocaleDateString("ja-JP",{year:"numeric",month:"long",day:"numeric",weekday:"short"});
+
+  renderAll();
+  connectDb();
+})();
+</script>
+
+</body></html>

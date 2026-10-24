@@ -1,0 +1,50 @@
+{
+  "betting_recommendations": {
+    "ana_100": [
+      "16-2"
+    ],
+    "honsen_600": [
+      "2-16",
+      "2-12"
+    ],
+    "osae_300": [
+      "16-12"
+    ]
+  },
+  "date": "2026-09-26",
+  "final_selection": {
+    "honmei": 2,
+    "taikou": 16,
+    "tan_ana": 12
+  },
+  "horses": [
+    {
+      "mark": "◎",
+      "name": "イゾラフェリーチェ",
+      "num": 2,
+      "odds": 5.2
+    },
+    {
+      "mark": "○",
+      "name": "マルガイマルチピコアーガイル",
+      "num": 16,
+      "odds": 9.7
+    },
+    {
+      "mark": "▲",
+      "name": "アイムインディ",
+      "num": 12,
+      "odds": 7.6
+    }
+  ],
+  "market_analysis": "本命②の信頼度高い、対抗⑯も堅実",
+  "note": "重馬場で信頼度低下（予想時は芝:良を想定）",
+  "race_name": "勝浦特別",
+  "race_num": 2,
+  "race_number": "10R",
+  "timestamp": "2026-09-26",
+  "track": "中山",
+  "track_condition": "芝:重",
+  "weather": "曇",
+  "winning_probability": 15
+}

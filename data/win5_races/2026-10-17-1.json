@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-17",
+  "final_selection": {
+    "honmei": 6,
+    "taikou": 7,
+    "tan_ana": 3
+  },
+  "horses": [
+    {
+      "name": "チェルヴァーラ",
+      "num": 6,
+      "odds": 1.3
+    },
+    {
+      "name": "トリニティ",
+      "num": 7,
+      "odds": 7.1
+    },
+    {
+      "name": "メイショウナルカミ",
+      "num": 3,
+      "odds": 8.8
+    }
+  ],
+  "race_name": "清滝特別(京都10R)",
+  "race_num": 1,
+  "winning_probability": 77
+}

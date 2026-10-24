@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-18",
+  "final_selection": {
+    "honmei": 9,
+    "taikou": 11,
+    "tan_ana": 6
+  },
+  "horses": [
+    {
+      "name": "クールミラボー",
+      "num": 9,
+      "odds": 4.9
+    },
+    {
+      "name": "レッドプロフェシー",
+      "num": 11,
+      "odds": 5.5
+    },
+    {
+      "name": "ハヒ",
+      "num": 6,
+      "odds": 5.6
+    }
+  ],
+  "race_name": "ブラジルC(東京11R)",
+  "race_num": 4,
+  "winning_probability": 20
+}

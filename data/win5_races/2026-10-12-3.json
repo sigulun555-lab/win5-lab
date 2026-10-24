@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-12",
+  "final_selection": {
+    "honmei": 5,
+    "taikou": 2,
+    "tan_ana": 9
+  },
+  "horses": [
+    {
+      "name": "アクセス",
+      "num": 5,
+      "odds": 2.5
+    },
+    {
+      "name": "カムアップローズーズ",
+      "num": 2,
+      "odds": 4.3
+    },
+    {
+      "name": "ミリタリータトゥー",
+      "num": 9,
+      "odds": 4.5
+    }
+  ],
+  "race_name": "堀川特別(京都10R)",
+  "race_num": 3,
+  "winning_probability": 40
+}

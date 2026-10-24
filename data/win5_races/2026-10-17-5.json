@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-17",
+  "final_selection": {
+    "honmei": 4,
+    "taikou": 10,
+    "tan_ana": 5
+  },
+  "horses": [
+    {
+      "name": "トロヴァトーレ",
+      "num": 4,
+      "odds": 3.2
+    },
+    {
+      "name": "アンパドゥ",
+      "num": 10,
+      "odds": 3.6
+    },
+    {
+      "name": "アドマイヤズーム",
+      "num": 5,
+      "odds": 5.6
+    }
+  ],
+  "race_name": "富士ステークス(東京11R)",
+  "race_num": 5,
+  "winning_probability": 31
+}

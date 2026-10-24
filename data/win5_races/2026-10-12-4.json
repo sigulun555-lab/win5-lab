@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-12",
+  "final_selection": {
+    "honmei": 2,
+    "taikou": 9,
+    "tan_ana": 1
+  },
+  "horses": [
+    {
+      "name": "アスクセクシーモア",
+      "num": 2,
+      "odds": 3.7
+    },
+    {
+      "name": "ディマイザキッド",
+      "num": 9,
+      "odds": 6.5
+    },
+    {
+      "name": "メイショウハチコウ",
+      "num": 1,
+      "odds": 6.7
+    }
+  ],
+  "race_name": "オカトーバーS(東京11R)",
+  "race_num": 4,
+  "winning_probability": 27
+}

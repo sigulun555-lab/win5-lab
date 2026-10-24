@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-11",
+  "final_selection": {
+    "honmei": 16,
+    "taikou": 15,
+    "tan_ana": 11
+  },
+  "horses": [
+    {
+      "name": "カムニャック",
+      "num": 16,
+      "odds": 3.3
+    },
+    {
+      "name": "ジョスラン",
+      "num": 15,
+      "odds": 6
+    },
+    {
+      "name": "ラヴァンダ",
+      "num": 11,
+      "odds": 6.1
+    }
+  ],
+  "race_name": "アイルランドT(東京11R・GⅡ)",
+  "race_num": 5,
+  "winning_probability": 30
+}

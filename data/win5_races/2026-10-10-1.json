@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-10",
+  "final_selection": {
+    "honmei": 2,
+    "taikou": 3,
+    "tan_ana": 7
+  },
+  "horses": [
+    {
+      "name": "ノクターン",
+      "num": 2,
+      "odds": 1.7
+    },
+    {
+      "name": "ノラリクラリ",
+      "num": 3,
+      "odds": 5.1
+    },
+    {
+      "name": "ジュンツバメガエシ",
+      "num": 7,
+      "odds": 6.9
+    }
+  ],
+  "race_name": "陣馬特別(東京9R)",
+  "race_num": 1,
+  "winning_probability": 59
+}

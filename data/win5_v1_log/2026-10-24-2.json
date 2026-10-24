@@ -1,0 +1,188 @@
+{
+  "basis": "市場正規化のみ(定性分析未実施)",
+  "date": "2026-10-24",
+  "final_selection": {
+    "honmei": 10,
+    "taikou": 12,
+    "tan_ana": 13
+  },
+  "horses": [
+    {
+      "adj_conf": "D",
+      "base_conf": "D",
+      "claude_prob": 0.3,
+      "claude_rank": 14,
+      "market_prob": 0.3,
+      "name": "トルショー",
+      "num": 1,
+      "odds": 332.4,
+      "reliability": "低"
+    },
+    {
+      "adj_conf": "D",
+      "base_conf": "D",
+      "claude_prob": 0.5,
+      "claude_rank": 10,
+      "market_prob": 0.5,
+      "name": "ルシフェル",
+      "num": 2,
+      "odds": 166.2,
+      "reliability": "低"
+    },
+    {
+      "adj_conf": "D",
+      "base_conf": "D",
+      "claude_prob": 0.1,
+      "claude_rank": 15,
+      "market_prob": 0.1,
+      "name": "ラッキーキッド",
+      "num": 3,
+      "odds": 664.8,
+      "reliability": "低"
+    },
+    {
+      "adj_conf": "D",
+      "base_conf": "D",
+      "claude_prob": 1.7,
+      "claude_rank": 6,
+      "market_prob": 1.7,
+      "name": "リバートゥルー",
+      "num": 4,
+      "odds": 51.1,
+      "reliability": "低"
+    },
+    {
+      "adj_conf": "D",
+      "base_conf": "D",
+      "claude_prob": 0.9,
+      "claude_rank": 9,
+      "market_prob": 0.9,
+      "name": "ダンツファイター",
+      "num": 5,
+      "odds": 94.9,
+      "reliability": "低"
+    },
+    {
+      "adj_conf": "D",
+      "base_conf": "D",
+      "claude_prob": 1.5,
+      "claude_rank": 7,
+      "market_prob": 1.5,
+      "name": "テリフィックプラン",
+      "num": 6,
+      "odds": 60.4,
+      "reliability": "低"
+    },
+    {
+      "adj_conf": "D",
+      "base_conf": "D",
+      "claude_prob": 0.4,
+      "claude_rank": 12,
+      "market_prob": 0.4,
+      "name": "ジェイエルマスター",
+      "num": 7,
+      "odds": 221.6,
+      "reliability": "低"
+    },
+    {
+      "adj_conf": "D",
+      "base_conf": "D",
+      "claude_prob": 1.2,
+      "claude_rank": 8,
+      "market_prob": 1.2,
+      "name": "アデランテ",
+      "num": 8,
+      "odds": 73.8,
+      "reliability": "低"
+    },
+    {
+      "adj_conf": "D",
+      "base_conf": "D",
+      "claude_prob": 0.5,
+      "claude_rank": 10,
+      "market_prob": 0.5,
+      "name": "デコラシオン",
+      "num": 9,
+      "odds": 166.2,
+      "reliability": "低"
+    },
+    {
+      "adj_conf": "A",
+      "base_conf": "A",
+      "claude_prob": 80,
+      "claude_rank": 1,
+      "market_prob": 80,
+      "name": "リフレックス",
+      "num": 10,
+      "odds": 1.1,
+      "reliability": "低"
+    },
+    {
+      "adj_conf": "D",
+      "base_conf": "D",
+      "claude_prob": 2,
+      "claude_rank": 4,
+      "market_prob": 2,
+      "name": "ワイドクリーガー",
+      "num": 11,
+      "odds": 44.3,
+      "reliability": "低"
+    },
+    {
+      "adj_conf": "D",
+      "base_conf": "D",
+      "claude_prob": 5.4,
+      "claude_rank": 2,
+      "market_prob": 5.4,
+      "name": "サムシャイン",
+      "num": 12,
+      "odds": 16.2,
+      "reliability": "低"
+    },
+    {
+      "adj_conf": "D",
+      "base_conf": "D",
+      "claude_prob": 3,
+      "claude_rank": 3,
+      "market_prob": 3,
+      "name": "サノノワンダー",
+      "num": 13,
+      "odds": 28.9,
+      "reliability": "低"
+    },
+    {
+      "adj_conf": "D",
+      "base_conf": "D",
+      "claude_prob": 2,
+      "claude_rank": 4,
+      "market_prob": 2,
+      "name": "ロカヒ",
+      "num": 14,
+      "odds": 44.3,
+      "reliability": "低"
+    },
+    {
+      "name": "パルデンス",
+      "note": "オッズ未掲載のため算出対象外",
+      "num": 15,
+      "odds": null
+    },
+    {
+      "adj_conf": "D",
+      "base_conf": "D",
+      "claude_prob": 0.4,
+      "claude_rank": 12,
+      "market_prob": 0.4,
+      "name": "パフ",
+      "num": 16,
+      "odds": 221.6,
+      "reliability": "低"
+    }
+  ],
+  "odds_timestamp": "2026-10-23 19:05 JST 中間オッズ",
+  "race_name": "日本農業新聞杯(3勝)",
+  "race_num": 2,
+  "racecourse": "東京",
+  "rule_version": "win5-prompt de2c6eb9c814",
+  "version": "V1"
+}

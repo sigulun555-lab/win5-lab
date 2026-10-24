@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-17",
+  "final_selection": {
+    "honmei": 15,
+    "taikou": 8,
+    "tan_ana": 13
+  },
+  "horses": [
+    {
+      "name": "サトノワーグナー",
+      "num": 15,
+      "odds": 5.4
+    },
+    {
+      "name": "ハッピーエンジェル",
+      "num": 8,
+      "odds": 5.8
+    },
+    {
+      "name": "トーラスシャイン",
+      "num": 13,
+      "odds": 7
+    }
+  ],
+  "race_name": "北陸ステークス(新潟11R)",
+  "race_num": 3,
+  "winning_probability": 19
+}

@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-18",
+  "final_selection": {
+    "honmei": 8,
+    "taikou": 13,
+    "tan_ana": 6
+  },
+  "horses": [
+    {
+      "name": "モンローウォーク",
+      "num": 8,
+      "odds": 1.4
+    },
+    {
+      "name": "ドリームコア",
+      "num": 13,
+      "odds": 8
+    },
+    {
+      "name": "ラベルセーヌ",
+      "num": 6,
+      "odds": 13.4
+    }
+  ],
+  "race_name": "秋華賞(京都11R)",
+  "race_num": 5,
+  "winning_probability": 71
+}

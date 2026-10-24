@@ -1,0 +1,49 @@
+{
+  "betting_recommendations": {
+    "ana_100": [
+      "8-1"
+    ],
+    "honsen_600": [
+      "1-7",
+      "1-8"
+    ],
+    "osae_300": [
+      "7-8"
+    ]
+  },
+  "date": "2026-09-26",
+  "final_selection": {
+    "honmei": 1,
+    "taikou": 7,
+    "tan_ana": 8
+  },
+  "horses": [
+    {
+      "mark": "◎",
+      "name": "ヴォーカライズ",
+      "num": 1,
+      "odds": 2.9
+    },
+    {
+      "mark": "○",
+      "name": "ウィルサヴァイブ",
+      "num": 7,
+      "odds": 8.1
+    },
+    {
+      "mark": "▲",
+      "name": "ショウナンバルドル",
+      "num": 8,
+      "odds": 9
+    }
+  ],
+  "market_analysis": "本命①の展開有利、穴八番も対応可能",
+  "race_name": "野分特別",
+  "race_num": 3,
+  "race_number": "10R",
+  "timestamp": "2026-09-26",
+  "track": "阪神",
+  "track_condition": "芝:良",
+  "weather": "雨",
+  "winning_probability": 35
+}

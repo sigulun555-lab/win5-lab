@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-10",
+  "final_selection": {
+    "honmei": 14,
+    "taikou": 3,
+    "tan_ana": 7
+  },
+  "horses": [
+    {
+      "name": "ボクマダナムイヨ",
+      "num": 14,
+      "odds": 3
+    },
+    {
+      "name": "インナーパッション",
+      "num": 3,
+      "odds": 5.3
+    },
+    {
+      "name": "コズミックダンサー",
+      "num": 7,
+      "odds": 6.8
+    }
+  ],
+  "race_name": "JRA電話50周年(東京10R)",
+  "race_num": 3,
+  "winning_probability": 33
+}
