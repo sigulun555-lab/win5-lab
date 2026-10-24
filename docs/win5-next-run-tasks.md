@@ -40,3 +40,12 @@
 - 72頭すべてが対象レース・馬番で一致し、欠損は0件。保存後に再取得して更新72/72を検証した。
 - `gpt_estimated_win_probability_pct` と元のGPTモデル情報は上書きしていない。これはオッズを同時点にそろえるための「最新観測オッズ」更新であり、GPT確率の再計算ではない。
 - 当日の発売締切後に取得された15:07のオッズは予想用CSVへ取り込まず、締切前に保存済みの14:39〜14:40の値を採用した。
+
+
+## 2026-10-24 V2シナリオ追加
+
+- `scripts/build_gpt_v2_scenario.py` と `tests/test_build_gpt_v2_scenario.py` を追加。式は `V2 ∝ V1 × (旧オッズ / 最新観測オッズ)^alpha`、既定値 alpha=1.0。
+- 元の `win5_gpt_primary.csv` は変更せず、別ファイル `data/win5_joint/2026-10-24/win5_gpt_v2_scenario.csv` に72頭分のV2列を保存した。
+- V2は市場情報を取り込んだシナリオであり、独立したGPTモデルや精度向上の証明ではない。
+- V2出力は5レース各100.00%。V1確率列は維持した。実際の結果を使った精度検証は未実施。
+- GitHub Actionsがスクリプト変更でも起動するよう `.github/workflows/odds-snapshot.yml` のパス条件に `scripts/**` を追加。実行結果はActions runを確認してから完了扱いにする。
