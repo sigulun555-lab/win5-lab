@@ -1,0 +1,23 @@
+name: test-b2-leakage
+
+on:
+  push:
+    paths:
+      - "research/factor-validation/b2_features.py"
+      - "research/factor-validation/test_b2_leakage.py"
+      - ".github/workflows/test-b2-leakage.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  leakage-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run B2 leakage safeguards
+        run: python -m unittest discover -s research/factor-validation -p 'test_b2_leakage.py' -v
