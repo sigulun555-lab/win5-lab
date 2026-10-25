@@ -1,23 +1,20 @@
-# WIN5 odds refresh status — 2026-10-25
+# WIN5 直前オッズ更新状況（2026-10-25）
 
-## Completed
-- Retrieved the JRA official race-card odds shown on the five WIN5 race pages.
-- Calculated inverse-odds market probabilities for all 75 listed runners (9 + 15 + 17 + 16 + 18).
-- Normalized each race independently; each race totals 100% before CSV rounding.
-- Saved the calculations to `data/odds_snapshots/2026-10-25-full-field-market-probabilities.csv`.
-- Re-fetched the saved CSV from GitHub and verified 75 data rows and near-100% sums after rounding.
+最終更新: 2026-10-25（追記版）
 
-## Source pages
-1. Tokyo 10R Yamanakako Tokubetsu: https://sp.jra.jp/JRADB/accessD.html?CNAME=sw01ddd0105202604091020261025/6D
-2. Kyoto 10R Canopus Stakes: https://sp.jra.jp/JRADB/accessD.html?CNAME=sw01ddd0108202604091020261025/4B
-3. Niigata 11R Lumiere Autumn Dash: https://sp.jra.jp/JRADB/accessD.html?CNAME=sw01dde0104202604041120261025/99
-4. Tokyo 11R Kannazuki Stakes: https://sp.jra.jp/JRADB/accessD.html?CNAME=sw01ddd0105202604091120261025/22
-5. Kyoto 11R Kikuka-sho: https://sp.jra.jp/JRADB/accessD.html?CNAME=sw01dde0108202604091120261025/C6
+## 完了
+- JRA公式出馬表から5レース75頭の単勝オッズを整理し、逆数オッズを各レース内で正規化した市場確率を保存済み。
+- 当初はGPT全頭確率ファイルを見つけられず比較保留としていたが、main の `data/win5_joint/2026-10-25/gpt-exploratory-history-only-probabilities.csv` を再確認できた。
+- GPT探索確率75頭と市場確率75頭を馬番・馬名で突合。5レースすべて頭数一致（9/15/17/16/18）、欠落・名前不一致なし。
+- 比較CSVに最新確認オッズ、市場確率、GPT探索確率、市場順位、GPT順位、両方の上位3頭、順位差を保存し、odds-dataへプッシュ済み。
 
-The JRA page for Kyoto 11R explicitly says odds are current as of 13:46. The other four pages' exact timestamp was not independently exposed in the text extraction; treat their values as the retrieved JRA page snapshot, not a verified synchronized 13:46 snapshot.
+## 出力
+- 市場確率: `data/odds_snapshots/2026-10-25-full-field-market-probabilities.csv`
+- GPT×市場比較: `data/odds_snapshots/2026-10-25-model-market-comparison.csv`
+- 比較説明: `data/odds_snapshots/2026-10-25-model-market-comparison.md`
 
-## Not completed — model prediction refresh
-The repository's `win5_gpt_primary.csv` on `main` is dated 2026-10-24, and the expected 2026-10-25 GPT/Claude joint CSV paths were not found on either `main` or `odds-data`. Therefore no GPT model probabilities or model ◎○▲ were overwritten or invented. Market probabilities in the CSV are explicitly marked market-only and must not be interpreted as GPT predictions.
-
-## Required next step
-Locate or generate the independently computed 2026-10-25 GPT full-field probability file, compare its rankings against the refreshed market probabilities, record any justified changes separately, and then push the prediction refresh. Do not change model win probabilities solely to follow market odds without a validated correction rule.
+## 判断
+- GPT確率は履歴のみを使う未検証探索ベースライン。市場オッズは独立モデル確率に混ぜていない。
+- ルールに従い、オッズ変動や順位差だけを根拠にGPT確率を上書きしなかった。モデル順位と市場順位の差は比較CSVに可視化した。
+- 菊花賞ページは13:46現在の表示を確認。他4レースはページ上で同時刻を独立確認できていないため、完全同期スナップショットとは断定しない。
+- これは購入用の正式な確率モデルとして検証済みという意味ではない。探索モデルの正式採用には時系列バックテストと前向き検証が必要。
