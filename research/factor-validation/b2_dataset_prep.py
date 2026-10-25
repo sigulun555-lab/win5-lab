@@ -6,8 +6,9 @@ Historical runs are joined by horse ID; only strictly earlier dates are eligible
 Races with dead-heat winners are retained with fractional winner labels.
 """
 from __future__ import annotations
-import argparse, collections, datetime as dt, hashlib, json
+import argparse, collections, datetime as dt, hashlib, json, sys
 from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 from b2_features import b_score
 
 def iso(value):
