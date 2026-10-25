@@ -20,3 +20,6 @@ jobs:
       - run: python -m unittest discover -s tests -v
       - name: Audit available B2 horse-history bundle
         run: python scripts/audit_b2_history_bundle.py data/horse_history/2026-10-25.json
+
+      - name: Audit B2 training data sources
+        run: python scripts/audit_b2_training_sources.py
