@@ -58,8 +58,18 @@ def read_results(path: Path, date: str) -> tuple[dict[int, int], dict[int, set[i
     return winners, scratched
 
 
+def validate_log_loss_floor(value) -> float:
+    """Accept only a finite number with 0 < value <= 1 (the lower bound of a probability in log loss)."""
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise ValueError(f"log_loss_floor must be a number with 0 < value <= 1, got {value!r}")
+    if not math.isfinite(value) or not 0 < value <= 1:
+        raise ValueError(f"log_loss_floor must be finite with 0 < value <= 1, got {value!r}")
+    return float(value)
+
+
 def evaluate_model(spec: str, date: str, winners: dict[int, int],
                    scratched: dict[int, set[int]], log_loss_floor: float = 1e-15) -> dict:
+    log_loss_floor = validate_log_loss_floor(log_loss_floor)
     parts = spec.split("|")
     if len(parts) != 5:
         raise ValueError("--model must be NAME|CSV_PATH|PROBABILITY_COLUMN|LEG_COLUMN|HORSE_COLUMN")
@@ -172,6 +182,10 @@ def main() -> None:
     ap.add_argument("--output", type=Path, required=True, help="Output JSON report")
     ap.add_argument("--log-loss-floor", type=float, default=1e-15, help="lower bound of the winner probability in log loss")
     args = ap.parse_args()
+    try:
+        args.log_loss_floor = validate_log_loss_floor(args.log_loss_floor)
+    except ValueError as e:
+        ap.error(str(e))
     winners, scratched = read_results(args.results, args.date)
     reports = [evaluate_model(spec, args.date, winners, scratched, args.log_loss_floor) for spec in args.model]
     if len({r["name"] for r in reports}) != len(reports):

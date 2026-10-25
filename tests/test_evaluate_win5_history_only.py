@@ -286,6 +286,17 @@ class EdgeCases(Base):
             self.assertEqual(before, (d / "p.csv").read_bytes())
 
 
+class FloorValidation(Base):
+    def test_invalid_floors_are_rejected(self):
+        for v in (0, -1e-9, 1.0000001, 2, float("nan"), float("inf")):
+            with self.assertRaises(ValueError, msg=repr(v)):
+                self.run_eval(log_loss_floor=v)
+
+    def test_boundary_floors_are_accepted(self):
+        for v in (1e-15, 1.0):
+            self.assertEqual(self.run_eval(log_loss_floor=v)["top1_hits"], 5)
+
+
 class Cli(Base):
     def test_cli_writes_report(self):
         with tempfile.TemporaryDirectory() as d:

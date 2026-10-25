@@ -92,8 +92,9 @@ def evaluate(prediction_path: Path, result_path: Path,
     for need in ("date", "winner_no"):
         if need not in results[0]:
             raise ValueError(f"Result CSV missing columns: {[need]}")
-    if not 0 < log_loss_floor < 1:
-        raise ValueError("log_loss_floor must be in (0, 1)")
+    if isinstance(log_loss_floor, bool) or not isinstance(log_loss_floor, (int, float)) \
+            or not math.isfinite(log_loss_floor) or not 0 < log_loss_floor <= 1:
+        raise ValueError(f"log_loss_floor must be finite with 0 < value <= 1, got {log_loss_floor!r}")
 
     date_values = {r.get("date", "").strip() for r in preds}
     if len(date_values) != 1 or "" in date_values:

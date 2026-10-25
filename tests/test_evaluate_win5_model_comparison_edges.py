@@ -83,3 +83,45 @@ class Edges(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class LogLossFloorValidation(unittest.TestCase):
+    def test_default_and_boundary_values_are_accepted(self):
+        from evaluate_win5_model_comparison import validate_log_loss_floor
+        for v in (1e-15, 1e-6, 0.5, 1, 1.0, 5e-324):
+            self.assertEqual(validate_log_loss_floor(v), float(v))
+
+    def test_invalid_values_raise_a_clear_error(self):
+        from evaluate_win5_model_comparison import validate_log_loss_floor
+        for v in (0, 0.0, -1e-9, -1, 1.0000001, 2, float("nan"), float("inf"), float("-inf"), None, "1e-6", True):
+            with self.assertRaises(ValueError, msg=repr(v)) as cm:
+                validate_log_loss_floor(v)
+            self.assertIn("log_loss_floor", str(cm.exception))
+
+    def test_evaluate_model_rejects_invalid_floor_before_reading_files(self):
+        with self.assertRaises(ValueError):
+            evaluate_model("M|/nonexistent.csv|p|leg|horse_number", DATE, {}, {}, log_loss_floor=0)
+
+    def test_default_floor_still_gives_the_same_log_loss(self):
+        t = Edges("test_zero_winner_probability_is_floored_and_warned")
+        t.setUp()
+        try:
+            r = t.run_model([(1, 50), (2, 50), (3, 0)], winner="3")
+            import math
+            self.assertAlmostEqual(r["mean_winner_log_loss"], -math.log(1e-15), places=4)
+            r1 = t.run_model([(1, 50), (2, 50), (3, 0)], winner="3", log_loss_floor=1)
+            self.assertAlmostEqual(r1["mean_winner_log_loss"], 0.0, places=6)
+        finally:
+            t.tmp.cleanup()
+
+    def test_cli_exits_with_a_clear_message(self):
+        import subprocess
+        d = Path(tempfile.mkdtemp())
+        (d / "r.csv").write_text("date,leg,winner_no,scratched_nos\n", encoding="utf-8")
+        for bad in ("0", "-1", "2", "nan", "inf"):
+            r = subprocess.run([sys.executable, str(ROOT / "scripts/evaluate_win5_model_comparison.py"), "--date", DATE,
+                                "--results", str(d / "r.csv"), "--model", "M|x|p|leg|h", "--output", str(d / "o.json"),
+                                f"--log-loss-floor={bad}"], capture_output=True, text=True)
+            self.assertEqual(r.returncode, 2, bad)
+            self.assertIn("log_loss_floor", r.stderr)
+            self.assertNotIn("Traceback", r.stderr)

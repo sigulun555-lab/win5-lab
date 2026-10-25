@@ -1,0 +1,81 @@
+{
+  "metadata_for": "data/win5_joint/2026-10-25/gpt-exploratory-history-only-probabilities.csv",
+  "record_created_at_jst": "2026-10-25T12:12:34+09:00",
+  "recorded_by": "Claude（ユーザーを通じたGPT側の依頼）。リポジトリ上で確認できた事実だけを記録した。予測CSVは変更していない",
+  "target_date": "2026-10-25",
+  "target_races": [
+    "東京10R 山中湖特別",
+    "京都10R カノープスS",
+    "新潟11R ルミエールオータムダッシュ",
+    "東京11R 神無月S",
+    "京都11R 菊花賞"
+  ],
+  "model": {
+    "name": "GPT exploratory history-only baseline",
+    "version": "v0（暫定ベースライン）。CSVの model_status = exploratory_unvalidated_history_only_no_market_odds",
+    "method_doc": "docs/win5/2026-10-25-gpt-exploratory-model-method.md",
+    "method_doc_sha256": "370eef0aaf0c468f531cab8382ead3d8892c8f02a7baae53f9b759d24fb86899",
+    "validation_status": "未検証。時系列ホールドアウトによる予測性能の検証なし（方法書に記載）"
+  },
+  "prediction_created_at": {
+    "value": "不明",
+    "reason": "予測を計算した時刻の記録がない。以下は、リポジトリ上で確認できる『遅くともこの時刻には存在した』という上限のみ",
+    "first_commit": "d558ddb4c8f8a0427912b7dc845d1ece16a6183e",
+    "first_commit_time_jst": "2026-10-25T09:55:28+09:00",
+    "commit_time_note": "git のコミット時刻（クライアント記録）。GitHubサーバー側の受信時刻は、ここでは独立に確認していない",
+    "first_race_post_time_jst": "2026-10-25T14:45:00+09:00（東京10R）",
+    "csv_unchanged_since_first_commit": true,
+    "commits_touching_csv": 1,
+    "win5_deadline_jst": "2026-10-25T14:40:00+09:00（JRA公式のWIN5対象レース一覧で確認）"
+  },
+  "inputs": [
+    {
+      "path": "data/horse_history/2026-10-25.json",
+      "description": "JRA公式 出馬表・競走馬情報（各馬の過去の出走成績）。Claudeの収集ツール collector/horse_history.py で取得した公式データ。Claudeの予想は含まない",
+      "fetched_at_jst": "2026-10-24T18:04:26+09:00",
+      "sha256": "4aaeb0cd1ed55b41777be640b855bf69d73c70a97e8b926547c49a66b9ab391a",
+      "runner_fields": [
+        "hid",
+        "jockey",
+        "name",
+        "num",
+        "weight"
+      ],
+      "note": "出走馬の欄に単勝オッズの項目はない。過去走の『人気』の欄はあるが、方法書の計算は着順とレーティングのみを使う"
+    }
+  ],
+  "market_odds_used": {
+    "value": false,
+    "basis": "方法書に『Claudeの予想と市場オッズを使わず』と記載。CSVの model_status に no_market_odds。入力データに当日の単勝オッズ項目がないことを確認。GPT側の主張に加え、入力ファイルの項目で矛盾がないことまで確認した",
+    "caveat": "計算の実行環境や中間ファイルは確認できていない。完全な証明ではない"
+  },
+  "claude_prediction_used": false,
+  "prediction_csv": {
+    "path": "data/win5_joint/2026-10-25/gpt-exploratory-history-only-probabilities.csv",
+    "sha256": "6ca4ef42499475a475716bf207fd6deac5d62f743ab665606df7ec675694e4bc",
+    "rows": 75,
+    "legs": 5,
+    "field_sizes": [
+      9,
+      15,
+      17,
+      16,
+      18
+    ]
+  },
+  "formal_backtest_eligibility": {
+    "status": "候補（暫定）",
+    "conditions_met": [
+      "コミット時刻がWIN5締切（14:40）より前",
+      "CSVはその後変更されていない",
+      "入力データの取得時刻（10/24 18:04）が発走前",
+      "市場オッズの項目が入力にない"
+    ],
+    "conditions_not_proven": [
+      "予測を計算した時刻",
+      "GitHubサーバー側の受信時刻",
+      "計算に市場オッズを使っていないことの独立した証明"
+    ],
+    "note": "モデルは未検証の探索ベースライン。5レースだけで優劣を判断しない。後から発走前に保存したように見せる記録の書き換えはしない"
+  }
+}
