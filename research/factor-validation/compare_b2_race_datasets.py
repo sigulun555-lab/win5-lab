@@ -66,17 +66,33 @@ def main():
     ap.add_argument("--reference",required=True)
     ap.add_argument("--out",required=True)
     a=ap.parse_args()
-    current,reference=load(a.current),load(a.reference)
+    current_raw,reference_raw=load(a.current),load(a.reference)
+    def dedupe(doc):
+        out={}
+        duplicates=[]
+        for r in doc:
+            k=key(r)
+            if k in out:
+                duplicates.append(k)
+                # Keep the record with more populated result rows, deterministically.
+                def completeness(x):
+                    rows=x.get("rows",x.get("runners",[]))
+                    return sum(1 for z in rows if isinstance(z,dict) and z.get("place") not in (None,"") and z.get("pop") not in (None,"")) if isinstance(rows,list) else 0
+                if completeness(r)>completeness(out[k]): out[k]=r
+            else: out[k]=r
+        return list(out.values()),duplicates
+    current,current_duplicates=dedupe(current_raw)
+    reference,reference_duplicates=dedupe(reference_raw)
     cdict={key(r):r for r in current}; rdict={key(r):r for r in reference}
     ckeys,rkeys=set(cdict),set(rdict)
     only_c=sorted(ckeys-rkeys); only_r=sorted(rkeys-ckeys)
     report={
       "status":"comparison_only_not_model_validation",
-      "current":{"path":a.current,"total_races":len(current),
+      "current":{"path":a.current,"total_races_raw":len(current_raw),"total_races_deduplicated":len(current),"duplicate_race_key_count":len(current_duplicates),"duplicate_race_keys_first_100":current_duplicates[:100],
         "train_2025-10_to_2026-07":summarize(current,"2025-10-01","2026-07-31"),
         "test_2026-08_to_2026-10-24":summarize(current,"2026-08-01","2026-10-24"),
         "race_keys_only_here_count":len(only_c),"race_keys_only_here_first_100":only_c[:100]},
-      "reference":{"path":a.reference,"total_races":len(reference),
+      "reference":{"path":a.reference,"total_races_raw":len(reference_raw),"total_races_deduplicated":len(reference),"duplicate_race_key_count":len(reference_duplicates),"duplicate_race_keys_first_100":reference_duplicates[:100],
         "train_2025-10_to_2026-07":summarize(reference,"2025-10-01","2026-07-31"),
         "test_2026-08_to_2026-10-24":summarize(reference,"2026-08-01","2026-10-24"),
         "race_keys_only_here_count":len(only_r),"race_keys_only_here_first_100":only_r[:100]},
