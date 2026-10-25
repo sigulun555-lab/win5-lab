@@ -1,0 +1,25 @@
+{
+  "artifact": "docs/win5/2026-10-25-gpt-b2-model-spec.md",
+  "artifact_sha256_utf8": "e6e52713d7bd3ffbc8463259d5d83322ab8828d8baeb15e646e95a7d0525c24b",
+  "artifact_git_blob_sha": "6b5695f46dbfabf23ae5f34235f974f53e511e0c",
+  "artifact_commit_sha": "f6cdbcb3fa4f15827dc680316aedb63933f5d085",
+  "recorded_at_jst": "2026-10-25T13:06:15+09:00",
+  "status": "specification_only; no B2 coefficients fitted and no predictions generated",
+  "existing_history_input": {
+    "path": "data/horse_history/2026-10-25.json",
+    "recorded_fetch_time_jst": "2026-10-24T18:04:26+09:00",
+    "source": "JRA official race card and horse information pages",
+    "input_sha256": "must_be_computed_from_exact_input_file_before_validation"
+  },
+  "history_collector": {
+    "path": "collector/horse_history.py",
+    "usage": "python3 collector/horse_history.py --date YYYY-MM-DD --out data/horse_history",
+    "note": "Pages are current at fetch time; for historical prediction rows, discard all runs on or after the target race date. Do not assume this JRA collector contains all local-racing history."
+  },
+  "validation_protocol": "docs/win5/b2-validation-protocol.md",
+  "notes": [
+    "B and its original prediction files remain unchanged.",
+    "The artifact SHA256 is calculated over the UTF-8 file content, excluding GitHub blob framing.",
+    "Input and output file hashes and actual acquisition timestamps must be added to the validation run record; unknown times remain unknown."
+  ]
+}
