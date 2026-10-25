@@ -1,6 +1,6 @@
-date,leg,winner_no,winner_name,official_source,verified_at_jst
-2026-10-25,1,,,https://www.jra.go.jp/, 
-2026-10-25,2,,,https://www.jra.go.jp/, 
-2026-10-25,3,,,https://www.jra.go.jp/, 
-2026-10-25,4,,,https://www.jra.go.jp/, 
-2026-10-25,5,,,https://www.jra.go.jp/, 
+date,leg,winner_no,winner_name,official_source,verified_at_jst,scratched_nos
+2026-10-25,1,,,https://www.jra.go.jp/,,
+2026-10-25,2,,,https://www.jra.go.jp/,,
+2026-10-25,3,,,https://www.jra.go.jp/,,
+2026-10-25,4,,,https://www.jra.go.jp/,,
+2026-10-25,5,,,https://www.jra.go.jp/,,
