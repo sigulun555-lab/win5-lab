@@ -12,8 +12,12 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from b2_features import b_score
 
 def iso(value):
-    try: return dt.date.fromisoformat(str(value))
-    except (TypeError, ValueError): return None
+    if value is None: return None
+    text=str(value).strip()
+    for fmt in ("%Y-%m-%d","%Y年%m月%d日","%Y/%m/%d","%Y.%m.%d"):
+        try: return dt.datetime.strptime(text,fmt).date()
+        except (TypeError,ValueError): pass
+    return None
 
 def _history_seed(bundle, cutoff):
     """Return only numeric historical runs strictly before cutoff from horse-history snapshots."""
