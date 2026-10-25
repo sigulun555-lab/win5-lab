@@ -14,7 +14,7 @@
     "name": "GPT exploratory history-only baseline",
     "version": "v0（暫定ベースライン）。CSVの model_status = exploratory_unvalidated_history_only_no_market_odds",
     "method_doc": "docs/win5/2026-10-25-gpt-exploratory-model-method.md",
-    "method_doc_sha256": "c0729387f37d314b9e6ac36860da52a43cde63c4829ef454f88cc5acef70b928",
+    "method_doc_sha256": "3de133946a2d041798c47617af47c76f9a2f43d1bdfdd6acb93ac0331eb85b87",
     "validation_status": "未検証。時系列ホールドアウトによる予測性能の検証なし（方法書に記載）",
     "method_doc_history": [
       {
