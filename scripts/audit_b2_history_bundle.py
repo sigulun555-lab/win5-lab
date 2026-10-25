@@ -55,6 +55,12 @@ def main():
     future_or_unparseable = 0
     missing_fields = collections.Counter()
     venues = collections.Counter()
+    race_venues = collections.Counter()
+    race_records = 0
+    race_venue_labels_needing_mapping = collections.Counter()
+    known_jra_venues = {"札幌","函館","福島","新潟","東京","中山","中京","京都","阪神","小倉"}
+    known_local_venues = {"帯広","門別","盛岡","水沢","浦和","船橋","大井","川崎","金沢","笠松","名古屋","園田","姫路","高知","佐賀"}
+    overseas_tokens = ("海外","アメリカ","英国","イギリス","フランス","香港","豪州","オーストラリア","ドバイ","サウジ","韓国","UAE")
     dates = []
     duplicate_run_keys = 0
     administrative_event_rows = 0
@@ -75,6 +81,12 @@ def main():
             is_admin_event = race_label in {'JRAへ転入', 'JRAより転出', '地方へ転入', '地方より転出'}
             if is_admin_event:
                 administrative_event_rows += 1
+            else:
+                race_records += 1
+                venue_label = str(run.get('venue', '')).strip() or '<EMPTY>'
+                race_venues[venue_label] += 1
+                if venue_label not in known_jra_venues and venue_label not in known_local_venues and not any(token in venue_label for token in overseas_tokens):
+                    race_venue_labels_needing_mapping[venue_label] += 1
             required_fields = ('date',) if is_admin_event else ('date', 'venue', 'race', 'field', 'place')
             missing_here = [field for field in required_fields if not str(run.get(field, '')).strip()]
             for field in missing_here:
@@ -105,6 +117,7 @@ def main():
         'schema_detected': 'collector_horses_map' if isinstance(doc, dict) and isinstance(doc.get('horses'), dict) else 'direct_map_or_unknown',
         'horse_records': horse_count,
         'run_records': run_count,
+        'race_records_excluding_administrative_events': race_records,
         'horses_without_run_list': missing_runs,
         'empty_horse_ids': missing_hid,
         'non_object_run_rows': invalid_run_rows,
@@ -115,6 +128,8 @@ def main():
         'missing_field_examples_first_25': missing_field_examples,
         'distinct_venue_labels': len(venues),
         'venue_label_counts': dict(venues.most_common()),
+        'race_venue_label_counts_excluding_administrative_events': dict(race_venues.most_common()),
+        'race_venue_labels_needing_explicit_mapping': dict(race_venue_labels_needing_mapping.most_common()),
         'date_min': min(dates) if dates else None,
         'date_max': max(dates) if dates else None,
         'status': 'audit_only_not_b2_validation',
