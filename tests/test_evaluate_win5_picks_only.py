@@ -36,6 +36,8 @@ class Picks(unittest.TestCase):
         r = self.go({1: 2, 2: 6, 3: 7, 4: 4, 5: 8}, {1: 2, 2: 3, 3: 14, 4: 4, 5: 9})
         self.assertEqual(r["top1_hits"], 2)
         self.assertEqual([d["hit"] for d in r["details"]], [True, False, False, True, False])
+        self.assertFalse(r["marks_complete"])
+        self.assertIsNone(r["top3_marks_hits"])
 
     def test_decimal_formatted_numbers(self):
         r = self.go({1: "2.00000", 2: "6.00000", 3: "7.00000", 4: "4.00000", 5: "8.00000"}, {i: 1 for i in range(1, 6)})
@@ -56,7 +58,7 @@ class Picks(unittest.TestCase):
 
     def test_scratched_pick_is_flagged_not_hidden(self):
         r = self.go({i: 5 for i in range(1, 6)}, {i: 1 for i in range(1, 6)}, scratched={1: "5"})
-        self.assertTrue(r["details"][0]["pick_scratched"])
+        self.assertTrue(r["details"][0]["honmei_scratched"])
 
     def test_unfinished_results_are_rejected(self):
         with (self.d / "p.csv").open("w", newline="", encoding="utf-8") as f:
@@ -75,7 +77,56 @@ class Picks(unittest.TestCase):
         win, sc = read_results(self.d / "r.csv", DATE)
         r = evaluate_picks(path, DATE, win, sc)
         self.assertEqual(r["legs"], 5)
-        self.assertEqual([d["pick_no"] for d in r["details"]], [2, 6, 7, 4, 8])
+        self.assertEqual([d["honmei_no"] for d in r["details"]], [2, 6, 7, 4, 8])
+
+
+class Marks(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.d = Path(self.tmp.name)
+
+    def run_marks(self, rows, winners):
+        with (self.d / "m.csv").open("w", newline="", encoding="utf-8") as f:
+            w = csv.writer(f)
+            w.writerow(["date", "leg", "mark", "horse_number", "horse_name"])
+            w.writerows([[DATE, *r] for r in rows])
+        with (self.d / "r.csv").open("w", newline="", encoding="utf-8") as f:
+            f.write("date,leg,winner_no,scratched_nos\n" + "".join(f"{DATE},{l},{w},\n" for l, w in winners.items()))
+        win, sc = read_results(self.d / "r.csv", DATE)
+        return evaluate_picks(self.d / "m.csv", DATE, win, sc)
+
+    def full(self):
+        return [(l, m, n, f"H{n}") for l in range(1, 6) for m, n in (("◎", 1), ("○", 2), ("▲", 3))]
+
+    def test_top1_and_top3_marks(self):
+        r = self.run_marks(self.full(), {1: 1, 2: 2, 3: 3, 4: 9, 5: 1})
+        self.assertEqual(r["top1_hits"], 2)
+        self.assertEqual(r["top3_marks_hits"], 4)
+        self.assertTrue(r["marks_complete"])
+
+    def test_incomplete_marks_do_not_report_top3(self):
+        rows = [x for x in self.full() if not (x[0] == 3 and x[1] == "▲")]
+        r = self.run_marks(rows, {i: 1 for i in range(1, 6)})
+        self.assertFalse(r["marks_complete"])
+        self.assertIsNone(r["top3_marks_hits"])
+
+    def test_same_horse_under_two_marks_is_rejected(self):
+        rows = self.full()
+        rows[1] = (1, "○", 1, "H1")
+        with self.assertRaises(ValueError):
+            self.run_marks(rows, {i: 1 for i in range(1, 6)})
+
+    def test_missing_honmei_is_rejected(self):
+        rows = [x for x in self.full() if not (x[0] == 2 and x[1] == "◎")]
+        with self.assertRaises(ValueError):
+            self.run_marks(rows, {i: 1 for i in range(1, 6)})
+
+    def test_unknown_mark_is_rejected(self):
+        rows = self.full()
+        rows[0] = (1, "×", 1, "H1")
+        with self.assertRaises(ValueError):
+            self.run_marks(rows, {i: 1 for i in range(1, 6)})
 
 
 if __name__ == "__main__":
