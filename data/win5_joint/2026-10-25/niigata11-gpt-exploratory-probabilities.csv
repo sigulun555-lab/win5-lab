@@ -1,0 +1,18 @@
+date,race,horse_number,horse_name,odds_snapshot,normalized_market_probability_pct,heuristic_score,gpt_exploratory_probability_pct,model_status,odds_timestamp_jst
+2026-10-25,Niigata11,1,"ウインアイオライト",66.9,1.1886,1,1.2070,exploratory_unvalidated,2026-10-24 22:55
+2026-10-25,Niigata11,2,"スコーピオン",59.3,1.3409,1,1.3136,exploratory_unvalidated,2026-10-24 22:55
+2026-10-25,Niigata11,3,"ヴェントゥーラ",11,7.2288,7,7.6852,exploratory_unvalidated,2026-10-24 22:55
+2026-10-25,Niigata11,4,"トールキン",63.1,1.2602,1,1.2571,exploratory_unvalidated,2026-10-24 22:55
+2026-10-25,Niigata11,5,"デュガ",34.8,2.2850,3.5,2.9120,exploratory_unvalidated,2026-10-24 22:55
+2026-10-25,Niigata11,6,"クールベイビー",62.2,1.2784,1,1.2699,exploratory_unvalidated,2026-10-24 22:55
+2026-10-25,Niigata11,7,"フウセツ",41,1.9394,3,2.4826,exploratory_unvalidated,2026-10-24 22:55
+2026-10-25,Niigata11,8,"フィオライア",22.2,3.5818,5,4.3823,exploratory_unvalidated,2026-10-24 22:55
+2026-10-25,Niigata11,9,"モズナナスター",10.8,7.3627,6,7.4039,exploratory_unvalidated,2026-10-24 22:55
+2026-10-25,Niigata11,10,"クムシラコ",51.7,1.5380,1.5,1.6391,exploratory_unvalidated,2026-10-24 22:55
+2026-10-25,Niigata11,11,"エコロレジーナ",6.9,11.5242,9,11.4419,exploratory_unvalidated,2026-10-24 22:55
+2026-10-25,Niigata11,12,"ナナオ",14.1,5.6395,6,6.1976,exploratory_unvalidated,2026-10-24 22:55
+2026-10-25,Niigata11,13,"ハートホイップ",28.4,2.7999,1.5,2.5224,exploratory_unvalidated,2026-10-24 22:55
+2026-10-25,Niigata11,14,"カウスリップ",3.5,22.7191,15,21.5284,exploratory_unvalidated,2026-10-24 22:55
+2026-10-25,Niigata11,15,"ポールセン",7.2,11.0440,9,11.1058,exploratory_unvalidated,2026-10-24 22:55
+2026-10-25,Niigata11,16,"シュラフ",13.1,6.0700,3,5.3740,exploratory_unvalidated,2026-10-24 22:55
+2026-10-25,Niigata11,17,"ロードトレイル",7.1,11.1995,6.5,10.2772,exploratory_unvalidated,2026-10-24 22:55
