@@ -14,7 +14,7 @@
     "name": "GPT exploratory history-only baseline",
     "version": "v0（暫定ベースライン）。CSVの model_status = exploratory_unvalidated_history_only_no_market_odds",
     "method_doc": "docs/win5/2026-10-25-gpt-exploratory-model-method.md",
-    "method_doc_sha256": "370eef0aaf0c468f531cab8382ead3d8892c8f02a7baae53f9b759d24fb86899",
+    "method_doc_sha256": "3de133946a2d041798c47617af47c76f9a2f43d1bdfdd6acb93ac0331eb85b87",
     "validation_status": "未検証。時系列ホールドアウトによる予測性能の検証なし（方法書に記載）"
   },
   "prediction_created_at": {
@@ -95,6 +95,6 @@
     ],
     "note": "モデルは未検証の探索ベースライン。5レースだけで優劣を判断しない。後から発走前に保存したように見せる記録の書き換えはしない"
   },
-  "record_updated_at_jst": "2026-10-25T12:17:38+09:00",
+  "record_updated_at_jst": "2026-10-25T12:38:33+09:00",
   "role": "B：履歴のみ探索モデル。全頭確率の評価対象候補（GPT方針）。正式な発走前予想ではない"
 }
