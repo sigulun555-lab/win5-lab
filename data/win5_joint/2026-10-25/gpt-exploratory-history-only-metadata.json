@@ -15,7 +15,22 @@
     "version": "v0（暫定ベースライン）。CSVの model_status = exploratory_unvalidated_history_only_no_market_odds",
     "method_doc": "docs/win5/2026-10-25-gpt-exploratory-model-method.md",
     "method_doc_sha256": "3de133946a2d041798c47617af47c76f9a2f43d1bdfdd6acb93ac0331eb85b87",
-    "validation_status": "未検証。時系列ホールドアウトによる予測性能の検証なし（方法書に記載）"
+    "validation_status": "未検証。時系列ホールドアウトによる予測性能の検証なし（方法書に記載）",
+    "method_doc_history": [
+      {
+        "sha256": "370eef0aaf0c468f531cab8382ead3d8892c8f02a7baae53f9b759d24fb86899",
+        "state": "初版（簡略な計算方法）。10/25 09:55 JST ごろにコミット（1d73b6c）"
+      },
+      {
+        "sha256": "ce0788c65e10740d930302e7abc02da9de85b90dd0e64ddeb98dd7d55a4f00c7",
+        "state": "計算式を明文化（44d791b、12:35 JST）。『直近最大6走』のみで、無効な走の除外順の記載なし"
+      },
+      {
+        "sha256": "3de133946a2d041798c47617af47c76f9a2f43d1bdfdd6acb93ac0331eb85b87",
+        "state": "無効な走（着順が数値でない・頭数1以下）を先に除外する規則を追記（e7a2365、12:38 JST）。現在の版。Claude側の再計算（75頭すべて一致）で必要と判明"
+      }
+    ],
+    "method_doc_note": "方法書は予測CSVの後に書かれた／書き直された。方法書の更新時刻は、予測の作成時刻や、計算式が計算時点から変わっていないことの証拠にはならない。確認できたのは、現在の式でCSV（SHA256 6ca4ef42…）の75頭を再現できること（確率差は最大5e-7ポイント）"
   },
   "prediction_created_at": {
     "value": "不明（計算した時刻の証拠はない）",
@@ -95,6 +110,14 @@
     ],
     "note": "モデルは未検証の探索ベースライン。5レースだけで優劣を判断しない。後から発走前に保存したように見せる記録の書き換えはしない"
   },
-  "record_updated_at_jst": "2026-10-25T12:38:33+09:00",
-  "role": "B：履歴のみ探索モデル。全頭確率の評価対象候補（GPT方針）。正式な発走前予想ではない"
+  "record_updated_at_jst": "2026-10-25T12:42:00+09:00",
+  "role": "B：履歴のみ探索モデル。全頭確率の評価対象候補（GPT方針）。正式な発走前予想ではない",
+  "reproducibility": {
+    "checked_by": "Claude",
+    "checked_at_jst": "2026-10-25T12:42:00+09:00",
+    "input": "data/horse_history/2026-10-25.json",
+    "result": "75頭すべての順位パーセンタイル・レーティング平均・スコア・使用走数・確率がCSVと一致",
+    "condition": "着順が数値でない走と頭数1以下の走を先に除外し、残りの新しい順に最大6走。重みの番号は除外後の順",
+    "meaning": "CSVは現在の式から再現できる。計算した時刻、および式が当初から同じだったことは、証明できない"
+  }
 }
