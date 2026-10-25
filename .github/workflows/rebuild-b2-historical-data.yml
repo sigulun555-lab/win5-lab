@@ -29,6 +29,8 @@ jobs:
         run: python parse_ses.py
       - name: Audit race dataset integrity
         run: python scripts/audit_race_dataset.py research/factor-validation/races.json --out reports/b2-race-dataset-audit.json
+      - name: Reconcile current races against pinned reference dataset
+        run: python research/factor-validation/compare_b2_race_datasets.py --current research/factor-validation/races.json --reference research/factor-validation/data/races.json.gz --out reports/b2-race-dataset-reconciliation.json
       - name: Prepare leakage-safe B2 dataset
         run: python research/factor-validation/b2_dataset_prep.py research/factor-validation/races.json --aliases research/factor-validation/b2_venue_aliases.json --horse-history data/horse_history/2026-10-25.json --out reports/b2-prepared-races.json
       - name: Install evaluation dependencies
@@ -46,6 +48,7 @@ jobs:
             research/factor-validation/crawl_status.json
             research/factor-validation/ses/
             reports/b2-race-dataset-audit.json
+            reports/b2-race-dataset-reconciliation.json
             reports/b2-prepared-races.json
             reports/b2-preliminary-eval.json
           if-no-files-found: warn
