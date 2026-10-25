@@ -1,7 +1,15 @@
+import importlib.util
+from pathlib import Path
 import unittest
-from research.factor_validation.b2_features import (
-    eligible_prior_runs, b_score, classify_venue, classify_race_class
-)
+
+MODULE_PATH = Path(__file__).resolve().parents[1] / "research" / "factor-validation" / "b2_features.py"
+SPEC = importlib.util.spec_from_file_location("b2_features", MODULE_PATH)
+b2_features = importlib.util.module_from_spec(SPEC)
+SPEC.loader.exec_module(b2_features)
+eligible_prior_runs = b2_features.eligible_prior_runs
+b_score = b2_features.b_score
+classify_venue = b2_features.classify_venue
+classify_race_class = b2_features.classify_race_class
 
 class B2FeatureTests(unittest.TestCase):
     def setUp(self):
