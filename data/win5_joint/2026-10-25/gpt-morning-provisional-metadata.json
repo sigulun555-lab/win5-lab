@@ -1,0 +1,50 @@
+{
+  "metadata_for": "docs/win5/2026-10-25-gpt-morning-provisional.md",
+  "record_created_at_jst": "2026-10-25T12:17:38+09:00",
+  "recorded_by": "Claude（ユーザーを通じたGPT側の依頼）。GPTの記録を変更せず、別枠として保存した",
+  "role": "A：朝の暫定◎。5レースの◎候補の記録。B（履歴のみ探索モデル）とは別のもので、混ぜない",
+  "target_date": "2026-10-25",
+  "picks_csv": "data/win5_joint/2026-10-25/gpt-morning-provisional-picks.csv（上記文書の表を転記しただけ。文書自体は変更していない）",
+  "source_doc": {
+    "path": "docs/win5/2026-10-25-gpt-morning-provisional.md",
+    "sha256": "cec0689491c8bf20e15c2287c6511d110f19caf1c8b01fc1433f35884a6b9007",
+    "commit": "8a8566aa094a8fce80122594e78d56dab5123699",
+    "commit_time_jst": "2026-10-25T08:43:57+09:00 (クライアント記録)"
+  },
+  "prediction_created_at": {
+    "value": "不明（文書に『会話内で作成。正確な取得時刻は未記録』とある）",
+    "server_side_evidence": {
+      "not_yet_in_main": {
+        "run": "odds-snapshot（workflow_dispatch）run 40143050282",
+        "run_created_at": "2026-10-24T23:30:56Z (08:30:56 JST)",
+        "head_sha": "5add4bfce110bec7cea64b15ed4f04ee8157b4dd",
+        "commit_is_ancestor": false
+      },
+      "already_in_main": {
+        "run": "win5-morning-snapshot（schedule）run 40147706169",
+        "run_created_at": "2026-10-25T00:41:58Z (09:41:58 JST)",
+        "head_sha": "e6177c7fcf5af0c73607cfe34a0d705e785cf5b3",
+        "commit_is_ancestor": true
+      },
+      "conclusion": "mainに入ったのは、サーバー時刻で08:30:56〜09:41:58 JSTの間。締切14:40より前。作成時刻そのものの証明ではない"
+    }
+  },
+  "contents": {
+    "kind": "各レースの◎候補と、会話内で示した仮の勝率のみ",
+    "probabilities_for_all_horses": false,
+    "probability_sum_check": "なし（全頭確率がないため）",
+    "odds_time": "記録なし",
+    "market_odds_used": "記録なし（不明）"
+  },
+  "evaluation_policy": {
+    "log_loss_brier": "対象外（全頭確率がない）",
+    "top1_hits": "◎の的中数のみ、別枠で照合する。発走前にmainに存在したことは、上のサーバー側の証拠で確認できる。ただし作成時刻と根拠（データ・モデル出力）は未記録のため、正式成績には含めない",
+    "mixing_with_B": "禁止。AとBを1つの予想として扱わない。AとBの◎が違うレースは、そのまま記録する（結果を見て選ばない・確率を直さない）"
+  },
+  "known_discrepancies_with_B": {
+    "leg2_京都10R": "A=6 / B=3",
+    "leg3_新潟11R": "A=7 / B=14",
+    "leg4_東京11R": "A=4 / B=13"
+  },
+  "gpt_statement": "新潟11R ◎7番フウセツは、選定の具体的なデータ・モデル出力・取得元・取得時刻が記録されておらず、検証済みの根拠があったとは主張できない（GPT回答）"
+}

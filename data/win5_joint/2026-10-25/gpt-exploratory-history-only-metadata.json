@@ -18,7 +18,7 @@
     "validation_status": "未検証。時系列ホールドアウトによる予測性能の検証なし（方法書に記載）"
   },
   "prediction_created_at": {
-    "value": "不明",
+    "value": "不明（計算した時刻の証拠はない）",
     "reason": "予測を計算した時刻の記録がない。以下は、リポジトリ上で確認できる『遅くともこの時刻には存在した』という上限のみ",
     "first_commit": "d558ddb4c8f8a0427912b7dc845d1ece16a6183e",
     "first_commit_time_jst": "2026-10-25T09:55:28+09:00",
@@ -26,7 +26,25 @@
     "first_race_post_time_jst": "2026-10-25T14:45:00+09:00（東京10R）",
     "csv_unchanged_since_first_commit": true,
     "commits_touching_csv": 1,
-    "win5_deadline_jst": "2026-10-25T14:40:00+09:00（JRA公式のWIN5対象レース一覧で確認）"
+    "win5_deadline_jst": "2026-10-25T14:40:00+09:00（JRA公式のWIN5対象レース一覧で確認）",
+    "server_side_evidence": {
+      "purpose": "コミット時刻（クライアント記録）とは別に、GitHubのサーバー側が記録した時刻で、CSVがmainに存在した時点を挟み込む。計算した時刻の証明ではなく、『遅くともこの時刻にはmainにあった』『この時刻にはまだなかった』を示す",
+      "not_yet_in_main": {
+        "run": "win5-morning-snapshot（schedule）run 40147706169",
+        "run_created_at": "2026-10-25T00:41:58Z (09:41:58 JST)",
+        "head_sha": "e6177c7fcf5af0c73607cfe34a0d705e785cf5b3",
+        "csv_commit_is_ancestor": false
+      },
+      "already_in_main": {
+        "run": "odds-snapshot（schedule）run 40148792918",
+        "run_created_at": "2026-10-25T00:58:46Z (09:58:46 JST)",
+        "head_sha": "4e121eb0b10a0e2e731ee595994fe635a009de6b",
+        "csv_commit_is_ancestor": true,
+        "url": "https://github.com/sigulun555-lab/win5-lab/actions/runs/40148792918"
+      },
+      "conclusion": "CSVがmainに入ったのは、サーバー時刻で09:41:58〜09:58:46 JSTの間。WIN5締切（14:40）と第1レース発走（14:45）より前で、結果が存在しない時点。ただし、確率を計算した時刻と、計算に市場オッズを使っていないことの独立した証明にはならない",
+      "caveat": "runのhead_shaは、その時点のmainの先頭コミット。scheduleトリガーはデフォルトブランチの先頭で動くため"
+    }
   },
   "inputs": [
     {
@@ -64,18 +82,19 @@
     ]
   },
   "formal_backtest_eligibility": {
-    "status": "候補（暫定）",
+    "status": "評価対象候補（GPT方針）。正式な発走前予想ではない",
     "conditions_met": [
-      "コミット時刻がWIN5締切（14:40）より前",
-      "CSVはその後変更されていない",
+      "CSVはmainに09:58:46 JSTまでに存在（サーバー側のrun時刻で確認）。WIN5締切14:40より前",
+      "CSVは最初のコミット以降、変更されていない（SHA256を記録）",
       "入力データの取得時刻（10/24 18:04）が発走前",
       "市場オッズの項目が入力にない"
     ],
     "conditions_not_proven": [
       "予測を計算した時刻",
-      "GitHubサーバー側の受信時刻",
-      "計算に市場オッズを使っていないことの独立した証明"
+      "計算に市場オッズを使っていないことの独立した証明（GPT側の記載と入力項目の確認まで）"
     ],
     "note": "モデルは未検証の探索ベースライン。5レースだけで優劣を判断しない。後から発走前に保存したように見せる記録の書き換えはしない"
-  }
+  },
+  "record_updated_at_jst": "2026-10-25T12:17:38+09:00",
+  "role": "B：履歴のみ探索モデル。全頭確率の評価対象候補（GPT方針）。正式な発走前予想ではない"
 }
