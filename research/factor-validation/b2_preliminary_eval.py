@@ -22,7 +22,8 @@ def build(races, lo, hi):
         date=dt.date.fromisoformat(r["date"])
         if not lo <= date <= hi: continue
         rows=r.get("rows",[])
-        if len(rows)<5: continue
+        # Match preregistered formal eligibility: exactly one recorded winner.
+        if int(r.get("winner_count",0)) != 1 or len(rows)<5: continue
         pop=np.array([min(max(int(x["pop"]),1),18) for x in rows],dtype=int)
         score=np.array([float(x.get("b2_score",0.0)) for x in rows],dtype=float)
         y=np.array([float(x.get("winner_share",0.0)) for x in rows],dtype=float)
@@ -72,7 +73,7 @@ def main():
     args=ap.parse_args()
     races=load(args.input)
     train=build(races,dt.date(2025,10,1),dt.date.fromisoformat(args.train_end))
-    test=build(races,dt.date.fromisoformat(args.test_start),dt.date(2026,10,25))
+    test=build(races,dt.date.fromisoformat(args.test_start),dt.date(2026,10,24))
     if not train or not test: raise SystemExit(f"empty split: train={len(train)} test={len(test)}")
     th0=fit(train,False); th1=fit(train,True)
     ll0=per_race_ll(test,th0,False); ll1=per_race_ll(test,th1,True)
@@ -81,12 +82,12 @@ def main():
       "status":"preliminary_diagnostic_not_full_b2_not_adoption",
       "warning":"Uses final popularity from result pages; this is a retrospective benchmark, not proof of pre-off operational performance.",
       "train":{"start":"2025-10-01","end":args.train_end,"races":len(train)},
-      "test":{"start":args.test_start,"end":"2026-10-25","races":len(test)},
+      "test":{"start":args.test_start,"end":"2026-10-24","races":len(test)},
       "baseline_popularity_only_mean_log_likelihood":float(ll0.mean()),
       "history_score_plus_popularity_mean_log_likelihood":float(ll1.mean()),
       "delta_combined_minus_popularity":float(delta.mean()),
       "delta_bootstrap_95_ci":bootstrap_ci(delta),
-      "test_races":len(test),
+      "test_races":len(test),\n      "eligibility":"JRA flat turf/dirt; at least five rows; exactly one recorded winner; test ends 2026-10-24 per preregistration",
       "limitations":["No nested rolling-origin selection of L2/k/tau.","Class interaction, local-transition adjustment, JRA-run shrinkage, and rating candidates are not fitted.","Not a formal B2 adoption test; later forward validation remains required."],
       "input_sha256":hashlib.sha256(args.input.read_bytes()).hexdigest()
     }
