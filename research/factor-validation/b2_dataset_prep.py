@@ -106,17 +106,35 @@ def main():
     ap.add_argument("--aliases",type=Path)
     ap.add_argument("--horse-history",type=Path, help="Optional JRA horse-history snapshot; only runs before the earliest race date are used as seed history.")
     args=ap.parse_args()
-    races=json.loads(args.input.read_text(encoding="utf-8"))
+    races_raw=json.loads(args.input.read_text(encoding="utf-8"))
+    # The collector can emit duplicate records for the same race. Prevent duplicate
+    # race/runner rows from leaking into model fitting; prefer the most complete result.
+    deduped={}
+    duplicate_keys=[]
+    def race_key(r):
+        return (str(iso(r.get("date")) or r.get("date","")),str(r.get("venue","")).strip(),str(r.get("rn",r.get("race_no",""))))
+    def completeness(r):
+        rows=r.get("rows",[])
+        return sum(1 for x in rows if isinstance(x,dict) and x.get("place") not in (None,"") and x.get("pop") not in (None,"")) if isinstance(rows,list) else 0
+    for race in races_raw:
+        k=race_key(race)
+        if k in deduped:
+            duplicate_keys.append(k)
+            if completeness(race)>completeness(deduped[k]):
+                deduped[k]=race
+        else:
+            deduped[k]=race
+    races=list(deduped.values())
     aliases=json.loads(args.aliases.read_text(encoding="utf-8")) if args.aliases else None
     horse_history=json.loads(args.horse_history.read_text(encoding="utf-8")) if args.horse_history else None
     prepared=prepare(races,aliases,horse_history)
     args.out.parent.mkdir(parents=True,exist_ok=True)
     payload=json.dumps(prepared,ensure_ascii=False,indent=2)+"\n"
     args.out.write_text(payload,encoding="utf-8")
-    print(json.dumps({"status":"prepared_not_fitted","input_races":len(races),
+    print(json.dumps({"status":"prepared_not_fitted","input_races_raw":len(races_raw),"duplicate_race_key_count":len(duplicate_keys),"input_races_deduplicated":len(races),
         "prepared_races":len(prepared),"prepared_runner_rows":sum(len(r["rows"]) for r in prepared),
         "multi_winner_races":sum(r["winner_count"]>1 for r in prepared),
-        "seed_history_horses":len(_history_seed(horse_history or {}, min((d for d in (iso(r.get("date")) for r in races) if d), default=dt.date.max))) if horse_history else 0,
+        "seed_history_horses":len(_history_seed(horse_history or {}, min((d for d in (iso(r.get("date")) for r in races) if d), default=dt.date.max))) if horse_history else 0,\n        "horse_history_schema_supported":bool(isinstance(horse_history,dict) and isinstance(horse_history.get("horses"),dict)) if horse_history else False,\n        "horse_history_warning":"Snapshot contains races/runners, not horses/{id}/runs; no prior race history can be seeded from this file." if horse_history and not (isinstance(horse_history,dict) and isinstance(horse_history.get("horses"),dict)) else None,
         "seed_history_cutoff":min((r["date"] for r in prepared),default=None),
         "date_min":min((r["date"] for r in prepared),default=None),
         "date_max":max((r["date"] for r in prepared),default=None),
