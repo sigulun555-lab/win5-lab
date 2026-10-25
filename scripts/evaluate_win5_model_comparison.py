@@ -59,7 +59,7 @@ def read_results(path: Path, date: str) -> tuple[dict[int, int], dict[int, set[i
 
 
 def evaluate_model(spec: str, date: str, winners: dict[int, int],
-                   scratched: dict[int, set[int]]) -> dict:
+                   scratched: dict[int, set[int]], log_loss_floor: float = 1e-15) -> dict:
     parts = spec.split("|")
     if len(parts) != 5:
         raise ValueError("--model must be NAME|CSV_PATH|PROBABILITY_COLUMN|LEG_COLUMN|HORSE_COLUMN")
@@ -91,8 +91,10 @@ def evaluate_model(spec: str, date: str, winners: dict[int, int],
         names[(leg, horse)] = row.get("horse_name", row.get("horse", ""))
 
     if set(grouped) != LEGS:
-        raise ValueError(f"{name}: expected predictions for legs 1-5, found {sorted(grouped)}")
+        hint = f" (dates present in the file: {sorted(dates)})" if not grouped else ""
+        raise ValueError(f"{name}: expected predictions for legs 1-5 on {date}, found {sorted(grouped)}{hint}")
     details = []
+    warnings: list[str] = []
     top1_hits = top3_hits = 0
     logloss = brier_sum = brier_per_horse_sum = 0.0
     horse_count = 0
@@ -102,9 +104,10 @@ def evaluate_model(spec: str, date: str, winners: dict[int, int],
         removed = scratched.get(leg, set())
         if winners[leg] in removed:
             raise ValueError(f"{name}: winner in scratched_nos for leg {leg}")
-        missing_scratch = removed - set(probs)
-        if missing_scratch:
-            raise ValueError(f"{name}: scratched horses absent from prediction leg {leg}: {sorted(missing_scratch)}")
+        already_excluded = removed - set(probs)
+        if already_excluded:
+            warnings.append(f"leg {leg}: scratched {sorted(already_excluded)} not in the prediction file (excluded before the forecast); nothing to remove")
+        removed = removed & set(probs)
         if removed:
             probs = {h: p for h, p in probs.items() if h not in removed}
             total = sum(probs.values())
@@ -120,12 +123,18 @@ def evaluate_model(spec: str, date: str, winners: dict[int, int],
         ordered = sorted(probs.items(), key=lambda x: (-x[1], x[0]))
         top1, top3 = ordered[0][0], {h for h, _ in ordered[:3]}
         wp = probs[winner]
+        if len(ordered) > 1 and ordered[0][1] == ordered[1][1]:
+            warnings.append(f"leg {leg}: tie for Top-1 (broken by lower horse number)")
+        if len(ordered) > 3 and ordered[2][1] == ordered[3][1]:
+            warnings.append(f"leg {leg}: tie at the Top-3 boundary (broken by lower horse number)")
+        if wp < log_loss_floor:
+            warnings.append(f"leg {leg}: winner probability {wp:.3g} is below the log-loss floor {log_loss_floor:g}")
         n = len(probs)
         sq = sum((p - (1.0 if h == winner else 0.0)) ** 2 for h, p in probs.items())
         uni_sq = (1.0 - 1.0 / n) ** 2 + (n - 1) * (1.0 / n) ** 2
         top1_hits += int(top1 == winner)
         top3_hits += int(winner in top3)
-        logloss += -math.log(max(wp, 1e-15))
+        logloss += -math.log(max(wp, log_loss_floor))
         brier_sum += sq
         brier_per_horse_sum += sq / n
         uniform_logloss += math.log(n)
@@ -151,7 +160,7 @@ def evaluate_model(spec: str, date: str, winners: dict[int, int],
             "brier_per_horse_race_mean": round(uniform_brier_per_horse_sum / 5, 6),
             "multiclass_brier_per_horse_pooled": round(uniform_brier_sum / horse_count, 6),
         },
-        "horses_scored": horse_count, "details": details,
+        "horses_scored": horse_count, "warnings": warnings, "details": details,
     }
 
 
@@ -161,9 +170,10 @@ def main() -> None:
     ap.add_argument("--results", type=Path, required=True)
     ap.add_argument("--model", action="append", required=True, help="Repeat: NAME|CSV_PATH|PROBABILITY_COLUMN|LEG_COLUMN|HORSE_COLUMN")
     ap.add_argument("--output", type=Path, required=True, help="Output JSON report")
+    ap.add_argument("--log-loss-floor", type=float, default=1e-15, help="lower bound of the winner probability in log loss")
     args = ap.parse_args()
     winners, scratched = read_results(args.results, args.date)
-    reports = [evaluate_model(spec, args.date, winners, scratched) for spec in args.model]
+    reports = [evaluate_model(spec, args.date, winners, scratched, args.log_loss_floor) for spec in args.model]
     if len({r["name"] for r in reports}) != len(reports):
         raise ValueError("Model names must be unique")
     payload = {

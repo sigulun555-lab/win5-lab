@@ -1,0 +1,322 @@
+{
+  "date": "2026-10-24",
+  "results_source_file": "data/win5_joint/2026-10-24/win5_official_results.csv",
+  "method": "same implementation for all models; probabilities are percent; no input files modified",
+  "models": [
+    {
+      "name": "GPT-V1-1106",
+      "source": "win5_gpt_primary.csv",
+      "date": "2026-10-24",
+      "legs": 5,
+      "top1_hits": 2,
+      "top3_hits": 3,
+      "mean_winner_log_loss": 2.033614,
+      "multiclass_brier_race_sum_mean": 0.824983,
+      "brier_per_horse_race_mean": 0.058564,
+      "multiclass_brier_per_horse_pooled": 0.05729,
+      "uniform_baseline": {
+        "mean_winner_log_loss": 2.660617,
+        "multiclass_brier_race_sum_mean": 0.929615,
+        "brier_per_horse_race_mean": 0.065361,
+        "multiclass_brier_per_horse_pooled": 0.064557
+      },
+      "horses_scored": 72,
+      "warnings": [],
+      "details": [
+        {
+          "leg": 1,
+          "winner_no": 2,
+          "winner_name": "アスミル",
+          "top1_no": 2,
+          "top1_name": "アスミル",
+          "winner_probability_pct": 17.29,
+          "field_size": 15,
+          "winner_in_top3": true,
+          "scratched_removed": []
+        },
+        {
+          "leg": 2,
+          "winner_no": 12,
+          "winner_name": "サムシャイン",
+          "top1_no": 12,
+          "top1_name": "サムシャイン",
+          "winner_probability_pct": 24.05,
+          "field_size": 16,
+          "winner_in_top3": true,
+          "scratched_removed": []
+        },
+        {
+          "leg": 3,
+          "winner_no": 5,
+          "winner_name": "アラタマフェーヴル",
+          "top1_no": 3,
+          "top1_name": "ユキワリザクラ",
+          "winner_probability_pct": 6.51,
+          "field_size": 12,
+          "winner_in_top3": false,
+          "scratched_removed": []
+        },
+        {
+          "leg": 4,
+          "winner_no": 12,
+          "winner_name": "ディールメーカー",
+          "top1_no": 11,
+          "top1_name": "ジーティーアダマン",
+          "winner_probability_pct": 7.3,
+          "field_size": 16,
+          "winner_in_top3": false,
+          "scratched_removed": []
+        },
+        {
+          "leg": 5,
+          "winner_no": 9,
+          "winner_name": "プルヴィナル",
+          "top1_no": 6,
+          "top1_name": "リスグロワール",
+          "winner_probability_pct": 19.42,
+          "field_size": 13,
+          "winner_in_top3": true,
+          "scratched_removed": []
+        }
+      ]
+    },
+    {
+      "name": "GPT-V2-posthoc",
+      "source": "data/win5_joint/2026-10-24/win5_gpt_v2_scenario.csv",
+      "date": "2026-10-24",
+      "legs": 5,
+      "top1_hits": 1,
+      "top3_hits": 3,
+      "mean_winner_log_loss": 2.020308,
+      "multiclass_brier_race_sum_mean": 0.825227,
+      "brier_per_horse_race_mean": 0.058548,
+      "multiclass_brier_per_horse_pooled": 0.057307,
+      "uniform_baseline": {
+        "mean_winner_log_loss": 2.660617,
+        "multiclass_brier_race_sum_mean": 0.929615,
+        "brier_per_horse_race_mean": 0.065361,
+        "multiclass_brier_per_horse_pooled": 0.064557
+      },
+      "horses_scored": 72,
+      "warnings": [],
+      "details": [
+        {
+          "leg": 1,
+          "winner_no": 2,
+          "winner_name": "アスミル",
+          "top1_no": 10,
+          "top1_name": "スカイハイ",
+          "winner_probability_pct": 11.57,
+          "field_size": 15,
+          "winner_in_top3": false,
+          "scratched_removed": []
+        },
+        {
+          "leg": 2,
+          "winner_no": 12,
+          "winner_name": "サムシャイン",
+          "top1_no": 12,
+          "top1_name": "サムシャイン",
+          "winner_probability_pct": 29.47,
+          "field_size": 16,
+          "winner_in_top3": true,
+          "scratched_removed": []
+        },
+        {
+          "leg": 3,
+          "winner_no": 5,
+          "winner_name": "アラタマフェーヴル",
+          "top1_no": 3,
+          "top1_name": "ユキワリザクラ",
+          "winner_probability_pct": 7.12,
+          "field_size": 12,
+          "winner_in_top3": false,
+          "scratched_removed": []
+        },
+        {
+          "leg": 4,
+          "winner_no": 12,
+          "winner_name": "ディールメーカー",
+          "top1_no": 13,
+          "top1_name": "ガイアメンテ",
+          "winner_probability_pct": 7.84,
+          "field_size": 16,
+          "winner_in_top3": true,
+          "scratched_removed": []
+        },
+        {
+          "leg": 5,
+          "winner_no": 9,
+          "winner_name": "プルヴィナル",
+          "top1_no": 6,
+          "top1_name": "リスグロワール",
+          "winner_probability_pct": 21.55,
+          "field_size": 13,
+          "winner_in_top3": true,
+          "scratched_removed": []
+        }
+      ]
+    },
+    {
+      "name": "Market-1439-1440",
+      "source": "data/win5_joint/2026-10-24/win5_gpt_v2_scenario.csv",
+      "date": "2026-10-24",
+      "legs": 5,
+      "top1_hits": 1,
+      "top3_hits": 3,
+      "mean_winner_log_loss": 2.025356,
+      "multiclass_brier_race_sum_mean": 0.82441,
+      "brier_per_horse_race_mean": 0.058501,
+      "multiclass_brier_per_horse_pooled": 0.057251,
+      "uniform_baseline": {
+        "mean_winner_log_loss": 2.660617,
+        "multiclass_brier_race_sum_mean": 0.929615,
+        "brier_per_horse_race_mean": 0.065361,
+        "multiclass_brier_per_horse_pooled": 0.064557
+      },
+      "horses_scored": 72,
+      "warnings": [],
+      "details": [
+        {
+          "leg": 1,
+          "winner_no": 2,
+          "winner_name": "アスミル",
+          "top1_no": 10,
+          "top1_name": "スカイハイ",
+          "winner_probability_pct": 11.02,
+          "field_size": 15,
+          "winner_in_top3": false,
+          "scratched_removed": []
+        },
+        {
+          "leg": 2,
+          "winner_no": 12,
+          "winner_name": "サムシャイン",
+          "top1_no": 12,
+          "top1_name": "サムシャイン",
+          "winner_probability_pct": 30.37,
+          "field_size": 16,
+          "winner_in_top3": true,
+          "scratched_removed": []
+        },
+        {
+          "leg": 3,
+          "winner_no": 5,
+          "winner_name": "アラタマフェーヴル",
+          "top1_no": 3,
+          "top1_name": "ユキワリザクラ",
+          "winner_probability_pct": 7.16,
+          "field_size": 12,
+          "winner_in_top3": false,
+          "scratched_removed": []
+        },
+        {
+          "leg": 4,
+          "winner_no": 12,
+          "winner_name": "ディールメーカー",
+          "top1_no": 13,
+          "top1_name": "ガイアメンテ",
+          "winner_probability_pct": 7.81,
+          "field_size": 16,
+          "winner_in_top3": true,
+          "scratched_removed": []
+        },
+        {
+          "leg": 5,
+          "winner_no": 9,
+          "winner_name": "プルヴィナル",
+          "top1_no": 6,
+          "top1_name": "リスグロワール",
+          "winner_probability_pct": 21.37,
+          "field_size": 13,
+          "winner_in_top3": true,
+          "scratched_removed": []
+        }
+      ]
+    },
+    {
+      "name": "Claude-1427-market-derived",
+      "source": "data/win5_joint/2026-10-24/win5_claude.csv",
+      "date": "2026-10-24",
+      "legs": 5,
+      "top1_hits": 1,
+      "top3_hits": 4,
+      "mean_winner_log_loss": 1.987785,
+      "multiclass_brier_race_sum_mean": 0.811746,
+      "brier_per_horse_race_mean": 0.05767,
+      "multiclass_brier_per_horse_pooled": 0.056371,
+      "uniform_baseline": {
+        "mean_winner_log_loss": 2.660617,
+        "multiclass_brier_race_sum_mean": 0.929615,
+        "brier_per_horse_race_mean": 0.065361,
+        "multiclass_brier_per_horse_pooled": 0.064557
+      },
+      "horses_scored": 72,
+      "warnings": [],
+      "details": [
+        {
+          "leg": 1,
+          "winner_no": 2,
+          "winner_name": "アスミル",
+          "top1_no": 10,
+          "top1_name": "スカイハイ",
+          "winner_probability_pct": 12.2,
+          "field_size": 15,
+          "winner_in_top3": true,
+          "scratched_removed": []
+        },
+        {
+          "leg": 2,
+          "winner_no": 12,
+          "winner_name": "サムシャイン",
+          "top1_no": 12,
+          "top1_name": "サムシャイン",
+          "winner_probability_pct": 31.8,
+          "field_size": 16,
+          "winner_in_top3": true,
+          "scratched_removed": []
+        },
+        {
+          "leg": 3,
+          "winner_no": 5,
+          "winner_name": "アラタマフェーヴル",
+          "top1_no": 3,
+          "top1_name": "ユキワリザクラ",
+          "winner_probability_pct": 7.3,
+          "field_size": 12,
+          "winner_in_top3": false,
+          "scratched_removed": []
+        },
+        {
+          "leg": 4,
+          "winner_no": 12,
+          "winner_name": "ディールメーカー",
+          "top1_no": 11,
+          "top1_name": "ジーティーアダマン",
+          "winner_probability_pct": 8.0,
+          "field_size": 16,
+          "winner_in_top3": true,
+          "scratched_removed": []
+        },
+        {
+          "leg": 5,
+          "winner_no": 9,
+          "winner_name": "プルヴィナル",
+          "top1_no": 6,
+          "top1_name": "リスグロワール",
+          "winner_probability_pct": 21.3,
+          "field_size": 13,
+          "winner_in_top3": true,
+          "scratched_removed": []
+        }
+      ]
+    }
+  ],
+  "cautions": [
+    "Only compare forecasts made before the corresponding race start.",
+    "Market probabilities are a benchmark, not an independent predictive model.",
+    "Different odds timestamps are not a fair same-time comparison.",
+    "Five legs from one WIN5 date are a very small sample; do not infer model superiority.",
+    "Pooled Brier per horse depends on field sizes; inspect the race-sum and race-mean metrics and uniform baseline too."
+  ]
+}
