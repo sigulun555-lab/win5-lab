@@ -1,9 +1,10 @@
 {
   "artifact": "docs/win5/2026-10-25-gpt-b2-model-spec.md",
-  "artifact_sha256_utf8": "e6e52713d7bd3ffbc8463259d5d83322ab8828d8baeb15e646e95a7d0525c24b",
-  "artifact_git_blob_sha": "6b5695f46dbfabf23ae5f34235f974f53e511e0c",
-  "artifact_commit_sha": "f6cdbcb3fa4f15827dc680316aedb63933f5d085",
+  "artifact_sha256_utf8": "RECOMPUTE_FROM_REVISED_UTF8_FILE_BEFORE_VALIDATION",
+  "artifact_git_blob_sha": "df7512af078c8c34d6ad1485908aebc5d54b3839",
+  "artifact_commit_sha": "96562c325d2ba6c6e2e9b37ef9e8b024432f5989",
   "recorded_at_jst": "2026-10-25T13:06:15+09:00",
+  "revised_spec_commit_note": "Revised after Claude review; this metadata commit records the spec file's commit/blob. The UTF-8 SHA256 must be recomputed from the exact revised file before validation starts.",
   "status": "specification_only; no B2 coefficients fitted and no predictions generated",
   "existing_history_input": {
     "path": "data/horse_history/2026-10-25.json",
@@ -14,12 +15,13 @@
   "history_collector": {
     "path": "collector/horse_history.py",
     "usage": "python3 collector/horse_history.py --date YYYY-MM-DD --out data/horse_history",
-    "note": "Pages are current at fetch time; for historical prediction rows, discard all runs on or after the target race date. Do not assume this JRA collector contains all local-racing history."
+    "note": "The current-date entry-point collector cannot itself retrieve past-date racecards. Historical validation uses horse IDs from historical JRA results and retrieved horse information pages. Pages are current at fetch time; discard runs on or after each target race date. Local racing history is present in horse information pages, but local class data is not assumed."
   },
   "validation_protocol": "docs/win5/b2-validation-protocol.md",
   "notes": [
     "B and its original prediction files remain unchanged.",
-    "The artifact SHA256 is calculated over the UTF-8 file content, excluding GitHub blob framing.",
-    "Input and output file hashes and actual acquisition timestamps must be added to the validation run record; unknown times remain unknown."
+    "The artifact SHA256 is calculated over UTF-8 file content, excluding GitHub blob framing; recompute from the exact revised file before validation.",
+    "Input and output file hashes and actual acquisition timestamps must be added to the validation run record; unknown times remain unknown.",
+    "2026-08-01 onward is preliminary rather than fully unseen because B percentile results for that period were previously discussed; include prospective validation from 2026-10-25 onward in adoption decisions."
   ]
 }
