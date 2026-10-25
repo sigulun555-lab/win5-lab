@@ -87,7 +87,8 @@ def main():
       "history_score_plus_popularity_mean_log_likelihood":float(ll1.mean()),
       "delta_combined_minus_popularity":float(delta.mean()),
       "delta_bootstrap_95_ci":bootstrap_ci(delta),
-      "test_races":len(test),\n      "eligibility":"JRA flat turf/dirt; at least five rows; exactly one recorded winner; test ends 2026-10-24 per preregistration",
+      "test_races":len(test),
+      "eligibility":"JRA flat turf/dirt; at least five rows; exactly one recorded winner; test ends 2026-10-24 per preregistration",
       "limitations":["No nested rolling-origin selection of L2/k/tau.","Class interaction, local-transition adjustment, JRA-run shrinkage, and rating candidates are not fitted.","Not a formal B2 adoption test; later forward validation remains required."],
       "input_sha256":hashlib.sha256(args.input.read_bytes()).hexdigest()
     }
