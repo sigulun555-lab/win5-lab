@@ -1,0 +1,75 @@
+{
+  "date": "2026-10-25",
+  "picks_file": "data/win5_joint/2026-10-25/gpt-morning-provisional-picks.csv",
+  "top1_hits": 2,
+  "legs": 5,
+  "marks_complete": false,
+  "top3_marks_hits": null,
+  "details": [
+    {
+      "leg": 1,
+      "honmei_no": 2,
+      "honmei_name": "クライスレリアーナ",
+      "winner_no": 2,
+      "hit": true,
+      "marks": {
+        "◎": 2
+      },
+      "winner_in_marks": true,
+      "honmei_scratched": false
+    },
+    {
+      "leg": 2,
+      "honmei_no": 6,
+      "honmei_name": "ギュルヴィ",
+      "winner_no": 12,
+      "hit": false,
+      "marks": {
+        "◎": 6
+      },
+      "winner_in_marks": false,
+      "honmei_scratched": false
+    },
+    {
+      "leg": 3,
+      "honmei_no": 7,
+      "honmei_name": "フウセツ",
+      "winner_no": 9,
+      "hit": false,
+      "marks": {
+        "◎": 7
+      },
+      "winner_in_marks": false,
+      "honmei_scratched": false
+    },
+    {
+      "leg": 4,
+      "honmei_no": 4,
+      "honmei_name": "ベルジュロネット",
+      "winner_no": 4,
+      "hit": true,
+      "marks": {
+        "◎": 4
+      },
+      "winner_in_marks": true,
+      "honmei_scratched": false
+    },
+    {
+      "leg": 5,
+      "honmei_no": 8,
+      "honmei_name": "ロブチェン",
+      "winner_no": 9,
+      "hit": false,
+      "marks": {
+        "◎": 8
+      },
+      "winner_in_marks": false,
+      "honmei_scratched": false
+    }
+  ],
+  "cautions": [
+    "Log loss / Brier are not computed here (use evaluate_win5_model_comparison.py for full-field models).",
+    "Do not mix picks-only results with full-probability model results.",
+    "Five legs are too few to judge a model."
+  ]
+}

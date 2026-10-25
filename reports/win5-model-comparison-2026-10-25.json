@@ -1,0 +1,322 @@
+{
+  "date": "2026-10-25",
+  "results_source_file": "data/win5_joint/2026-10-25/win5_official_results.csv",
+  "method": "same implementation for all models; probabilities are percent; no input files modified",
+  "models": [
+    {
+      "name": "GPT-B-history-only",
+      "source": "data/win5_joint/2026-10-25/gpt-exploratory-history-only-probabilities.csv",
+      "date": "2026-10-25",
+      "legs": 5,
+      "top1_hits": 1,
+      "top3_hits": 2,
+      "mean_winner_log_loss": 2.604201,
+      "multiclass_brier_race_sum_mean": 0.917175,
+      "brier_per_horse_race_mean": 0.063549,
+      "multiclass_brier_per_horse_pooled": 0.061145,
+      "uniform_baseline": {
+        "mean_winner_log_loss": 2.68029,
+        "multiclass_brier_race_sum_mean": 0.929069,
+        "brier_per_horse_race_mean": 0.065483,
+        "multiclass_brier_per_horse_pooled": 0.061938
+      },
+      "horses_scored": 75,
+      "warnings": [],
+      "details": [
+        {
+          "leg": 1,
+          "winner_no": 2,
+          "winner_name": "クライスレリアーナ",
+          "top1_no": 2,
+          "top1_name": "クライスレリアーナ",
+          "winner_probability_pct": 18.71042,
+          "field_size": 9,
+          "winner_in_top3": true,
+          "scratched_removed": []
+        },
+        {
+          "leg": 2,
+          "winner_no": 12,
+          "winner_name": "メイショウズイウン",
+          "top1_no": 3,
+          "top1_name": "クインズショコラ",
+          "winner_probability_pct": 4.05613,
+          "field_size": 15,
+          "winner_in_top3": false,
+          "scratched_removed": []
+        },
+        {
+          "leg": 3,
+          "winner_no": 9,
+          "winner_name": "モズナナスター",
+          "top1_no": 14,
+          "top1_name": "カウスリップ",
+          "winner_probability_pct": 4.77381,
+          "field_size": 17,
+          "winner_in_top3": false,
+          "scratched_removed": []
+        },
+        {
+          "leg": 4,
+          "winner_no": 4,
+          "winner_name": "ベルジュロネット",
+          "top1_no": 13,
+          "top1_name": "リュウノフライト",
+          "winner_probability_pct": 9.27607,
+          "field_size": 16,
+          "winner_in_top3": true,
+          "scratched_removed": []
+        },
+        {
+          "leg": 5,
+          "winner_no": 9,
+          "winner_name": "ゴーイントゥスカイ",
+          "top1_no": 8,
+          "top1_name": "ロブチェン",
+          "winner_probability_pct": 6.58606,
+          "field_size": 18,
+          "winner_in_top3": false,
+          "scratched_removed": []
+        }
+      ]
+    },
+    {
+      "name": "Market-0828",
+      "source": "data/win5_joint/2026-10-25/win5_claude_morning.csv",
+      "date": "2026-10-25",
+      "legs": 5,
+      "top1_hits": 2,
+      "top3_hits": 3,
+      "mean_winner_log_loss": 2.306833,
+      "multiclass_brier_race_sum_mean": 0.85027,
+      "brier_per_horse_race_mean": 0.055569,
+      "multiclass_brier_per_horse_pooled": 0.056685,
+      "uniform_baseline": {
+        "mean_winner_log_loss": 2.68029,
+        "multiclass_brier_race_sum_mean": 0.929069,
+        "brier_per_horse_race_mean": 0.065483,
+        "multiclass_brier_per_horse_pooled": 0.061938
+      },
+      "horses_scored": 75,
+      "warnings": [],
+      "details": [
+        {
+          "leg": 1,
+          "winner_no": 2,
+          "winner_name": "クライスレリアーナ",
+          "top1_no": 2,
+          "top1_name": "クライスレリアーナ",
+          "winner_probability_pct": 41.74,
+          "field_size": 9,
+          "winner_in_top3": true,
+          "scratched_removed": []
+        },
+        {
+          "leg": 2,
+          "winner_no": 12,
+          "winner_name": "メイショウズイウン",
+          "top1_no": 6,
+          "top1_name": "ギュルヴィ",
+          "winner_probability_pct": 3.62,
+          "field_size": 15,
+          "winner_in_top3": false,
+          "scratched_removed": []
+        },
+        {
+          "leg": 3,
+          "winner_no": 9,
+          "winner_name": "モズナナスター",
+          "top1_no": 14,
+          "top1_name": "カウスリップ",
+          "winner_probability_pct": 4.62,
+          "field_size": 17,
+          "winner_in_top3": false,
+          "scratched_removed": []
+        },
+        {
+          "leg": 4,
+          "winner_no": 4,
+          "winner_name": "ベルジュロネット",
+          "top1_no": 4,
+          "top1_name": "ベルジュロネット",
+          "winner_probability_pct": 19.78,
+          "field_size": 16,
+          "winner_in_top3": true,
+          "scratched_removed": []
+        },
+        {
+          "leg": 5,
+          "winner_no": 9,
+          "winner_name": "ゴーイントゥスカイ",
+          "top1_no": 8,
+          "top1_name": "ロブチェン",
+          "winner_probability_pct": 7.09,
+          "field_size": 18,
+          "winner_in_top3": true,
+          "scratched_removed": []
+        }
+      ]
+    },
+    {
+      "name": "Claude-1340-market-derived",
+      "source": "data/win5_joint/2026-10-25/win5_claude_prefinal_1340.csv",
+      "date": "2026-10-25",
+      "legs": 5,
+      "top1_hits": 1,
+      "top3_hits": 3,
+      "mean_winner_log_loss": 2.156242,
+      "multiclass_brier_race_sum_mean": 0.829595,
+      "brier_per_horse_race_mean": 0.053373,
+      "multiclass_brier_per_horse_pooled": 0.055306,
+      "uniform_baseline": {
+        "mean_winner_log_loss": 2.68029,
+        "multiclass_brier_race_sum_mean": 0.929069,
+        "brier_per_horse_race_mean": 0.065483,
+        "multiclass_brier_per_horse_pooled": 0.061938
+      },
+      "horses_scored": 75,
+      "warnings": [],
+      "details": [
+        {
+          "leg": 1,
+          "winner_no": 2,
+          "winner_name": "クライスレリアーナ",
+          "top1_no": 2,
+          "top1_name": "クライスレリアーナ",
+          "winner_probability_pct": 48.9,
+          "field_size": 9,
+          "winner_in_top3": true,
+          "scratched_removed": []
+        },
+        {
+          "leg": 2,
+          "winner_no": 12,
+          "winner_name": "メイショウズイウン",
+          "top1_no": 13,
+          "top1_name": "ゴールデンクラウド",
+          "winner_probability_pct": 3.7,
+          "field_size": 15,
+          "winner_in_top3": false,
+          "scratched_removed": []
+        },
+        {
+          "leg": 3,
+          "winner_no": 9,
+          "winner_name": "モズナナスター",
+          "top1_no": 14,
+          "top1_name": "カウスリップ",
+          "winner_probability_pct": 9.7,
+          "field_size": 17,
+          "winner_in_top3": false,
+          "scratched_removed": []
+        },
+        {
+          "leg": 4,
+          "winner_no": 4,
+          "winner_name": "ベルジュロネット",
+          "top1_no": 2,
+          "top1_name": "メリディアンスター",
+          "winner_probability_pct": 18.8,
+          "field_size": 16,
+          "winner_in_top3": true,
+          "scratched_removed": []
+        },
+        {
+          "leg": 5,
+          "winner_no": 9,
+          "winner_name": "ゴーイントゥスカイ",
+          "top1_no": 8,
+          "top1_name": "ロブチェン",
+          "winner_probability_pct": 6.3,
+          "field_size": 18,
+          "winner_in_top3": true,
+          "scratched_removed": []
+        }
+      ]
+    },
+    {
+      "name": "Market-1436",
+      "source": "data/win5_joint/2026-10-25/market_prob_1436_official.csv",
+      "date": "2026-10-25",
+      "legs": 5,
+      "top1_hits": 1,
+      "top3_hits": 3,
+      "mean_winner_log_loss": 2.187146,
+      "multiclass_brier_race_sum_mean": 0.826072,
+      "brier_per_horse_race_mean": 0.052776,
+      "multiclass_brier_per_horse_pooled": 0.055071,
+      "uniform_baseline": {
+        "mean_winner_log_loss": 2.68029,
+        "multiclass_brier_race_sum_mean": 0.929069,
+        "brier_per_horse_race_mean": 0.065483,
+        "multiclass_brier_per_horse_pooled": 0.061938
+      },
+      "horses_scored": 75,
+      "warnings": [],
+      "details": [
+        {
+          "leg": 1,
+          "winner_no": 2,
+          "winner_name": "クライスレリアーナ",
+          "top1_no": 2,
+          "top1_name": "クライスレリアーナ",
+          "winner_probability_pct": 52.5507,
+          "field_size": 9,
+          "winner_in_top3": true,
+          "scratched_removed": []
+        },
+        {
+          "leg": 2,
+          "winner_no": 12,
+          "winner_name": "メイショウズイウン",
+          "top1_no": 13,
+          "top1_name": "ゴールデンクラウド",
+          "winner_probability_pct": 3.0869,
+          "field_size": 15,
+          "winner_in_top3": false,
+          "scratched_removed": []
+        },
+        {
+          "leg": 3,
+          "winner_no": 9,
+          "winner_name": "モズナナスター",
+          "top1_no": 14,
+          "top1_name": "カウスリップ",
+          "winner_probability_pct": 8.0824,
+          "field_size": 17,
+          "winner_in_top3": false,
+          "scratched_removed": []
+        },
+        {
+          "leg": 4,
+          "winner_no": 4,
+          "winner_name": "ベルジュロネット",
+          "top1_no": 2,
+          "top1_name": "メリディアンスター",
+          "winner_probability_pct": 19.7567,
+          "field_size": 16,
+          "winner_in_top3": true,
+          "scratched_removed": []
+        },
+        {
+          "leg": 5,
+          "winner_no": 9,
+          "winner_name": "ゴーイントゥスカイ",
+          "top1_no": 8,
+          "top1_name": "ロブチェン",
+          "winner_probability_pct": 6.8757,
+          "field_size": 18,
+          "winner_in_top3": true,
+          "scratched_removed": []
+        }
+      ]
+    }
+  ],
+  "cautions": [
+    "Only compare forecasts made before the corresponding race start.",
+    "Market probabilities are a benchmark, not an independent predictive model.",
+    "Different odds timestamps are not a fair same-time comparison.",
+    "Five legs from one WIN5 date are a very small sample; do not infer model superiority.",
+    "Pooled Brier per horse depends on field sizes; inspect the race-sum and race-mean metrics and uniform baseline too."
+  ]
+}

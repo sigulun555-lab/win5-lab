@@ -1,0 +1,85 @@
+{
+  "date": "2026-10-25",
+  "picks_file": "data/win5_joint/2026-10-25/claude-prefinal-1340-marks.csv",
+  "top1_hits": 1,
+  "legs": 5,
+  "marks_complete": true,
+  "top3_marks_hits": 3,
+  "details": [
+    {
+      "leg": 1,
+      "honmei_no": 2,
+      "honmei_name": "クライスレリアーナ",
+      "winner_no": 2,
+      "hit": true,
+      "marks": {
+        "◎": 2,
+        "○": 9,
+        "▲": 1
+      },
+      "winner_in_marks": true,
+      "honmei_scratched": false
+    },
+    {
+      "leg": 2,
+      "honmei_no": 13,
+      "honmei_name": "ゴールデンクラウド",
+      "winner_no": 12,
+      "hit": false,
+      "marks": {
+        "◎": 13,
+        "○": 6,
+        "▲": 5
+      },
+      "winner_in_marks": false,
+      "honmei_scratched": false
+    },
+    {
+      "leg": 3,
+      "honmei_no": 14,
+      "honmei_name": "カウスリップ",
+      "winner_no": 9,
+      "hit": false,
+      "marks": {
+        "◎": 14,
+        "○": 11,
+        "▲": 17
+      },
+      "winner_in_marks": false,
+      "honmei_scratched": false
+    },
+    {
+      "leg": 4,
+      "honmei_no": 2,
+      "honmei_name": "メリディアンスター",
+      "winner_no": 4,
+      "hit": false,
+      "marks": {
+        "◎": 2,
+        "○": 4,
+        "▲": 16
+      },
+      "winner_in_marks": true,
+      "honmei_scratched": false
+    },
+    {
+      "leg": 5,
+      "honmei_no": 8,
+      "honmei_name": "ロブチェン",
+      "winner_no": 9,
+      "hit": false,
+      "marks": {
+        "◎": 8,
+        "○": 10,
+        "▲": 9
+      },
+      "winner_in_marks": true,
+      "honmei_scratched": false
+    }
+  ],
+  "cautions": [
+    "Log loss / Brier are not computed here (use evaluate_win5_model_comparison.py for full-field models).",
+    "Do not mix picks-only results with full-probability model results.",
+    "Five legs are too few to judge a model."
+  ]
+}
