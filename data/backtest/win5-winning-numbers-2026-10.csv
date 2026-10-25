@@ -1,5 +1,6 @@
-# INVALIDATED: do not use as official labels
-# The previous version contained unverified horse-number sequences and incorrectly labeled some dates as WIN5 dates.
-# It has been withdrawn pending row-by-row verification against official JRA WIN5 results and each leg's official race result.
-# No winning-number labels are currently certified in this file.
-date,leg,winning_horse_number,win5_sequence_source,official_race_result_url,verified_at_jst,verification_status,notes
+date,leg,venue,race_no,race_name,winning_horse_number,official_result_url,verified_at_jst,verification_status,notes
+2026-10-18,1,東京,10,西湖特別,7,https://www.jra.go.jp/JRADB/accessS.html?CNAME=pw01sde1005202604071020261018/38,2026-10-25,verified_official_JRA,"JRA official result; 1着ヘリオトロープ"
+2026-10-18,2,京都,10,聚楽第特別,8,https://www.jra.go.jp/JRADB/accessS.html?CNAME=pw01sde0108202604071020261018/37,2026-10-25,verified_official_JRA,"JRA official result; 1着ジョータルマエ"
+2026-10-18,3,新潟,11,新潟牝馬ステークス,3,https://www.jra.go.jp/JRADB/accessS.html?CNAME=pw01sde1004202604021120261018/64,2026-10-25,verified_official_JRA,"JRA official result; 1着シャドウメテオ"
+2026-10-18,4,東京,11,ブラジルカップ,9,https://www.jra.go.jp/JRADB/accessS.html?CNAME=pw01sde0105202604071120261018/0E,2026-10-25,verified_official_JRA,"JRA official result; 1着クールミラボー"
+2026-10-18,5,京都,11,秋華賞,8,https://www.jra.go.jp/JRADB/accessS.html?CNAME=pw01sde1008202604071120261018/CB,2026-10-25,verified_official_JRA,"JRA official result; 1着モンローウォーク"
