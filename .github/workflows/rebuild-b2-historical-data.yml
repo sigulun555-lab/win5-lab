@@ -1,0 +1,42 @@
+name: rebuild-b2-historical-data
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rebuild-b2-historical-data
+  cancel-in-progress: false
+
+jobs:
+  collect-parse-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Prepare collector output directory
+        run: mkdir -p ses
+      - name: Collect JRA result pages
+        run: python research/factor-validation/crawl.py
+      - name: Parse collected pages
+        run: python research/factor-validation/parse_ses.py
+      - name: Audit race dataset integrity
+        run: python scripts/audit_race_dataset.py research/factor-validation/races.json --out reports/b2-race-dataset-audit.json
+      - name: Save dataset and audit as workflow artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b2-historical-data-audit
+          path: |
+            research/factor-validation/races.json
+            months.json
+            crawl_status.json
+            ses/
+            reports/b2-race-dataset-audit.json
+          if-no-files-found: warn
+          retention-days: 14
