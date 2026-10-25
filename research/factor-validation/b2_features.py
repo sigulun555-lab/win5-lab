@@ -30,7 +30,8 @@ def classify_race_class(value: Any, venue_type: str = "JRA", class_aliases: dict
     label = str(value or "").strip()
     if venue_type == "LOCAL": return "LOCAL"
     if venue_type == "OVERSEAS": return "OVERSEAS"
-    if venue_type != "JRA" or not label: return "UNCLASSIFIABLE"
+    if venue_type != "JRA": return "UNCLASSIFIABLE"
+    if not label: return "UNKNOWN_JRA"
     if class_aliases and label in class_aliases:
         mapped = class_aliases[label]
         return mapped if mapped in CLASS_CATEGORIES else "UNKNOWN_JRA"
