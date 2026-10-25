@@ -57,6 +57,7 @@ def main():
     venues = collections.Counter()
     dates = []
     duplicate_run_keys = 0
+    missing_field_examples = []
     for hid, horse in horses.items():
         if not str(hid).strip():
             missing_hid += 1
@@ -69,9 +70,17 @@ def main():
                 invalid_run_rows += 1
                 continue
             run_count += 1
-            for field in ('date', 'venue', 'race', 'field', 'place'):
-                if not str(run.get(field, '')).strip():
-                    missing_fields[field] += 1
+            missing_here = [field for field in ('date', 'venue', 'race', 'field', 'place') if not str(run.get(field, '')).strip()]
+            for field in missing_here:
+                missing_fields[field] += 1
+            if missing_here and len(missing_field_examples) < 25:
+                missing_field_examples.append({
+                    'horse_id': str(hid),
+                    'date': str(run.get('date', '')).strip() or None,
+                    'venue': str(run.get('venue', '')).strip() or None,
+                    'race': str(run.get('race', '')).strip() or None,
+                    'missing_fields': missing_here,
+                })
             date = parse_date(run.get('date'))
             if date is None:
                 invalid_dates += 1
@@ -96,6 +105,7 @@ def main():
         'unparseable_run_dates': invalid_dates,
         'duplicate_run_keys_within_horse': duplicate_run_keys,
         'missing_required_field_counts': dict(missing_fields),
+        'missing_field_examples_first_25': missing_field_examples,
         'distinct_venue_labels': len(venues),
         'venue_label_counts': dict(venues.most_common()),
         'date_min': min(dates) if dates else None,
