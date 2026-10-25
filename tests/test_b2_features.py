@@ -1,4 +1,5 @@
 import importlib.util
+import json
 from pathlib import Path
 import unittest
 
@@ -33,6 +34,14 @@ class B2FeatureTests(unittest.TestCase):
         self.assertEqual(len(got),6)
         self.assertTrue(all(x["_venue_type"] != "LOCAL" for x in got))
         self.assertNotIn("2026-02-01",[x["_parsed_date"] for x in got])
+
+    def test_explicit_venue_alias_file_is_conservative(self):
+        alias_path = Path(__file__).resolve().parents[1] / "research" / "factor-validation" / "b2_venue_aliases.json"
+        aliases = json.loads(alias_path.read_text(encoding="utf-8"))
+        self.assertEqual(aliases.get("名古"), "LOCAL")
+        self.assertEqual(aliases.get("米"), "UNCLASSIFIABLE")
+        self.assertEqual(classify_venue("名古", aliases), "LOCAL")
+        self.assertEqual(classify_venue("米", aliases), "UNCLASSIFIABLE")
 
     def test_venue_classification_is_not_fuzzy(self):
         self.assertEqual(classify_venue("東京"),"JRA")
