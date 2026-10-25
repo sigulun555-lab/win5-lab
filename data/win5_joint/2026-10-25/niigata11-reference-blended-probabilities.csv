@@ -1,0 +1,18 @@
+date,race,horse_number,horse_name,market_probability_pct,external_model_probability_pct,external_model_source,blend_method,blended_reference_probability_pct,status
+2026-10-25,Niigata11,1,"ウインアイオライト",1.1886,1.8000,"uma5.com 2026-10-25 Niigata11", "50% normalized market + 50% normalized external model",1.4943,reference_blend_not_independent_GPT_model
+2026-10-25,Niigata11,2,"スコーピオン",1.3409,1.7000,"uma5.com 2026-10-25 Niigata11", "50% normalized market + 50% normalized external model",1.5205,reference_blend_not_independent_GPT_model
+2026-10-25,Niigata11,3,"ヴェントゥーラ",7.2288,8.1000,"uma5.com 2026-10-25 Niigata11", "50% normalized market + 50% normalized external model",7.6644,reference_blend_not_independent_GPT_model
+2026-10-25,Niigata11,4,"トールキン",1.2602,1.2000,"uma5.com 2026-10-25 Niigata11", "50% normalized market + 50% normalized external model",1.2301,reference_blend_not_independent_GPT_model
+2026-10-25,Niigata11,5,"デュガ",2.2850,3.4000,"uma5.com 2026-10-25 Niigata11", "50% normalized market + 50% normalized external model",2.8425,reference_blend_not_independent_GPT_model
+2026-10-25,Niigata11,6,"クールベイビー",1.2784,1.5000,"uma5.com 2026-10-25 Niigata11", "50% normalized market + 50% normalized external model",1.3892,reference_blend_not_independent_GPT_model
+2026-10-25,Niigata11,7,"フウセツ",1.9394,1.8000,"uma5.com 2026-10-25 Niigata11", "50% normalized market + 50% normalized external model",1.8697,reference_blend_not_independent_GPT_model
+2026-10-25,Niigata11,8,"フィオライア",3.5818,4.5000,"uma5.com 2026-10-25 Niigata11", "50% normalized market + 50% normalized external model",4.0409,reference_blend_not_independent_GPT_model
+2026-10-25,Niigata11,9,"モズナナスター",7.3627,7.7000,"uma5.com 2026-10-25 Niigata11", "50% normalized market + 50% normalized external model",7.5313,reference_blend_not_independent_GPT_model
+2026-10-25,Niigata11,10,"クムシラコ",1.5380,1.4000,"uma5.com 2026-10-25 Niigata11", "50% normalized market + 50% normalized external model",1.4690,reference_blend_not_independent_GPT_model
+2026-10-25,Niigata11,11,"エコロレジーナ",11.5242,10.3000,"uma5.com 2026-10-25 Niigata11", "50% normalized market + 50% normalized external model",10.9121,reference_blend_not_independent_GPT_model
+2026-10-25,Niigata11,12,"ナナオ",5.6395,7.1000,"uma5.com 2026-10-25 Niigata11", "50% normalized market + 50% normalized external model",6.3697,reference_blend_not_independent_GPT_model
+2026-10-25,Niigata11,13,"ハートホイップ",2.7999,1.9000,"uma5.com 2026-10-25 Niigata11", "50% normalized market + 50% normalized external model",2.3499,reference_blend_not_independent_GPT_model
+2026-10-25,Niigata11,14,"カウスリップ",22.7191,18.0000,"uma5.com 2026-10-25 Niigata11", "50% normalized market + 50% normalized external model",20.3595,reference_blend_not_independent_GPT_model
+2026-10-25,Niigata11,15,"ポールセン",11.0440,14.8000,"uma5.com 2026-10-25 Niigata11", "50% normalized market + 50% normalized external model",12.9220,reference_blend_not_independent_GPT_model
+2026-10-25,Niigata11,16,"シュラフ",6.0700,6.1000,"uma5.com 2026-10-25 Niigata11", "50% normalized market + 50% normalized external model",6.0850,reference_blend_not_independent_GPT_model
+2026-10-25,Niigata11,17,"ロードトレイル",11.1995,8.7000,"uma5.com 2026-10-25 Niigata11", "50% normalized market + 50% normalized external model",9.9498,reference_blend_not_independent_GPT_model
