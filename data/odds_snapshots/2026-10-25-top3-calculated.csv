@@ -1,0 +1,16 @@
+date,leg,race,horse_no,horse_name,win_odds,implied_inverse_odds_pct,top3_conditional_probability_pct,calculation_scope,source_time_jst
+2026-10-25,1,"東京10R 山中湖特別",2,"クライスレリアーナ",1.9,52.6316,61.01,top3_only_not_full_field_market_probability,2026-10-25 13:46 JST
+2026-10-25,1,"東京10R 山中湖特別",4,"マイスターヴェルク",5.8,17.2414,19.99,top3_only_not_full_field_market_probability,2026-10-25 13:46 JST
+2026-10-25,1,"東京10R 山中湖特別",1,"ロートホルン",6.1,16.3934,19.00,top3_only_not_full_field_market_probability,2026-10-25 13:46 JST
+2026-10-25,2,"京都10R カノープスステークス",13,"ゴールデンクラウド",5.3,18.8679,38.33,top3_only_not_full_field_market_probability,2026-10-25 13:46 JST
+2026-10-25,2,"京都10R カノープスステークス",6,"ギュルヴィ",5.6,17.8571,36.28,top3_only_not_full_field_market_probability,2026-10-25 13:46 JST
+2026-10-25,2,"京都10R カノープスステークス",5,"リアライズカミオン",8,12.5000,25.39,top3_only_not_full_field_market_probability,2026-10-25 13:46 JST
+2026-10-25,3,"新潟11R ルミエールオータムダッシュ",14,"カウスリップ",3.4,29.4118,47.69,top3_only_not_full_field_market_probability,2026-10-25 13:46 JST
+2026-10-25,3,"新潟11R ルミエールオータムダッシュ",17,"ロードトレイル",6.1,16.3934,26.58,top3_only_not_full_field_market_probability,2026-10-25 13:46 JST
+2026-10-25,3,"新潟11R ルミエールオータムダッシュ",11,"エコロレジーナ",6.3,15.8730,25.74,top3_only_not_full_field_market_probability,2026-10-25 13:46 JST
+2026-10-25,4,"東京11R 神無月ステークス",2,"メリディアンスター",3.4,29.4118,40.59,top3_only_not_full_field_market_probability,2026-10-25 13:46 JST
+2026-10-25,4,"東京11R 神無月ステークス",4,"ベルジュロネット",4.2,23.8095,32.86,top3_only_not_full_field_market_probability,2026-10-25 13:46 JST
+2026-10-25,4,"東京11R 神無月ステークス",16,"ワイワイレジェンド",5.2,19.2308,26.54,top3_only_not_full_field_market_probability,2026-10-25 13:46 JST
+2026-10-25,5,"京都11R 菊花賞",8,"ロブチェン",1.9,52.6316,61.65,top3_only_not_full_field_market_probability,2026-10-25 13:46 JST
+2026-10-25,5,"京都11R 菊花賞",10,"ダノンヒストリー",4.2,23.8095,27.89,top3_only_not_full_field_market_probability,2026-10-25 13:46 JST
+2026-10-25,5,"京都11R 菊花賞",9,"ゴーイントゥスカイ",11.2,8.9286,10.46,top3_only_not_full_field_market_probability,2026-10-25 13:46 JST
