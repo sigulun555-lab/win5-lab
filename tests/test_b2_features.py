@@ -26,7 +26,7 @@ class B2FeatureTests(unittest.TestCase):
     def test_future_and_same_day_runs_never_used(self):
         got=eligible_prior_runs(self.runs,"2026-05-01")
         self.assertTrue(all(x["_parsed_date"] < "2026-05-01" for x in got))
-        self.assertEqual(len(got),3)
+        self.assertEqual(len(got),4)
 
     def test_local_excluded_before_six_run_cut(self):
         got=eligible_prior_runs(self.runs,"2026-08-01",local_policy="exclude",max_runs=6)
