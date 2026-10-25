@@ -19,7 +19,7 @@ class TestB2DatasetPrep(unittest.TestCase):
         target=next(x for x in out if x["date"]=="2026-02-01")
         h1=next(x for x in target["rows"] if x["hid"]=="h1")
         self.assertEqual(h1["prior_runs"],1)
-        self.assertEqual(h1["b2_score"],0.0) # debut is a neutral prior
+        self.assertAlmostEqual(h1["b2_score"],1.05) # percentile score remains; debut class effect is the reference
         self.assertEqual(target["class"],"未勝利")
 
     def test_dead_heat_is_retained_fractionally(self):
