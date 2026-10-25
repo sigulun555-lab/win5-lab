@@ -20,11 +20,13 @@ jobs:
         with:
           python-version: "3.12"
       - name: Prepare collector output directory
-        run: mkdir -p ses
+        run: mkdir -p research/factor-validation/ses reports
       - name: Collect JRA result pages
-        run: python research/factor-validation/crawl.py
+        working-directory: research/factor-validation
+        run: python crawl.py
       - name: Parse collected pages
-        run: python research/factor-validation/parse_ses.py
+        working-directory: research/factor-validation
+        run: python parse_ses.py
       - name: Audit race dataset integrity
         run: python scripts/audit_race_dataset.py research/factor-validation/races.json --out reports/b2-race-dataset-audit.json
       - name: Save dataset and audit as workflow artifacts
@@ -34,9 +36,9 @@ jobs:
           name: b2-historical-data-audit
           path: |
             research/factor-validation/races.json
-            months.json
-            crawl_status.json
-            ses/
+            research/factor-validation/months.json
+            research/factor-validation/crawl_status.json
+            research/factor-validation/ses/
             reports/b2-race-dataset-audit.json
           if-no-files-found: warn
           retention-days: 14
