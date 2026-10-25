@@ -57,6 +57,7 @@ def main():
     venues = collections.Counter()
     dates = []
     duplicate_run_keys = 0
+    administrative_event_rows = 0
     missing_field_examples = []
     for hid, horse in horses.items():
         if not str(hid).strip():
@@ -70,7 +71,12 @@ def main():
                 invalid_run_rows += 1
                 continue
             run_count += 1
-            missing_here = [field for field in ('date', 'venue', 'race', 'field', 'place') if not str(run.get(field, '')).strip()]
+            race_label = str(run.get('race', '')).strip()
+            is_admin_event = race_label in {'JRAへ転入', 'JRAより転出', '地方へ転入', '地方より転出'}
+            if is_admin_event:
+                administrative_event_rows += 1
+            required_fields = ('date',) if is_admin_event else ('date', 'venue', 'race', 'field', 'place')
+            missing_here = [field for field in required_fields if not str(run.get(field, '')).strip()]
             for field in missing_here:
                 missing_fields[field] += 1
             if missing_here and len(missing_field_examples) < 25:
@@ -102,6 +108,7 @@ def main():
         'horses_without_run_list': missing_runs,
         'empty_horse_ids': missing_hid,
         'non_object_run_rows': invalid_run_rows,
+        'administrative_event_rows_not_treated_as_races': administrative_event_rows,
         'unparseable_run_dates': invalid_dates,
         'duplicate_run_keys_within_horse': duplicate_run_keys,
         'missing_required_field_counts': dict(missing_fields),
