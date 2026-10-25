@@ -31,8 +31,12 @@ jobs:
         run: python scripts/audit_race_dataset.py research/factor-validation/races.json --out reports/b2-race-dataset-audit.json
       - name: Reconcile current races against pinned reference dataset
         run: python research/factor-validation/compare_b2_race_datasets.py --current research/factor-validation/races.json --reference research/factor-validation/data/races.json.gz --out reports/b2-race-dataset-reconciliation.json
+      - name: Collect official prior horse histories
+        run: python collector/horse_history.py --date 2026-10-25 --out reports/horse-history
+      - name: Audit official horse-history bundle
+        run: python scripts/audit_b2_history_bundle.py reports/horse-history/2026-10-25.json --out reports/b2-horse-history-audit.json
       - name: Prepare leakage-safe B2 dataset
-        run: python research/factor-validation/b2_dataset_prep.py research/factor-validation/races.json --aliases research/factor-validation/b2_venue_aliases.json --horse-history data/horse_history/2026-10-25.json --out reports/b2-prepared-races.json
+        run: python research/factor-validation/b2_dataset_prep.py research/factor-validation/races.json --aliases research/factor-validation/b2_venue_aliases.json --horse-history reports/horse-history/2026-10-25.json --out reports/b2-prepared-races.json
       - name: Install evaluation dependencies
         run: python -m pip install --disable-pip-version-check numpy scipy
       - name: Run preliminary chronological benchmark (diagnostic only)
