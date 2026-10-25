@@ -31,6 +31,8 @@ jobs:
         run: python scripts/audit_race_dataset.py research/factor-validation/races.json --out reports/b2-race-dataset-audit.json
       - name: Prepare leakage-safe B2 dataset
         run: python research/factor-validation/b2_dataset_prep.py research/factor-validation/races.json --aliases research/factor-validation/b2_venue_aliases.json --out reports/b2-prepared-races.json
+      - name: Run preliminary chronological benchmark (diagnostic only)
+        run: python research/factor-validation/b2_preliminary_eval.py reports/b2-prepared-races.json --out reports/b2-preliminary-eval.json
       - name: Save dataset and audit as workflow artifacts
         if: always()
         uses: actions/upload-artifact@v4
@@ -43,5 +45,6 @@ jobs:
             research/factor-validation/ses/
             reports/b2-race-dataset-audit.json
             reports/b2-prepared-races.json
+            reports/b2-preliminary-eval.json
           if-no-files-found: warn
           retention-days: 14
