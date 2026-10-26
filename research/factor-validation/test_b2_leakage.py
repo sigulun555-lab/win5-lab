@@ -51,6 +51,7 @@ class B2LeakageTests(unittest.TestCase):
 
 
 from b2_class_lookup import build_prior_class_lookup, lookup_prior_class
+from b2_dataset_prep import _history_seed
 
 
 class B2PriorClassLookupTests(unittest.TestCase):
@@ -80,6 +81,30 @@ class B2PriorClassLookupTests(unittest.TestCase):
     def test_missing_match_stays_unknown_not_guessed(self):
         lookup = build_prior_class_lookup(self.races, "2026-01-04")
         self.assertEqual(lookup_prior_class(lookup, "2026-01-01", "京都", "winner", "2026-01-04"), "UNKNOWN_JRA")
+
+
+class B2DatasetClassJoinTests(unittest.TestCase):
+    def test_history_class_join_is_prior_only_and_uses_runner_id(self):
+        bundle = {"horses": {"runner": {"runs": [
+            {"date": "2026-01-01", "venue": "東京", "place": "2", "field": "10"},
+            {"date": "2026-01-03", "venue": "東京", "place": "1", "field": "10"},
+        ]}}}
+        races = [
+            {"date": "2026-01-01", "venue": "東京", "cls": "G3", "rows": [{"hid": "winner", "place": 1}, {"hid": "runner", "place": 2}]},
+            {"date": "2026-01-02", "venue": "東京", "cls": "OP", "rows": [{"hid": "winner2", "place": 1}, {"hid": "runner", "place": 3}]},
+            {"date": "2026-01-04", "venue": "東京", "cls": "G2", "rows": [{"hid": "winner3", "place": 1}, {"hid": "runner", "place": 2}]},
+        ]
+        seeded = _history_seed(bundle, __import__("datetime").date(2026, 1, 5), races)
+        self.assertEqual([r["class"] for r in seeded["runner"]], ["G3", "OP"])
+
+    def test_ambiguous_duplicate_race_match_stays_unknown(self):
+        bundle = {"horses": {"runner": {"runs": [{"date": "2026-01-01", "venue": "東京", "place": "2", "field": "10"}]}}}
+        races = [
+            {"date": "2026-01-01", "venue": "東京", "cls": "G3", "rows": [{"hid": "winner", "place": 1}, {"hid": "runner", "place": 2}]},
+            {"date": "2026-01-01", "venue": "東京", "cls": "G1", "rows": [{"hid": "winner2", "place": 1}, {"hid": "runner", "place": 2}]},
+        ]
+        seeded = _history_seed(bundle, __import__("datetime").date(2026, 1, 5), races)
+        self.assertEqual(seeded["runner"][0]["class"], "")
 
 
 if __name__ == "__main__":
