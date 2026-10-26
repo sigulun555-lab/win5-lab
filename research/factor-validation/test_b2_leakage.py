@@ -50,5 +50,37 @@ class B2LeakageTests(unittest.TestCase):
         self.assertEqual(classify_venue("不明競馬場", aliases), "UNCLASSIFIABLE")
 
 
+from b2_class_lookup import build_prior_class_lookup, lookup_prior_class
+
+
+class B2PriorClassLookupTests(unittest.TestCase):
+    def setUp(self):
+        self.races = [
+            {"date": "2026-01-01", "venue": "東京", "cls": "G3",
+             "rows": [{"hid": "winner", "place": 1}, {"hid": "other", "place": 2}]},
+            {"date": "2026-01-02", "venue": "東京", "cls": "OP",
+             "rows": [{"hid": "winner", "place": 1}, {"hid": "other", "place": 2}]},
+            {"date": "2026-01-03", "venue": "阪神", "cls": "G2",
+             "rows": [{"hid": "winner", "place": 1}, {"hid": "other", "place": 1}]},
+        ]
+
+    def test_only_strictly_prior_races_enter_lookup(self):
+        lookup = build_prior_class_lookup(self.races, "2026-01-02")
+        self.assertEqual(len(lookup), 1)
+        self.assertEqual(lookup[("2026-01-01", "東京", "winner")], "G3")
+
+    def test_future_run_cannot_be_looked_up_for_earlier_prediction(self):
+        lookup = build_prior_class_lookup(self.races, "2026-01-04")
+        self.assertEqual(lookup_prior_class(lookup, "2026-01-02", "東京", "winner", "2026-01-02"), "UNKNOWN_JRA")
+
+    def test_ambiguous_winners_are_not_joined(self):
+        lookup = build_prior_class_lookup(self.races, "2026-01-04")
+        self.assertNotIn(("2026-01-03", "阪神", "winner"), lookup)
+
+    def test_missing_match_stays_unknown_not_guessed(self):
+        lookup = build_prior_class_lookup(self.races, "2026-01-04")
+        self.assertEqual(lookup_prior_class(lookup, "2026-01-01", "京都", "winner", "2026-01-04"), "UNKNOWN_JRA")
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
