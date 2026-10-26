@@ -9,7 +9,7 @@ from __future__ import annotations
 import argparse, collections, datetime as dt, hashlib, json, sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from b2_features import b_score
+from b2_features import b_score, classify_venue, classify_race_class
 
 def iso(value):
     if value is None: return None
@@ -19,9 +19,32 @@ def iso(value):
         except (TypeError,ValueError): pass
     return None
 
-def _history_seed(bundle, cutoff):
-    """Return only numeric historical runs strictly before cutoff from horse-history snapshots."""
+def _prior_result_class_map(result_races, cutoff):
+    """Map runners to class only from unique, single-winner races strictly before cutoff."""
+    matches=collections.defaultdict(list)
+    for race in result_races if isinstance(result_races,list) else []:
+        if not isinstance(race,dict):
+            continue
+        day=iso(race.get("date"))
+        if day is None or day >= cutoff:
+            continue
+        venue=str(race.get("venue") or "").strip()
+        cls=str(race.get("cls") or race.get("class") or "").strip()
+        rows=race.get("rows",[])
+        winners=[x for x in rows if isinstance(x,dict) and str(x.get("place","")).strip()=="1" and x.get("hid")] if isinstance(rows,list) else []
+        if not venue or not cls or len(winners)!=1:
+            continue
+        for row in rows:
+            if isinstance(row,dict) and row.get("hid"):
+                matches[(day.isoformat(),venue,str(row["hid"]))].append(cls)
+    # Duplicate source matches remain unresolved rather than relying on file order.
+    return {key:vals[0] for key,vals in matches.items() if len(vals)==1}
+
+
+def _history_seed(bundle, cutoff, result_races=None):
+    """Return numeric prior runs; attach class only from a unique earlier result race."""
     horses=bundle.get("horses",{}) if isinstance(bundle,dict) else {}
+    class_map=_prior_result_class_map(result_races or [], cutoff) if cutoff else {}
     seeded=collections.defaultdict(list)
     if not isinstance(horses,dict):
         return seeded
@@ -40,9 +63,14 @@ def _history_seed(bundle, cutoff):
                 continue
             if field < 2 or place < 1 or place > field:
                 continue
+            venue=str(run.get("venue","") or "").strip()
+            # Horse-history pages often omit class. Join by date, venue and runner ID;
+            # ambiguous/missing matches stay unknown, and only earlier results are eligible.
+            resolved_class=class_map.get((date.isoformat(),venue,str(hid)), "")
+            raw_class=resolved_class or run.get("class","")
             seeded[str(hid)].append({
-                "date":date.isoformat(), "venue":run.get("venue",""),
-                "class":run.get("class",""), "field":field, "place":place
+                "date":date.isoformat(), "venue":venue,
+                "class":raw_class, "field":field, "place":place
             })
     for hid in seeded:
         seeded[hid].sort(key=lambda x:x["date"])
@@ -50,7 +78,7 @@ def _history_seed(bundle, cutoff):
 
 def prepare(races, aliases=None, horse_history=None):
     first_date=min((d for d in (iso(r.get("date")) for r in races) if d), default=None)
-    by_horse=_history_seed(horse_history or {}, first_date) if first_date else collections.defaultdict(list)
+    by_horse=_history_seed(horse_history or {}, first_date, races) if first_date else collections.defaultdict(list)
     cleaned=[]
     for race in sorted(races, key=lambda r:(str(r.get("date","")),str(r.get("venue","")),int(r.get("rn") or 0))):
         date=iso(race.get("date"))
@@ -134,9 +162,10 @@ def main():
     print(json.dumps({"status":"prepared_not_fitted","input_races_raw":len(races_raw),"duplicate_race_key_count":len(duplicate_keys),"input_races_deduplicated":len(races),
         "prepared_races":len(prepared),"prepared_runner_rows":sum(len(r["rows"]) for r in prepared),
         "multi_winner_races":sum(r["winner_count"]>1 for r in prepared),
-        "seed_history_horses":len(_history_seed(horse_history or {}, min((d for d in (iso(r.get("date")) for r in races) if d), default=dt.date.max))) if horse_history else 0,
+        "seed_history_horses":len(_history_seed(horse_history or {}, min((d for d in (iso(r.get("date")) for r in races) if d), default=dt.date.max), races)) if horse_history else 0,
         "horse_history_schema_supported":bool(isinstance(horse_history,dict) and isinstance(horse_history.get("horses"),dict)) if horse_history else False,
         "horse_history_warning":"Snapshot contains races/runners, not horses/{id}/runs; no prior race history can be seeded from this file." if horse_history and not (isinstance(horse_history,dict) and isinstance(horse_history.get("horses"),dict)) else None,
+        "seed_class_join":"strictly-prior result race by date+venue+runner ID; ambiguous/missing classes remain unknown",
         "seed_history_cutoff":min((r["date"] for r in prepared),default=None),
         "date_min":min((r["date"] for r in prepared),default=None),
         "date_max":max((r["date"] for r in prepared),default=None),
