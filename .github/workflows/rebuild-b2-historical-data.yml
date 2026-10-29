@@ -31,8 +31,6 @@ jobs:
         run: python scripts/audit_race_dataset.py research/factor-validation/races.json --out reports/b2-race-dataset-audit.json
       - name: Reconcile current races against pinned reference dataset
         run: python research/factor-validation/compare_b2_race_datasets.py --current research/factor-validation/races.json --reference research/factor-validation/data/races.json.gz --out reports/b2-race-dataset-reconciliation.json
-      - name: Build venue aliases from every observed venue label
-        run: python research/factor-validation/build_b2_venue_aliases.py research/factor-validation/races.json --out research/factor-validation/b2_venue_aliases.json
       - name: Install numerical dependencies
         run: python -m pip install --disable-pip-version-check numpy scipy
       - name: Retrieve pinned horse-pages snapshot from b2-data
@@ -74,6 +72,8 @@ jobs:
           echo "manifest=$MANIFEST_PATH"
           echo "horse_pages=$HORSE_PATH"
           sha256sum reports/b2-horse-pages-manifest.json reports/b2-horse-pages.json.gz reports/b2-horse-pages.json
+      - name: Build and hash venue aliases from race results and all horse histories
+        run: python research/factor-validation/build_b2_venue_aliases.py research/factor-validation/races.json --horse-history reports/b2-horse-pages.json --out research/factor-validation/b2_venue_aliases.json
       - name: Test B2 leakage and fitting safeguards
         run: python -m unittest discover -s research/factor-validation -p 'test_b2_leakage.py' -v
       - name: Prepare leakage-safe B2 dataset
