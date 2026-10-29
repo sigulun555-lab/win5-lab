@@ -51,7 +51,7 @@ class B2LeakageTests(unittest.TestCase):
 
 
 from b2_class_lookup import build_prior_class_lookup, lookup_prior_class
-from b2_dataset_prep import _history_seed
+from b2_dataset_prep import _history_seed, prepare
 
 
 class B2PriorClassLookupTests(unittest.TestCase):
@@ -105,6 +105,34 @@ class B2DatasetClassJoinTests(unittest.TestCase):
         ]
         seeded = _history_seed(bundle, __import__("datetime").date(2026, 1, 5), races)
         self.assertEqual(seeded["runner"][0]["class"], "")
+
+
+
+class B2RaceEligibilityTests(unittest.TestCase):
+    def test_multi_winner_flat_race_is_excluded_not_fractional_labelled(self):
+        race = {
+            "date": "2026-01-01", "venue": "東京", "rn": 8,
+            "surface": "芝", "dist": 1800, "cls": "1勝クラス",
+            "rows": [
+                {"hid": f"h{i}", "num": i, "pop": i, "place": 1 if i in (1, 2) else i}
+                for i in range(1, 7)
+            ],
+        }
+        self.assertEqual(prepare([race]), [])
+
+    def test_single_winner_flat_race_is_kept_with_one_full_winner_label(self):
+        race = {
+            "date": "2026-01-01", "venue": "東京", "rn": 8,
+            "surface": "芝", "dist": 1800, "cls": "1勝クラス",
+            "rows": [
+                {"hid": f"h{i}", "num": i, "pop": i, "place": 1 if i == 1 else i}
+                for i in range(1, 7)
+            ],
+        }
+        prepared = prepare([race])
+        self.assertEqual(len(prepared), 1)
+        self.assertEqual(prepared[0]["winner_count"], 1)
+        self.assertEqual(sum(x["winner_share"] for x in prepared[0]["rows"]), 1.0)
 
 
 if __name__ == "__main__":
