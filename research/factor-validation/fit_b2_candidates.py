@@ -102,7 +102,7 @@ def model_ll(races, score_fn, tau=1.0):
         vals.append(float(np.sum(y * np.log(np.clip(p, 1e-15, 1.0)))))
     return np.asarray(vals)
 
-def fit_theta(races, spec, l2, k):
+def fit_theta(races, spec, l2, k, tau=1.0):
     names = []
     if spec["class"]:
         names.extend(GAMMA_CATS)
@@ -118,7 +118,7 @@ def fit_theta(races, spec, l2, k):
         grad = 2.0 * l2 * theta
         for race in races:
             scores = np.asarray([raw_score(row, spec, theta, k) for row in race["rows"]], dtype=float)
-            p = softmax(scores, 1.0)
+            p = softmax(scores, tau)
             y = target_vec(race)
             loss -= float(y @ np.log(np.clip(p, 1e-15, 1.0)))
             # Numerical gradient is used below because features include candidate-specific shrinkage.
@@ -156,7 +156,7 @@ def tune_candidate(train, spec, is_b0=False):
                         theta = np.zeros(0)
                         scorer = b0_score
                     else:
-                        theta = fit_theta(inner_train, spec, l2, k)
+                        theta = fit_theta(inner_train, spec, l2, k, tau)
                         scorer = lambda row, t=theta, kk=k: raw_score(row, spec, t, kk)
                     block_ll.extend(model_ll(inner_val, scorer, tau).tolist())
                 if len(block_ll) < 3:
@@ -167,7 +167,7 @@ def tune_candidate(train, spec, is_b0=False):
     # Highest mean log likelihood; ties: larger L2, smaller k, tau nearest 1.0.
     combos.sort(key=lambda x: (-x[0], -x[1], x[2], abs(x[3] - 1.0), x[3]))
     best = combos[0]
-    theta = np.zeros(0) if is_b0 else fit_theta(train, spec, best[1], best[2])
+    theta = np.zeros(0) if is_b0 else fit_theta(train, spec, best[1], best[2], best[3])
     return {"mean_inner_log_likelihood": best[0], "l2": best[1], "k": best[2],
             "tau": best[3], "theta": theta.tolist(), "inner_months": [f"{y:04d}-{m:02d}" for y, m in months]}
 
