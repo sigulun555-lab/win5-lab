@@ -453,6 +453,10 @@ def main():
         "implementation_sha256": sha(__file__),
         "prep_implementation": str(args.prep_script), "prep_implementation_sha256": sha(args.prep_script),
         "features_implementation": str(args.features_script), "features_implementation_sha256": sha(args.features_script),
+        "venue_alias_builder_implementation_sha256": sha(Path("research/factor-validation/build_b2_venue_aliases.py")),
+        "race_reconciliation_implementation_sha256": sha(Path("research/factor-validation/compare_b2_race_datasets.py")),
+        "race_dataset_audit_implementation_sha256": sha(Path("scripts/audit_race_dataset.py")),
+        "horse_history_audit_implementation_sha256": sha(Path("scripts/audit_b2_horse_pages.py")),
         "history_manifest": str(args.history_manifest) if args.history_manifest else None,
         "history_manifest_sha256": sha(args.history_manifest) if args.history_manifest else None,
         "history_audit": str(args.history_audit) if args.history_audit else None,
@@ -480,7 +484,12 @@ def main():
     }
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    print(json.dumps({k: v for k, v in payload.items() if k != "folds"}, ensure_ascii=False, indent=2))
+    output_digest = sha(args.out)
+    output_sidecar = args.out.with_suffix(".sha256")
+    output_sidecar.write_text(f"{output_digest}  {args.out.name}\n", encoding="ascii")
+    print(json.dumps({"output": str(args.out), "output_sha256": output_digest,
+                      "output_sha256_sidecar": str(output_sidecar),
+                      "metadata": {k: v for k, v in payload.items() if k != "folds"}}, ensure_ascii=False, indent=2))
     for report in reports:
         print(report["split"], "train", report["train_races"], "test", report["test_races"])
         for name, result in report["candidates"].items():
