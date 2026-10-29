@@ -360,8 +360,20 @@ def main():
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--spec", type=Path, default=Path("docs/win5/2026-10-25-gpt-b2-model-spec.md"))
     ap.add_argument("--aliases", type=Path, default=Path("research/factor-validation/b2_venue_aliases.json"))
+    ap.add_argument("--history-manifest", type=Path)
+    ap.add_argument("--race-reconciliation", type=Path)
+    ap.add_argument("--prep-script", type=Path, default=Path("research/factor-validation/b2_dataset_prep.py"))
+    ap.add_argument("--features-script", type=Path, default=Path("research/factor-validation/b2_features.py"))
     args = ap.parse_args()
     races = load_races(args.input)
+    runner_rows = [row for race in races for row in race["rows"]]
+    selected_runs = [run for row in runner_rows for run in row.get("candidate_features", {}).get("all", {}).get("selected", [])]
+    jra_selected = [run for run in selected_runs if run.get("venue_type") == "JRA"]
+    rating_observed = sum(run.get("rating") is not None for run in jra_selected)
+    unknown_jra = sum(run.get("class_category") == "UNKNOWN_JRA" for run in jra_selected)
+    unclassifiable_venues = sum(run.get("venue_type") == "UNCLASSIFIABLE" for run in selected_runs)
+    no_prior_history_rows = sum(int(row.get("prior_runs", 0) or 0) == 0 for row in runner_rows)
+    history_manifest = json.loads(args.history_manifest.read_text(encoding="utf-8")) if args.history_manifest else None
     def between(lo, hi):
         return [r for r in races if dt.date.fromisoformat(lo) <= r["_day"] <= dt.date.fromisoformat(hi)]
     folds = [
@@ -385,7 +397,25 @@ def main():
         "spec": str(args.spec), "spec_sha256": sha(args.spec),
         "aliases": str(args.aliases), "aliases_sha256": sha(args.aliases),
         "implementation_sha256": sha(__file__),
+        "prep_implementation": str(args.prep_script), "prep_implementation_sha256": sha(args.prep_script),
+        "features_implementation": str(args.features_script), "features_implementation_sha256": sha(args.features_script),
+        "history_manifest": str(args.history_manifest) if args.history_manifest else None,
+        "history_manifest_sha256": sha(args.history_manifest) if args.history_manifest else None,
+        "history_manifest_summary": ({k: history_manifest.get(k) for k in ("started_at_jst", "finished_at_jst", "requested", "succeeded", "missing", "horses_with_zero_runs", "total_runs", "cnames_sha256", "horses_json_sha256", "horses_json_gz_sha256", "script_sha256")} if history_manifest else None),
+        "race_reconciliation": str(args.race_reconciliation) if args.race_reconciliation else None,
+        "race_reconciliation_sha256": sha(args.race_reconciliation) if args.race_reconciliation else None,
         "races_loaded": len(races),
+        "runner_rows_loaded": len(runner_rows),
+        "runner_rows_with_no_usable_prior_history": no_prior_history_rows,
+        "runner_rows_with_no_usable_prior_history_rate": no_prior_history_rows / len(runner_rows) if runner_rows else None,
+        "selected_history_run_observations": len(selected_runs),
+        "selected_jra_run_observations": len(jra_selected),
+        "selected_jra_runs_with_numeric_rating": rating_observed,
+        "selected_jra_rating_coverage": rating_observed / len(jra_selected) if jra_selected else None,
+        "selected_jra_runs_unknown_class": unknown_jra,
+        "selected_jra_unknown_class_rate": unknown_jra / len(jra_selected) if jra_selected else None,
+        "selected_runs_with_unclassifiable_venue": unclassifiable_venues,
+
         "folds": reports,
         "forward_validation_required_from": "2026-10-25",
     }
