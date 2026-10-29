@@ -52,6 +52,7 @@ class B2LeakageTests(unittest.TestCase):
 
 from b2_class_lookup import build_prior_class_lookup, lookup_prior_class
 from b2_dataset_prep import _history_seed, prepare
+from fit_b2_candidates import candidate_design, fit_theta
 
 
 class B2PriorClassLookupTests(unittest.TestCase):
@@ -142,5 +143,36 @@ class B2RaceEligibilityTests(unittest.TestCase):
         self.assertEqual(sum(x["winner_share"] for x in prepared[0]["rows"]), 1.0)
 
 
-if __name__ == "__main__":
+
+class B2CandidateFitSmokeTests(unittest.TestCase):
+    def test_design_applies_shrink_to_base_and_class_but_not_rating(self):
+        row = {"candidate_features": {"all": {
+            "base_score": 2.0, "class_features": {"MAIDEN": 0.2},
+            "local_feature": 0.1, "jra_runs_selected": 2, "rating_delta": 4.0
+        }}}
+        spec = {"policy": "all", "class": True, "shrink": True, "local": False, "rating": True}
+        base, columns = candidate_design(row, spec, 2)
+        self.assertAlmostEqual(base, 1.0)
+        self.assertAlmostEqual(columns[0], 0.1)
+        self.assertAlmostEqual(columns[-1], 4.0)
+
+    def test_candidate_fit_returns_finite_coefficients(self):
+        spec = {"policy": "all", "class": True, "shrink": False, "local": False, "rating": False}
+        races = []
+        for r in range(6):
+            rows = []
+            for h in range(5):
+                rows.append({
+                    "winner_share": 1.0 if h == (r % 5) else 0.0,
+                    "candidate_features": {"all": {
+                        "base_score": (4-h)*0.1,
+                        "class_features": {"MAIDEN": (h-2)*0.1, "UNKNOWN_JRA": 0.0},
+                        "local_feature": 0.0, "jra_runs_selected": 3, "rating_delta": 0.0
+                    }}
+                })
+            races.append({"rows": rows})
+        theta = fit_theta(races, spec, 0.01, 0, 0.75)
+        self.assertEqual(len(theta), 7)
+        self.assertTrue(all(__import__("math").isfinite(float(x)) for x in theta))
+\n\nif __name__ == "__main__":
     unittest.main(verbosity=2)
