@@ -387,7 +387,23 @@ def evaluate_split(train, test, split_name):
             ],
         }
 
+    b0_tau1_ll = score_summary(test, b0_score, 1.0)["_ll"]
     for name, record in staged.items():
+        pred_by_race = {p["race_id"]: p for p in record["predictions"]}
+        raw_tau1_ll = []
+        for race in test:
+            pred = pred_by_race.get(race.get("race_id"))
+            if pred is None:
+                raw_tau1_ll.append(float("nan"))
+                continue
+            prob_by_hid = {str(h["hid"]): h["probability_tau_1"] for h in pred["horses"]}
+            raw_tau1_ll.append(sum(
+                float(row.get("winner_share", 0.0)) * math.log(max(prob_by_hid.get(str(row.get("hid")), 0.0), 1e-15))
+                for row in race["rows"]
+            ))
+        raw_d = np.asarray(raw_tau1_ll, dtype=float) - b0_tau1_ll
+        record["raw_score_tau_1_delta_vs_B0_tau_1"] = float(np.nanmean(raw_d))
+        record["raw_score_tau_1_delta_vs_B0_tau_1_95_ci"] = bootstrap_ci(raw_d[np.isfinite(raw_d)])
         if name == "B0-original":
             record["delta_vs_B0_original"] = 0.0
             record["delta_vs_B0_original_95_ci"] = [0.0, 0.0]
