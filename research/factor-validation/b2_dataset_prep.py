@@ -77,6 +77,14 @@ def _history_seed(bundle, cutoff, result_races=None):
         seeded[hid].sort(key=lambda x:x["date"])
     return seeded
 
+def supported_history_schema(bundle):
+    if not isinstance(bundle,dict):
+        return False
+    if isinstance(bundle.get("horses"),dict):
+        return True
+    return any(isinstance(v,dict) and isinstance(v.get("runs"),list) for v in bundle.values())
+
+
 def prepare(races, aliases=None, horse_history=None):
     first_date=min((d for d in (iso(r.get("date")) for r in races) if d), default=None)
     by_horse=_history_seed(horse_history or {}, first_date, races) if first_date else collections.defaultdict(list)
@@ -184,8 +192,8 @@ def main():
             and str(r.get("surface","")).strip() in ("芝","ダート") and r.get("dist")
         ),
         "seed_history_horses":len(_history_seed(horse_history or {}, min((d for d in (iso(r.get("date")) for r in races) if d), default=dt.date.max), races)) if horse_history else 0,
-        "horse_history_schema_supported":bool(isinstance(horse_history,dict) and isinstance(horse_history.get("horses"),dict)) if horse_history else False,
-        "horse_history_warning":"Snapshot contains races/runners, not horses/{id}/runs; no prior race history can be seeded from this file." if horse_history and not (isinstance(horse_history,dict) and isinstance(horse_history.get("horses"),dict)) else None,
+        "horse_history_schema_supported":supported_history_schema(horse_history) if horse_history else False,
+        "horse_history_warning":"Horse-history input is not a supported horse-ID to {profile,runs} mapping; no prior race history can be seeded from this file." if horse_history and not supported_history_schema(horse_history) else None,
         "seed_class_join":"strictly-prior result race by date+venue+runner ID; ambiguous/missing classes remain unknown",
         "seed_history_cutoff":min((r["date"] for r in prepared),default=None),
         "date_min":min((r["date"] for r in prepared),default=None),
