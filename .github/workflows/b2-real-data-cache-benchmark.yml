@@ -1,0 +1,58 @@
+name: B2 real-data cache benchmark
+
+on:
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 130
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: optimize-b2-cache-progress
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install --disable-pip-version-check numpy scipy
+      - name: Download baseline artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: b2-historical-data-audit
+          repository: sigulun555-lab/win5-lab
+          run-id: 40882658354
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: baseline-artifact
+      - name: Prepare identical input and reference output
+        run: |
+          set -euo pipefail
+          mkdir -p reports
+          cp baseline-artifact/reports/b2-prepared-races.json reports/
+          cp baseline-artifact/reports/b2-candidate-validation.json reports/b2-baseline-candidate-validation.json
+          cp baseline-artifact/reports/b2-horse-pages-manifest.json reports/
+          cp baseline-artifact/reports/b2-horse-pages-audit.json reports/
+          cp baseline-artifact/reports/b2-race-dataset-reconciliation.json reports/
+          sha256sum reports/b2-prepared-races.json reports/b2-baseline-candidate-validation.json
+      - name: Run cached fit and measure elapsed time
+        run: |
+          set -euo pipefail
+          /usr/bin/time -f 'CACHED_FIT_ELAPSED_SECONDS=%e' -o reports/b2-cached-fit-time.txt python research/factor-validation/fit_b2_candidates.py reports/b2-prepared-races.json --out reports/b2-cached-candidate-validation.json --history-manifest reports/b2-horse-pages-manifest.json --history-audit reports/b2-horse-pages-audit.json --race-reconciliation reports/b2-race-dataset-reconciliation.json 2>&1 | tee reports/b2-cached-fit.log
+          cat reports/b2-cached-fit-time.txt
+      - name: Compare all numeric results to baseline
+        run: python scripts/compare_b2_benchmark_outputs.py reports/b2-baseline-candidate-validation.json reports/b2-cached-candidate-validation.json --out reports/b2-cache-benchmark-comparison.json
+      - name: Upload benchmark report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b2-real-data-cache-benchmark
+          path: |
+            reports/b2-cached-fit-time.txt
+            reports/b2-cached-fit.log
+            reports/b2-cache-benchmark-comparison.json
+            reports/b2-cached-candidate-validation.sha256
+          if-no-files-found: warn
+          retention-days: 14
