@@ -299,6 +299,17 @@ def candidate_data_coverage(runner_rows, policy):
     }
 
 
+def coefficient_names(spec):
+    if not isinstance(spec, dict):
+        return []
+    names = list(GAMMA_CATS) if spec.get("class") else []
+    if spec.get("local"):
+        names.append("eta_LOCAL")
+    if spec.get("rating"):
+        names.append("rho")
+    return names
+
+
 def evaluate_split(train, test, split_name):
     report = {
         "split": split_name,
@@ -371,6 +382,7 @@ def evaluate_split(train, test, split_name):
         policy = spec.get("policy", "all") if isinstance(spec, dict) else "all"
         staged[name] = {
             "params": {k: v for k, v in params.items() if k != "theta"},
+            "coefficient_names": coefficient_names(spec),
             "coefficients": params.get("theta", []),
             "data_coverage_scope": "all runner observations in this fold's train and test sets",
             "data_coverage": candidate_data_coverage([row for race in train + test for row in race["rows"]], policy),
