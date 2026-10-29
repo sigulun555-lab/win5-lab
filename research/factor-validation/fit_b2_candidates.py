@@ -12,6 +12,7 @@ import datetime as dt
 import hashlib
 import json
 import math
+from collections import OrderedDict
 from pathlib import Path
 import numpy as np
 from scipy.optimize import minimize
@@ -120,6 +121,11 @@ def candidate_design(row, spec, k):
         cols.append(float(f.get("rating_delta", 0.0)))
     return base, np.asarray(cols, dtype=float)
 
+# Bounded cache for fit designs reused across the L2/tau search grid.
+_FIT_DESIGN_CACHE = OrderedDict()
+_FIT_DESIGN_CACHE_MAX = 6
+
+
 def fit_theta(races, spec, l2, k, tau=1.0):
     names = []
     if spec["class"]:
@@ -131,25 +137,35 @@ def fit_theta(races, spec, l2, k, tau=1.0):
     if not names:
         return np.zeros(0, dtype=float)
     bounds = [(-1.0, 0.0) if name == "eta_LOCAL" else (None, None) for name in names]
-    # Vectorize the conditional-logit objective across races. The previous
-    # implementation looped over every race on every optimizer iteration; the
-    # nested grid search invokes hundreds of fits, making that Python loop the
-    # dominant runtime cost. Padding is masked with -inf only for logsumexp;
-    # target values at padded positions remain zero.
-    n_races = len(races)
-    max_field = max(len(race["rows"]) for race in races)
-    n_features = len(names)
-    bases = np.zeros((n_races, max_field), dtype=float)
-    matrices = np.zeros((n_races, max_field, n_features), dtype=float)
-    targets = np.zeros((n_races, max_field), dtype=float)
-    mask = np.zeros((n_races, max_field), dtype=bool)
-    for i, race in enumerate(races):
-        designs = [candidate_design(row, spec, k) for row in race["rows"]]
-        n = len(designs)
-        bases[i, :n] = [x[0] for x in designs]
-        matrices[i, :n, :] = np.vstack([x[1] for x in designs])
-        targets[i, :n] = target_vec(race)
-        mask[i, :n] = True
+    # The design arrays depend on races/spec/k, but not on L2 or tau.
+    cache_key = (
+        tuple(id(race) for race in races),
+        spec.get("policy", "all"), bool(spec.get("class")), bool(spec.get("local")),
+        bool(spec.get("shrink")), bool(spec.get("rating")), int(k),
+    )
+    cached = _FIT_DESIGN_CACHE.get(cache_key)
+    if cached is not None:
+        _FIT_DESIGN_CACHE.move_to_end(cache_key)
+        bases, matrices, targets, mask = cached
+    else:
+        n_races = len(races)
+        max_field = max(len(race["rows"]) for race in races)
+        n_features = len(names)
+        bases = np.zeros((n_races, max_field), dtype=float)
+        matrices = np.zeros((n_races, max_field, n_features), dtype=float)
+        targets = np.zeros((n_races, max_field), dtype=float)
+        mask = np.zeros((n_races, max_field), dtype=bool)
+        for i, race in enumerate(races):
+            designs = [candidate_design(row, spec, k) for row in race["rows"]]
+            n = len(designs)
+            bases[i, :n] = [x[0] for x in designs]
+            matrices[i, :n, :] = np.vstack([x[1] for x in designs])
+            targets[i, :n] = target_vec(race)
+            mask[i, :n] = True
+        _FIT_DESIGN_CACHE[cache_key] = (bases, matrices, targets, mask)
+        _FIT_DESIGN_CACHE.move_to_end(cache_key)
+        while len(_FIT_DESIGN_CACHE) > _FIT_DESIGN_CACHE_MAX:
+            _FIT_DESIGN_CACHE.popitem(last=False)
 
     def objective(theta):
         # Stable, vectorized conditional-logit objective and exact gradient.
