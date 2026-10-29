@@ -411,6 +411,7 @@ def main():
     ap.add_argument("--spec", type=Path, default=Path("docs/win5/2026-10-25-gpt-b2-model-spec.md"))
     ap.add_argument("--aliases", type=Path, default=Path("research/factor-validation/b2_venue_aliases.json"))
     ap.add_argument("--history-manifest", type=Path)
+    ap.add_argument("--history-audit", type=Path)
     ap.add_argument("--race-reconciliation", type=Path)
     ap.add_argument("--prep-script", type=Path, default=Path("research/factor-validation/b2_dataset_prep.py"))
     ap.add_argument("--features-script", type=Path, default=Path("research/factor-validation/b2_features.py"))
@@ -425,6 +426,7 @@ def main():
     no_prior_history_rows = sum(int(row.get("prior_runs", 0) or 0) == 0 for row in runner_rows)
     missing_popularity_rows = sum(row.get("pop") in (None, "") for row in runner_rows)
     history_manifest = json.loads(args.history_manifest.read_text(encoding="utf-8")) if args.history_manifest else None
+    history_audit = json.loads(args.history_audit.read_text(encoding="utf-8")) if args.history_audit else None
     def between(lo, hi):
         return [r for r in races if dt.date.fromisoformat(lo) <= r["_day"] <= dt.date.fromisoformat(hi)]
     folds = [
@@ -452,6 +454,9 @@ def main():
         "features_implementation": str(args.features_script), "features_implementation_sha256": sha(args.features_script),
         "history_manifest": str(args.history_manifest) if args.history_manifest else None,
         "history_manifest_sha256": sha(args.history_manifest) if args.history_manifest else None,
+        "history_audit": str(args.history_audit) if args.history_audit else None,
+        "history_audit_sha256": sha(args.history_audit) if args.history_audit else None,
+        "history_audit_summary": ({k: history_audit.get(k) for k in ("status", "output_horse_count", "total_runs", "zero_run_horses", "horses_with_exactly_four_runs_potentially_limited", "horses_with_one_to_four_runs", "compressed_sha256", "uncompressed_sha256")} if history_audit else None),
         "history_manifest_summary": ({k: history_manifest.get(k) for k in ("started_at_jst", "finished_at_jst", "requested", "succeeded", "missing", "horses_with_zero_runs", "total_runs", "cnames_sha256", "horses_json_sha256", "horses_json_gz_sha256", "script_sha256")} if history_manifest else None),
         "race_reconciliation": str(args.race_reconciliation) if args.race_reconciliation else None,
         "race_reconciliation_sha256": sha(args.race_reconciliation) if args.race_reconciliation else None,
