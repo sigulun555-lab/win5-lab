@@ -96,8 +96,9 @@ def prepare(races, aliases=None, horse_history=None):
             except (TypeError,ValueError): place=None
             valid.append((row,num,pop,place))
         winners=[x for x in valid if x[3]==1]
-        # Keep multi-winner races; label each recorded winner equally.
-        if len(valid)<5 or not winners or not race.get("dist") or race.get("surface") not in ("芝","ダート"):
+        # Preregistered eligibility requires exactly one recorded first-place runner.
+        # Multi-winner races are excluded before any model fitting; never fractional-label them.
+        if len(valid)<5 or len(winners)!=1 or not race.get("dist") or race.get("surface") not in ("芝","ダート"):
             continue
         rid=f"{date.isoformat()}|{race.get('venue')}|{race.get('rn')}"
         out=[]
@@ -108,7 +109,7 @@ def prepare(races, aliases=None, horse_history=None):
             features=b_score(hist,date.isoformat(),aliases=aliases)
             out.append({
                 "hid":str(row["hid"]), "num":num, "pop":min(pop,18),
-                "place":place, "winner_share":(1.0/len(winners) if place==1 else 0.0),
+                "place":place, "winner_share":(1.0 if place==1 else 0.0),
                 "b2_score":features["score"], "prior_runs":features["selected_runs"],
                 "jra_prior_runs":features["jra_runs_selected"],
                 "class":race.get("cls",""), "race_id":rid
@@ -161,7 +162,12 @@ def main():
     args.out.write_text(payload,encoding="utf-8")
     print(json.dumps({"status":"prepared_not_fitted","input_races_raw":len(races_raw),"duplicate_race_key_count":len(duplicate_keys),"input_races_deduplicated":len(races),
         "prepared_races":len(prepared),"prepared_runner_rows":sum(len(r["rows"]) for r in prepared),
-        "multi_winner_races":sum(r["winner_count"]>1 for r in prepared),
+        "multi_winner_races_in_prepared":sum(r["winner_count"]>1 for r in prepared),
+        "multi_winner_races_excluded":sum(
+            1 for r in races
+            if len([x for x in r.get("rows",[]) if isinstance(x,dict) and str(x.get("place","")).strip()=="1"]) > 1
+            and str(r.get("surface","")).strip() in ("芝","ダート") and r.get("dist")
+        ),
         "seed_history_horses":len(_history_seed(horse_history or {}, min((d for d in (iso(r.get("date")) for r in races) if d), default=dt.date.max), races)) if horse_history else 0,
         "horse_history_schema_supported":bool(isinstance(horse_history,dict) and isinstance(horse_history.get("horses"),dict)) if horse_history else False,
         "horse_history_warning":"Snapshot contains races/runners, not horses/{id}/runs; no prior race history can be seeded from this file." if horse_history and not (isinstance(horse_history,dict) and isinstance(horse_history.get("horses"),dict)) else None,
