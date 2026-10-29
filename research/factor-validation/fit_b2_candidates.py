@@ -198,7 +198,13 @@ def tune_candidate(train, spec, is_b0=False):
                     if is_b0:
                         scorer = b0_score
                     else:
-                        theta = fit_theta(inner_train, spec, l2, k, tau)
+                        try:
+                            theta = fit_theta(inner_train, spec, l2, k, tau)
+                        except RuntimeError as exc:
+                            raise RuntimeError(
+                                f"inner fit failed for candidate_spec={spec}, l2={l2}, k={k}, tau={tau}, "
+                                f"block={year:04d}-{month:02d}: {exc}"
+                            ) from exc
                         scorer = lambda row, t=theta, kk=k, ss=spec: raw_score(row, ss, t, kk)
                     block_scores = model_ll(inner_val, scorer, tau)
                     if len(block_scores):
