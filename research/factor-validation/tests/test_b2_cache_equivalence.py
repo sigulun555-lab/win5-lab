@@ -11,7 +11,7 @@ from unittest.mock import patch
 
 import numpy as np
 
-MODULE_PATH = Path(__file__).resolve().parent / "fit_b2_candidates.py"
+MODULE_PATH = Path(__file__).resolve().parents[1] / "fit_b2_candidates.py"
 SPEC = importlib.util.spec_from_file_location("fit_b2_candidates_under_test", MODULE_PATH)
 FIT = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(FIT)
