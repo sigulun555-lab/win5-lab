@@ -167,7 +167,18 @@ def main():
         return (str(iso(r.get("date")) or r.get("date","")),str(r.get("venue","")).strip(),str(r.get("rn",r.get("race_no",""))))
     def completeness(r):
         rows=r.get("rows",[])
-        return sum(1 for x in rows if isinstance(x,dict) and x.get("place") not in (None,"") and x.get("pop") not in (None,"")) if isinstance(rows,list) else 0
+        if not isinstance(rows,list):
+            return (0,0,0)
+        numeric_finishers = sum(
+            1 for x in rows if isinstance(x,dict) and x.get("hid") not in (None,"")
+            and str(x.get("num","")).strip().isdigit() and int(str(x.get("num","")).strip()) > 0
+            and str(x.get("place","")).strip().isdigit() and int(str(x.get("place","")).strip()) > 0
+        )
+        populated_popularity = sum(
+            1 for x in rows if isinstance(x,dict) and x.get("pop") not in (None,"")
+            and str(x.get("pop","")).strip().isdigit() and int(str(x.get("pop","")).strip()) > 0
+        )
+        return (numeric_finishers, populated_popularity, len(rows))
     for race in races_raw:
         k=race_key(race)
         if k in deduped:
