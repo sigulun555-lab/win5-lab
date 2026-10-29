@@ -360,10 +360,8 @@ def evaluate_split(train, test, split_name):
         staged[name] = {
             "params": {k: v for k, v in params.items() if k != "theta"},
             "coefficients": params.get("theta", []),
-            "data_coverage": candidate_data_coverage(
-                runner_rows if "runner_rows" in locals() else [row for race in train + test for row in race["rows"]],
-                policy
-            ),
+            "data_coverage_scope": "all runner observations in this fold's train and test sets",
+            "data_coverage": candidate_data_coverage([row for race in train + test for row in race["rows"]], policy),
             **summary,
             "delta_vs_popularity_only": float(delta_pop.mean()),
             "delta_vs_popularity_only_95_ci": bootstrap_ci(delta_pop),
