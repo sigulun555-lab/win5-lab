@@ -13,7 +13,7 @@ concurrency:
 jobs:
   collect-parse-audit:
     runs-on: ubuntu-latest
-    timeout-minutes: 170
+    timeout-minutes: 350
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
