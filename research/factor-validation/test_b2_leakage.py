@@ -8,7 +8,7 @@ import json
 import unittest
 from pathlib import Path
 
-from b2_features import b_score, eligible_prior_runs, classify_venue
+from b2_features import b_score, eligible_prior_runs, classify_venue, classify_race_class
 
 
 class B2LeakageTests(unittest.TestCase):
@@ -48,6 +48,11 @@ class B2LeakageTests(unittest.TestCase):
         self.assertEqual(classify_venue("名古", aliases), "LOCAL")
         self.assertEqual(classify_venue("米", aliases), "UNCLASSIFIABLE")
         self.assertEqual(classify_venue("不明競馬場", aliases), "UNCLASSIFIABLE")
+
+    def test_preregistered_short_overseas_alias_and_explicit_class_tokens(self):
+        self.assertEqual(classify_venue("サウ"), "OVERSEAS")
+        self.assertEqual(classify_race_class("3歳以上1勝クラス", "JRA"), "1WIN")
+        self.assertEqual(classify_race_class("三宮S", "JRA"), "UNKNOWN_JRA")
 
 
 from b2_class_lookup import build_prior_class_lookup, lookup_prior_class
