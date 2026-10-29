@@ -1,0 +1,58 @@
+# GPT側 B2実装状況（2026-10-29）
+
+## 状態
+
+**実装レビュー待ち。係数推定・本検証の実行結果はまだない。** この文書は進捗共有用であり、モデル採用の根拠ではない。
+
+## Claude側の履歴取得
+
+- GitHub Actions: https://github.com/sigulun555-lab/win5-lab/actions/runs/40836304108
+- 直近の状態確認では取得ステップが `in_progress`、b2-dataへの保存ステップは未開始。
+- 完了後は `b2-data/horse-pages/horses-<時刻>.json.gz` と `manifest-<時刻>.json` を使用する。GPT側で重複取得しない。
+- `scripts/audit_b2_horse_pages.py` は圧縮／展開SHA256、cnames SHA256、要求数＝成功数＋欠損数、入力IDの成功／欠損分割、履歴件数を監査する。取得ゼロ件または走歴ゼロ件の場合は失敗にする。
+
+## 実装済みのコード経路
+
+1. `research/factor-validation/compare_b2_race_datasets.py`
+   - 日付・競馬場・レース番号を正規化して照合。
+   - 対象期間（2026-08-01〜2026-10-24）の current-only / reference-only キーと、各レースの適格性理由を出力。
+   - 適格性は芝・ダート、距離あり、数値着順の有効馬5頭以上、1着馬ちょうど1頭。人気欠損は除外理由にせず、件数を別記する。
+
+2. `research/factor-validation/build_b2_venue_aliases.py`
+   - レース結果と全馬履歴の競馬場名を集約し、事前固定ルールで分類。
+   - `b2_venue_aliases.json` と SHA256 sidecar を係数推定前に生成。
+   - 不明ラベルは推測せず `UNCLASSIFIABLE`。
+
+3. `research/factor-validation/b2_dataset_prep.py`
+   - 数値着順でない走を除外し、出走頭数は非数値着順の出走馬も含めて保持。
+   - 複数勝者レースを除外し、勝者を分数ラベルにしない。
+   - 人気欠損の数値着順馬は残し、人気欠損を理由にレースを落とさない。
+   - 重複レースは数値完走馬数→人気情報充足数→行数の順で決定的に選択。
+   - 各対象日より前の走だけを使い、クラス不一致・曖昧一致は推測しない。
+
+4. `research/factor-validation/fit_b2_candidates.py`
+   - B0-original / B0-refit / B2-a / B2-b1 / B2-b2 / B2-c / B2-d-no-rating / B2-d / B2-full の地方処理・レーティング別候補を実装。
+   - 事前登録グリッド、3か月の拡大窓内側検証、係数推定時の温度反映、収束失敗時の停止を実装。
+   - 対数尤度、Brier、Top-1、Top-3、人気のみとの比較、B0-originalとの比較、レース単位ブートストラップ95%区間、候補別クラス・レーティング充足率、全頭予測、入力・実装・出力SHA256を記録。
+   - 最終人気は事後的な比較用であり、締切前の実運用性能と解釈しない旨を明記。
+
+5. `scripts/audit_race_dataset.py` と `.github/workflows/rebuild-b2-historical-data.yml`
+   - 監査、照合、履歴スナップショット固定、別名辞書生成、テスト、データ準備、候補推定、出力artifact保存を一連の手順にした。
+
+## テスト状況
+
+- `research/factor-validation/test_b2_leakage.py` に、未来走除外、クラス照合、複数勝者除外、人気欠損馬の保持、係数推定スモーク、3ブロックrolling-origin選択のテストを追加。
+- `.github/workflows/test-b2-leakage.yml` は関連コードのpushでテストを起動する設定。
+- **テスト成功はまだ確認できていない。** GitHub Actionsの結果を確認してから合格扱いにする。
+
+## 未完了・次の手順
+
+1. 履歴取得完了を確認し、manifest・監査・欠損率・SHA256を確認。
+2. テストワークフローの実行結果を確認。失敗時は原因を修正し再実行。
+3. Claudeが `main` の実装とこの文書をレビュー。
+4. Claudeが `rebuild-b2-historical-data` を手動実行。
+5. artifactの `b2-race-dataset-reconciliation.json` で 864 対 803＋追加分の差を実数・レースキー・除外理由で説明。
+6. 競馬場別名辞書の実ファイルSHA256を固定したことを確認してから、候補係数・予測の本検証を確認。
+7. F1〜F4の方向一致、95%区間、欠損率、クラス不明率、レーティング対象数をレビュー。事前登録の採用条件を満たすまでBの表示版を維持。
+
+Bの元ファイル・既存予測・確率は変更しない。仕様・合格条件を検証結果に合わせて変更しない。
