@@ -5,7 +5,7 @@ Reports exact race-key differences and eligibility reasons by chronological spli
 No model fitting or prediction outputs are changed.
 """
 from __future__ import annotations
-import argparse, collections, gzip, json
+import argparse, collections, gzip, json, datetime as dt
 from pathlib import Path
 
 def load(path):
@@ -17,8 +17,24 @@ def load(path):
         raise ValueError(f"{path}: expected top-level list")
     return doc
 
+def normalized_date(value):
+    text=str(value or "").strip()
+    for fmt in ("%Y-%m-%d","%Y/%m/%d","%Y.%m.%d","%Y年%m月%d日"):
+        try:
+            return dt.datetime.strptime(text,fmt).date().isoformat()
+        except ValueError:
+            pass
+    return text
+
+def normalized_race_no(value):
+    try:
+        return str(int(str(value).strip()))
+    except (ValueError,TypeError):
+        return str(value or "").strip()
+
 def key(r):
-    return (str(r.get("date","")),str(r.get("venue","")).strip(),str(r.get("rn",r.get("race_no",""))))
+    return (normalized_date(r.get("date")),str(r.get("venue","")).strip(),
+            normalized_race_no(r.get("rn",r.get("race_no",""))))
 
 def row_count_and_winners(r):
     # Eligibility is based on numeric finishers and valid runner numbers, not popularity.
