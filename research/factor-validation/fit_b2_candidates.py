@@ -165,7 +165,7 @@ def tune_candidate(train, spec, is_b0=False):
     for l2 in l2_values:
         for k in k_values:
             for tau in tau_values:
-                block_ll = []
+                block_means = []
                 for year, month in months:
                     start = dt.date(year, month, 1)
                     end = add_month(start, 1)
@@ -174,15 +174,18 @@ def tune_candidate(train, spec, is_b0=False):
                     if not inner_train or not inner_val:
                         continue
                     if is_b0:
-                        theta = np.zeros(0)
                         scorer = b0_score
                     else:
                         theta = fit_theta(inner_train, spec, l2, k, tau)
-                        scorer = lambda row, t=theta, kk=k: raw_score(row, spec, t, kk)
-                    block_ll.extend(model_ll(inner_val, scorer, tau).tolist())
-                if len(block_ll) < 3:
+                        scorer = lambda row, t=theta, kk=k, ss=spec: raw_score(row, ss, t, kk)
+                    block_scores = model_ll(inner_val, scorer, tau)
+                    if len(block_scores):
+                        block_means.append(float(np.mean(block_scores)))
+                # All three preregistered expanding-window validation blocks are required;
+                # average the three block means equally rather than weighting by race count.
+                if len(block_means) != 3:
                     continue
-                combos.append((float(np.mean(block_ll)), l2, k, tau))
+                combos.append((float(np.mean(block_means)), l2, k, tau))
     if not combos:
         raise ValueError("no valid inner rolling-origin combinations")
     # Highest mean log likelihood; ties: larger L2, smaller k, tau nearest 1.0.
