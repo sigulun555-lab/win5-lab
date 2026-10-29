@@ -48,6 +48,13 @@ def classify_race_class(value: Any, venue_type: str = "JRA", class_aliases: dict
     }
     if label in exact: return exact[label]
     if any(token in label for token in ("GⅠ","GⅡ","GⅢ","ＧⅠ","ＧⅡ","ＧⅢ")): return "GRADED"
+    # Age/sex qualifiers may surround the explicit class label; map only the registered tokens.
+    if "新馬" in label or "メイクデビュー" in label: return "DEBUT"
+    if "未勝利" in label: return "MAIDEN"
+    if "1勝クラス" in label or "１勝クラス" in label or "500万下" in label: return "1WIN"
+    if "2勝クラス" in label or "２勝クラス" in label or "1000万下" in label: return "2WIN"
+    if "3勝クラス" in label or "３勝クラス" in label or "1600万下" in label: return "3WIN"
+    if "リステッド" in label or "オープン" in label or label == "OP": return "OP_L"
     # Names such as 三宮S need a prior-only results join, never name guessing.
     return "UNKNOWN_JRA"
 
