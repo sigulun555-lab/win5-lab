@@ -1,0 +1,47 @@
+name: fetch-b2-horse-pages
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: fetch-b2-horse-pages
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 170
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: 馬ごとの競走馬情報ページを取得（B2の検証用の入力）
+        run: |
+          python collector/fetch_horse_pages.py \
+            --cnames research/factor-validation/data/horse_cnames.json.gz \
+            --out-dir out --workers 5 --passes 3
+      - name: 結果を b2-data ブランチに保存
+        if: always()
+        run: |
+          set -e
+          test -f out/manifest.json || { echo "出力がありません"; exit 1; }
+          REMOTE="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          git config --global user.name "fetch-b2-horse-pages"
+          git config --global user.email "fetch-b2-horse-pages@users.noreply.github.com"
+          if git ls-remote --exit-code --heads "$REMOTE" b2-data >/dev/null 2>&1; then
+            git clone --depth 1 --branch b2-data "$REMOTE" data
+          else
+            mkdir data && cd data && git init -q -b b2-data && git remote add origin "$REMOTE" && cd ..
+          fi
+          STAMP=$(date -u +%Y%m%dT%H%M%SZ)
+          mkdir -p data/horse-pages
+          cp out/horses.json.gz "data/horse-pages/horses-$STAMP.json.gz"
+          cp out/manifest.json "data/horse-pages/manifest-$STAMP.json"
+          cd data
+          git add horse-pages
+          git commit -q -m "B2 horse pages $STAMP"
+          for i in 1 2 3; do git push origin b2-data && break || sleep 5; done
