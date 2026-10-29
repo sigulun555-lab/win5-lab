@@ -102,7 +102,7 @@ class B2DatasetClassJoinTests(unittest.TestCase):
         bundle = {"runner": {"profile": {}, "runs": [
             {"date": "2026-01-01", "venue": "東京", "place": "2", "field": "10"}
         ]}}
-        seeded = _history_seed(bundle, __import__("datetime").date(2026, 1, 5), self.races)
+        seeded = _history_seed(bundle, __import__("datetime").date(2026, 1, 5), [])
         self.assertEqual(seeded["runner"][0]["place"], 2)
 
     def test_ambiguous_duplicate_race_match_stays_unknown(self):
