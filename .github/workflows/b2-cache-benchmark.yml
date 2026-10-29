@@ -34,7 +34,7 @@ jobs:
       - name: Download pinned prepared dataset artifact
         env:
           GH_TOKEN: ${{ github.token }}
-          SOURCE_RUN_ID: ${{ inputs.source_run_id }}
+          SOURCE_RUN_ID: ${{ inputs.source_run_id || '40882658354' }}
         shell: bash
         run: |
           set -euo pipefail
