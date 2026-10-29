@@ -21,6 +21,8 @@ def audit(doc: object) -> dict:
     runner_rows = 0
     winner_races = 0
     valid_pop_place_rows = 0
+    numeric_finishers = 0
+    missing_popularity_rows = 0
     for idx, race in enumerate(doc):
         if not isinstance(race, dict):
             issues["non_object_race"] += 1
@@ -49,27 +51,38 @@ def audit(doc: object) -> dict:
             continue
         runner_rows += len(rows)
         valid_rows = []
+        field_size = sum(
+            1 for row in rows if isinstance(row, dict)
+            and str(row.get("num", "")).strip().isdigit()
+            and int(str(row.get("num", "")).strip()) > 0
+        )
         for row in rows:
             if not isinstance(row, dict):
                 issues["non_object_runner"] += 1
                 continue
-            missing = [k for k in ("num", "pop", "hid", "place") if row.get(k) in (None, "", 0) and k != "place"]
-            # place=0 is invalid too, but use a distinct required check.
-            if row.get("place") in (None, "", 0):
-                missing.append("place")
-            if missing:
-                issues["runner_missing_" + ",".join(missing)] += 1
-            if all(row.get(k) not in (None, "") for k in ("num", "pop", "hid", "place")):
-                try:
-                    num, pop, place = int(row["num"]), int(row["pop"]), int(row["place"])
-                    if num > 0 and pop > 0 and place > 0:
-                        valid_rows.append(row)
-                        valid_pop_place_rows += 1
-                    else:
-                        issues["nonpositive_runner_value"] += 1
-                except (ValueError, TypeError):
-                    issues["nonnumeric_runner_value"] += 1
-        wins = sum(1 for row in valid_rows if row.get("place") == 1 or str(row.get("place")) == "1")
+            if row.get("hid") in (None, ""):
+                issues["runner_missing_hid"] += 1
+                continue
+            try:
+                num, place = int(str(row.get("num", "")).strip()), int(str(row.get("place", "")).strip())
+            except (ValueError, TypeError):
+                issues["nonnumeric_num_or_place"] += 1
+                continue
+            if num <= 0 or place <= 0 or place > field_size:
+                issues["invalid_numeric_finish"] += 1
+                continue
+            valid_rows.append({**row, "_place_int": place})
+            numeric_finishers += 1
+            try:
+                pop = int(str(row.get("pop", "")).strip())
+                if pop > 0:
+                    valid_pop_place_rows += 1
+                else:
+                    missing_popularity_rows += 1
+            except (ValueError, TypeError):
+                missing_popularity_rows += 1
+                issues["runner_missing_or_invalid_popularity"] += 1
+        wins = sum(1 for row in valid_rows if row.get("_place_int") == 1)
         if wins == 1:
             winner_races += 1
         if len(valid_rows) >= 5 and race.get("dist") and race.get("surface") in ("芝", "ダート") and wins == 1:
@@ -99,8 +112,10 @@ def audit(doc: object) -> dict:
         "race_count": len(doc),
         "runner_rows": runner_rows,
         "rows_with_numeric_num_pop_hid_place": valid_pop_place_rows,
+        "numeric_finisher_rows": numeric_finishers,
+        "runner_rows_missing_final_popularity": missing_popularity_rows,
         "races_with_exactly_one_valid_first_place": winner_races,
-        "eligible_for_existing_model_filter": eligible,
+        "eligible_for_preregistered_b2_filter": eligible,
         "date_min": date_min,
         "date_max": date_max,
         "date_counts": dict(sorted(date_counts.items())),
@@ -111,7 +126,8 @@ def audit(doc: object) -> dict:
         "blockers": blockers,
         "limitations": [
             "Passing this audit does not prove source completeness or leakage-free features.",
-            "Rows failing eligibility filters are reported, not imputed.",
+            "Rows failing numeric-finish eligibility filters are reported, not imputed.",
+            "Missing final popularity does not exclude a numeric finisher from B2; the popularity-only benchmark treats its popularity feature as absent and reports the missingness."
             "Check historical data source, retrieval timestamps, coverage, and strict prior-only feature generation separately."
         ],
     }
