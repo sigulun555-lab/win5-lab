@@ -4,6 +4,9 @@ on:
   push:
     paths:
       - "research/factor-validation/b2_features.py"
+      - "research/factor-validation/b2_dataset_prep.py"
+      - "research/factor-validation/b2_class_lookup.py"
+      - "research/factor-validation/fit_b2_candidates.py"
       - "research/factor-validation/test_b2_leakage.py"
       - ".github/workflows/test-b2-leakage.yml"
   workflow_dispatch:
