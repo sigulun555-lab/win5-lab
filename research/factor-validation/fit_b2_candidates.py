@@ -280,11 +280,23 @@ def evaluate_split(train, test, split_name):
 
     pop_theta = fit_popularity(train)
     pop_test_ll = popularity_ll(test, pop_theta)
+    pop_brier, pop_top1, pop_top3 = [], [], []
+    for race in test:
+        p = softmax(popularity_matrix(race) @ pop_theta, 1.0)
+        y = target_vec(race)
+        winner = int(np.argmax(y))
+        order = np.argsort(-p)
+        pop_brier.append(race_brier(race, p))
+        pop_top1.append(float(order[0] == winner))
+        pop_top3.append(float(winner in order[:min(3, len(order))]))
+    uniform_ll = np.asarray([-math.log(len(r["rows"])) for r in test], dtype=float)
     report["popularity_only"] = {
         "mean_log_likelihood": float(pop_test_ll.mean()),
-        "delta_vs_uniform_95_ci": bootstrap_ci(pop_test_ll - np.asarray([-math.log(len(r['rows'])) for r in test])),
+        "mean_brier": float(np.mean(pop_brier)),
+        "top1_rate": float(np.mean(pop_top1)),
+        "top3_rate": float(np.mean(pop_top3)),
+        "delta_vs_uniform_95_ci": bootstrap_ci(pop_test_ll - uniform_ll),
     }
-    uniform_ll = np.asarray([-math.log(len(r["rows"])) for r in test], dtype=float)
     uniform_brier = np.asarray([1.0 - 1.0 / len(r["rows"]) for r in test], dtype=float)
     report["uniform_all_horses_equal"] = {
         "mean_log_likelihood": float(uniform_ll.mean()),
