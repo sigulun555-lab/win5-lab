@@ -95,7 +95,14 @@ class B2DatasetClassJoinTests(unittest.TestCase):
             {"date": "2026-01-04", "venue": "東京", "cls": "G2", "rows": [{"hid": "winner3", "place": 1}, {"hid": "runner", "place": 2}]},
         ]
         seeded = _history_seed(bundle, __import__("datetime").date(2026, 1, 5), races)
-        self.assertEqual([r["class"] for r in seeded["runner"]], ["G3", "OP"])
+        self.assertEqual([r["class"] for r in seeded["runner"]], ["G3", ""])
+
+    def test_direct_horse_pages_bundle_is_supported(self):
+        bundle = {"runner": {"profile": {}, "runs": [
+            {"date": "2026-01-01", "venue": "東京", "place": "2", "field": "10"}
+        ]}}
+        seeded = _history_seed(bundle, __import__("datetime").date(2026, 1, 5), self.races)
+        self.assertEqual(seeded["runner"][0]["place"], 2)
 
     def test_ambiguous_duplicate_race_match_stays_unknown(self):
         bundle = {"horses": {"runner": {"runs": [{"date": "2026-01-01", "venue": "東京", "place": "2", "field": "10"}]}}}
