@@ -99,16 +99,17 @@ def audit(doc: object) -> dict:
     date_min = min(date_counts) if date_counts else None
     date_max = max(date_counts) if date_counts else None
     blockers = []
+    warnings = []
     if not doc:
         blockers.append("Dataset contains no races.")
     if not eligible:
         blockers.append("No races meet the existing model's minimum eligibility filter.")
     if duplicate_keys:
-        blockers.append("Duplicate (date, venue, race number) keys exist.")
+        warnings.append("Duplicate (date, venue, race number) keys exist; downstream reconciliation and preparation deduplicate deterministically and report the affected keys.")
     if issues["invalid_date"] or issues["missing_venue"] or issues["invalid_race_number"]:
         blockers.append("Race identity fields are missing or invalid.")
     return {
-        "status": "pass_basic_integrity_not_leakage_validation" if not blockers else "blocked_integrity_issues",
+        "status": ("blocked_integrity_issues" if blockers else ("pass_basic_integrity_with_warnings" if warnings else "pass_basic_integrity_not_leakage_validation")),
         "race_count": len(doc),
         "runner_rows": runner_rows,
         "rows_with_numeric_num_pop_hid_place": valid_pop_place_rows,
@@ -124,6 +125,7 @@ def audit(doc: object) -> dict:
         "duplicate_race_keys_first_100": duplicate_keys[:100],
         "problem_race_examples_first_12": examples,
         "blockers": blockers,
+        "warnings": warnings,
         "limitations": [
             "Passing this audit does not prove source completeness or leakage-free features.",
             "Rows failing numeric-finish eligibility filters are reported, not imputed.",
