@@ -159,7 +159,8 @@ def tune_candidate(train, spec, is_b0=False):
     if len(months) != 3:
         raise ValueError("need three inner validation months; got " + repr(months))
     combos = []
-    l2_values = L2_GRID if not is_b0 else (0.01,)
+    has_coefficients = bool(spec.get("class") or spec.get("local") or spec.get("rating"))
+    l2_values = L2_GRID if has_coefficients and not is_b0 else (0.01,)
     k_values = K_GRID if spec.get("shrink") and not is_b0 else (0,)
     tau_values = TAU_GRID if not is_b0 else TAU_GRID
     for l2 in l2_values:
@@ -192,7 +193,7 @@ def tune_candidate(train, spec, is_b0=False):
     combos.sort(key=lambda x: (-x[0], -x[1], x[2], abs(x[3] - 1.0), x[3]))
     best = combos[0]
     theta = np.zeros(0) if is_b0 else fit_theta(train, spec, best[1], best[2], best[3])
-    return {"mean_inner_log_likelihood": best[0], "l2": best[1], "k": best[2],
+    return {"mean_inner_log_likelihood": best[0], "l2": best[1] if has_coefficients and not is_b0 else None, "k": best[2],
             "tau": best[3], "theta": theta.tolist(), "inner_months": [f"{y:04d}-{m:02d}" for y, m in months]}
 
 def popularity_matrix(race):
