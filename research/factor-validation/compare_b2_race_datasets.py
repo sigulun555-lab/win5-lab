@@ -21,19 +21,24 @@ def key(r):
     return (str(r.get("date","")),str(r.get("venue","")).strip(),str(r.get("rn",r.get("race_no",""))))
 
 def row_count_and_winners(r):
+    # Eligibility is based on numeric finishers and valid runner numbers, not popularity.
+    # Missing final popularity is retained and reported separately.
     rows=r.get("rows",r.get("runners",[]))
     valid=[]
     for x in rows if isinstance(rows,list) else []:
         if not isinstance(x,dict): continue
         try:
             place=int(str(x.get("place","")).strip())
-            pop=int(str(x.get("pop","")).strip())
             num=int(str(x.get("num","")).strip())
         except (TypeError,ValueError):
             continue
-        if num>0 and pop>0 and place>0:
+        if num>0 and place>0:
             valid.append(x)
     return len(valid),sum(1 for x in valid if str(x.get("place","")).strip()=="1")
+
+def missing_popularity_count(r):
+    rows=r.get("rows",r.get("runners",[]))
+    return sum(1 for x in rows if isinstance(x,dict) and x.get("place") not in (None,"") and x.get("num") not in (None,"") and x.get("pop") in (None,"")) if isinstance(rows,list) else 0
 
 def reason(r):
     n,w=row_count_and_winners(r)
@@ -58,6 +63,7 @@ def summarize(doc, start, end):
                              "valid_runners":n,"winner_count":w,"reasons":rs})
             reason_counts.update(rs)
     return {"all_races":len(rows),"eligible_exactly_one_winner":len(eligible),
+            "missing_popularity_runner_rows":sum(missing_popularity_count(r) for r in rows),
             "excluded_reason_counts":dict(reason_counts),"excluded_examples":excluded}
 
 def main():
@@ -97,7 +103,7 @@ def main():
         "test_2026-08_to_2026-10-24":summarize(reference,"2026-08-01","2026-10-24"),
         "race_keys_only_here_count":len(only_r),"race_keys_only_here_first_100":only_r[:100]},
       "same_race_key_count":len(ckeys&rkeys),
-      "warning":"Race-key matching is by date, venue, and race number. Eligibility counts require numeric positive place/pop/num, at least 5 valid runners, distance, surface turf/dirt, and exactly one recorded first-place runner."
+      "warning":"Race-key matching is by date, venue, and race number. Eligibility counts require numeric positive place/num, at least 5 numeric finishers, distance, surface turf/dirt, and exactly one recorded first-place runner. Missing final popularity is retained for B2 and counted separately; it is not an exclusion reason."
     }
     out=Path(a.out); out.parent.mkdir(parents=True,exist_ok=True)
     out.write_text(json.dumps(report,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
