@@ -78,5 +78,6 @@ jobs:
             reports/b2-horse-pages.json.gz
             reports/b2-prepared-races.json
             reports/b2-candidate-validation.json
+            reports/b2-candidate-validation.sha256
           if-no-files-found: warn
           retention-days: 14
