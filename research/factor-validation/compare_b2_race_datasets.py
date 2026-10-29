@@ -73,7 +73,7 @@ def reason(r):
     return reasons
 
 def summarize(doc, start, end):
-    rows=[r for r in doc if start <= str(r.get("date","")) <= end]
+    rows=[r for r in doc if start <= normalized_date(r.get("date")) <= end]
     eligible=[r for r in rows if not reason(r)]
     reason_counts=collections.Counter()
     excluded=[]
