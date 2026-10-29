@@ -345,11 +345,14 @@ def evaluate_split(train, test, split_name):
             scorer = lambda row, s=spec, t=theta, kk=k: raw_score(row, s, t, kk)
 
         summary = score_summary(test, scorer, params["tau"])
+        raw_tau_summary = score_summary(test, scorer, 1.0)
         ll = summary.pop("_ll")
+        raw_tau_ll = raw_tau_summary.pop("_ll")
         if name == "B0-original":
             b0_ll = ll
         scores = [[scorer(row) for row in race["rows"]] for race in test]
         probs = [softmax(s, params["tau"]).tolist() for s in scores]
+        probs_tau_1 = [softmax(s, 1.0).tolist() for s in scores]
         # Final popularity is a retrospective benchmark only; it is not treated as pre-off information.
         extra_train = [[scorer(row) for row in race["rows"]] for race in train]
         combined_theta = fit_popularity(train, extra_train, l2=0.01)
@@ -364,6 +367,9 @@ def evaluate_split(train, test, split_name):
             "data_coverage_scope": "all runner observations in this fold's train and test sets",
             "data_coverage": candidate_data_coverage([row for race in train + test for row in race["rows"]], policy),
             **summary,
+            "raw_score_tau_1_metrics": raw_tau_summary,
+            "raw_score_tau_1_delta_vs_popularity_only": float((raw_tau_ll - pop_test_ll).mean()),
+            "raw_score_tau_1_delta_vs_popularity_only_95_ci": bootstrap_ci(raw_tau_ll - pop_test_ll),
             "delta_vs_popularity_only": float(delta_pop.mean()),
             "delta_vs_popularity_only_95_ci": bootstrap_ci(delta_pop),
             "delta_vs_uniform_95_ci": bootstrap_ci(delta_uniform),
@@ -372,19 +378,16 @@ def evaluate_split(train, test, split_name):
             "popularity_plus_candidate_delta_95_ci": bootstrap_ci(combined_delta),
             "predictions": [
                 {"race_id": race.get("race_id"), "date": race["date"],
-                 "horses": [{"hid": row.get("hid"), "num": row.get("num"), "probability": probs[i][j]}
+                 "horses": [{"hid": row.get("hid"), "num": row.get("num"),
+                             "raw_score": scores[i][j],
+                             "probability_tau_1": probs_tau_1[i][j],
+                             "probability": probs[i][j]}
                             for j, row in enumerate(race["rows"])]}
                 for i, race in enumerate(test)
             ],
         }
 
     for name, record in staged.items():
-        ll = score_summary(test, b0_score, FIXED_B0_TAU)["_ll"]
-        candidate_ll = np.asarray([
-            sum(float(h.get("winner_share", 0.0)) * math.log(max(h.get("probability", 0.0), 1e-15))
-                for h in race["rows"])
-            for race in test
-        ]) if False else None
         if name == "B0-original":
             record["delta_vs_B0_original"] = 0.0
             record["delta_vs_B0_original_95_ci"] = [0.0, 0.0]
