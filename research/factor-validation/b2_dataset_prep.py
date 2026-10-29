@@ -9,7 +9,7 @@ from __future__ import annotations
 import argparse, collections, datetime as dt, hashlib, json, sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from b2_features import b_score, classify_venue, classify_race_class
+from b2_features import b_score, candidate_feature_summary, classify_venue, classify_race_class
 
 def iso(value):
     if value is None: return None
@@ -26,7 +26,7 @@ def _prior_result_class_map(result_races, cutoff):
         if not isinstance(race,dict):
             continue
         day=iso(race.get("date"))
-        if day is None or day >= cutoff:
+        if day is None or (cutoff is not None and day >= cutoff):
             continue
         venue=str(race.get("venue") or "").strip()
         cls=str(race.get("cls") or race.get("class") or "").strip()
@@ -43,7 +43,7 @@ def _prior_result_class_map(result_races, cutoff):
 
 def _history_seed(bundle, cutoff, result_races=None):
     """Return numeric prior runs; attach class only from a unique earlier result race."""
-    horses=bundle.get("horses",{}) if isinstance(bundle,dict) else {}
+    horses=bundle.get("horses",{}) if isinstance(bundle,dict) and isinstance(bundle.get("horses"),dict) else (bundle if isinstance(bundle,dict) else {})
     class_map=_prior_result_class_map(result_races or [], cutoff) if cutoff else {}
     seeded=collections.defaultdict(list)
     if not isinstance(horses,dict):
@@ -70,7 +70,8 @@ def _history_seed(bundle, cutoff, result_races=None):
             raw_class=resolved_class or run.get("class","")
             seeded[str(hid)].append({
                 "date":date.isoformat(), "venue":venue,
-                "class":raw_class, "field":field, "place":place
+                "class":raw_class, "field":field, "place":place,
+                "rt":run.get("rt", run.get("rating", ""))
             })
     for hid in seeded:
         seeded[hid].sort(key=lambda x:x["date"])
@@ -107,11 +108,14 @@ def prepare(races, aliases=None, horse_history=None):
             hist=by_horse.get(str(row["hid"]),[])
             # b_score independently enforces strict date < target date.
             features=b_score(hist,date.isoformat(),aliases=aliases)
+            all_features=candidate_feature_summary(hist,date.isoformat(),aliases=aliases,local_policy="downweight")
+            no_local_features=candidate_feature_summary(hist,date.isoformat(),aliases=aliases,local_policy="exclude")
             out.append({
                 "hid":str(row["hid"]), "num":num, "pop":min(pop,18),
                 "place":place, "winner_share":(1.0 if place==1 else 0.0),
                 "b2_score":features["score"], "prior_runs":features["selected_runs"],
                 "jra_prior_runs":features["jra_runs_selected"],
+                "candidate_features":{"all":all_features,"local_excluded":no_local_features},
                 "class":race.get("cls",""), "race_id":rid
             })
         if len(out)<5: continue
