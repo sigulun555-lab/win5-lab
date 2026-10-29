@@ -2,12 +2,15 @@ name: rebuild-b2-historical-data
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - rebuild-b2-vectorized
 
 permissions:
   contents: read
 
 concurrency:
-  group: rebuild-b2-historical-data
+  group: rebuild-b2-historical-data-vectorized
   cancel-in-progress: false
 
 jobs:
