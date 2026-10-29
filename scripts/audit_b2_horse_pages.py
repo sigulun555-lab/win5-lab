@@ -60,6 +60,8 @@ def main():
         "cnames_sha_matches_manifest": sha_bytes(cnames_raw) == manifest.get("cnames_sha256"),
         "requested_count_matches_cnames": requested == len(input_ids),
         "output_and_missing_ids_partition_input": output_ids.isdisjoint(missing_id_set) and output_ids | missing_id_set == input_ids,
+        "at_least_one_horse_succeeded": succeeded > 0,
+        "at_least_one_history_run_exists": actual_runs > 0,
     }
     report = {
         "status": "pass" if all(checks.values()) else "fail",
@@ -73,7 +75,10 @@ def main():
         "compressed_sha256": sha_bytes(compressed),
         "uncompressed_sha256": sha_bytes(raw),
         "requested": requested, "succeeded": succeeded, "missing": missing,
+        "success_rate": succeeded / requested if requested > 0 else None,
+        "missing_rate": missing / requested if requested > 0 else None,
         "output_horse_count": actual_horses, "total_runs": actual_runs,
+        "zero_run_horse_rate": zero_runs / actual_horses if actual_horses > 0 else None,
         "zero_run_horses": zero_runs,
         "horses_with_exactly_four_runs_potentially_limited": exactly_four_runs,
         "horses_with_one_to_four_runs": one_to_four_runs,
