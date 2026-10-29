@@ -77,6 +77,29 @@ def _history_seed(bundle, cutoff, result_races=None):
         seeded[hid].sort(key=lambda x:x["date"])
     return seeded
 
+def numeric_finisher_stats(race):
+    rows = race.get("rows", []) if isinstance(race, dict) else []
+    if not isinstance(rows, list):
+        return 0, 0
+    field_size = sum(
+        1 for x in rows if isinstance(x, dict)
+        and str(x.get("num", "")).strip().isdigit()
+        and int(str(x.get("num", "")).strip()) > 0
+    )
+    valid_places = []
+    for x in rows:
+        if not isinstance(x, dict) or x.get("hid") in (None, ""):
+            continue
+        try:
+            num = int(str(x.get("num", "")).strip())
+            place = int(str(x.get("place", "")).strip())
+        except (TypeError, ValueError):
+            continue
+        if num > 0 and 1 <= place <= field_size:
+            valid_places.append(place)
+    return len(valid_places), sum(place == 1 for place in valid_places)
+
+
 def supported_history_schema(bundle):
     if not isinstance(bundle,dict):
         return False
@@ -203,7 +226,7 @@ def main():
         "multi_winner_races_in_prepared":sum(r["winner_count"]>1 for r in prepared),
         "multi_winner_races_excluded":sum(
             1 for r in races
-            if len([x for x in r.get("rows",[]) if isinstance(x,dict) and str(x.get("place","")).strip()=="1"]) > 1
+            if numeric_finisher_stats(r)[0] >= 5 and numeric_finisher_stats(r)[1] > 1
             and str(r.get("surface","")).strip() in ("芝","ダート") and r.get("dist")
         ),
         "seed_history_horses":len(_history_seed(horse_history or {}, min((d for d in (iso(r.get("date")) for r in races) if d), default=dt.date.max), races)) if horse_history else 0,
