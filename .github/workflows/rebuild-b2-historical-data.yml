@@ -58,7 +58,7 @@ jobs:
       - name: Prepare leakage-safe B2 dataset
         run: python research/factor-validation/b2_dataset_prep.py research/factor-validation/races.json --aliases research/factor-validation/b2_venue_aliases.json --horse-history reports/b2-horse-pages.json --out reports/b2-prepared-races.json
       - name: Fit preregistered B2 candidates and produce predictions
-        run: python research/factor-validation/fit_b2_candidates.py reports/b2-prepared-races.json --out reports/b2-candidate-validation.json --history-manifest reports/b2-horse-pages-manifest.json --race-reconciliation reports/b2-race-dataset-reconciliation.json
+        run: python research/factor-validation/fit_b2_candidates.py reports/b2-prepared-races.json --out reports/b2-candidate-validation.json --history-manifest reports/b2-horse-pages-manifest.json --history-audit reports/b2-horse-pages-audit.json --race-reconciliation reports/b2-race-dataset-reconciliation.json
       - name: Save dataset and audit as workflow artifacts
         if: always()
         uses: actions/upload-artifact@v4
