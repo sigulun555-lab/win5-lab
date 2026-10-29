@@ -24,15 +24,21 @@ def row_count_and_winners(r):
     # Eligibility is based on numeric finishers and valid runner numbers, not popularity.
     # Missing final popularity is retained and reported separately.
     rows=r.get("rows",r.get("runners",[]))
+    rows = rows if isinstance(rows, list) else []
+    field_size = sum(
+        1 for x in rows if isinstance(x, dict)
+        and str(x.get("num", "")).strip().isdigit()
+        and int(str(x.get("num", "")).strip()) > 0
+    )
     valid=[]
-    for x in rows if isinstance(rows,list) else []:
-        if not isinstance(x,dict): continue
+    for x in rows:
+        if not isinstance(x,dict) or x.get("hid") in (None, ""): continue
         try:
             place=int(str(x.get("place","")).strip())
             num=int(str(x.get("num","")).strip())
         except (TypeError,ValueError):
             continue
-        if num>0 and place>0:
+        if num>0 and place>0 and place<=field_size:
             valid.append(x)
     return len(valid),sum(1 for x in valid if str(x.get("place","")).strip()=="1")
 
