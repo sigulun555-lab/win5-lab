@@ -194,5 +194,7 @@ class B2CandidateFitSmokeTests(unittest.TestCase):
         theta = fit_theta(races, spec, 0.01, 0, 0.75)
         self.assertEqual(len(theta), 7)
         self.assertTrue(all(__import__("math").isfinite(float(x)) for x in theta))
-\n\nif __name__ == "__main__":
+
+
+if __name__ == "__main__":
     unittest.main(verbosity=2)
