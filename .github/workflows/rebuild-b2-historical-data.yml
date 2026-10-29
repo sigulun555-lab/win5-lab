@@ -38,31 +38,7 @@ jobs:
         run: |
           set -euo pipefail
           git fetch origin b2-data
-          MANIFEST_PATH=$(git ls-tree -r --name-only FETCH_HEAD -- horse-pages/ | grep -E '^horse-pages/manifest-[0-9]{8}T[0-9]{6}Z\.json
-      - name: Save dataset and audit as workflow artifacts
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: b2-historical-data-audit
-          path: |
-            research/factor-validation/races.json
-            research/factor-validation/months.json
-            research/factor-validation/crawl_status.json
-            research/factor-validation/ses/
-            reports/b2-race-dataset-audit.json
-            reports/b2-race-dataset-reconciliation.json
-            reports/b2-prepared-races.json
-            reports/b2-preliminary-eval.json
-            reports/b2-candidate-validation.json
-            reports/b2-horse-pages-manifest.json
-            reports/b2-horse-pages-audit.json
-            reports/b2-horse-pages.json.gz
-            reports/b2-horse-pages.json
-            research/factor-validation/b2_venue_aliases.json
-            research/factor-validation/b2_venue_aliases.sha256
-          if-no-files-found: warn
-          retention-days: 14
- | sort | tail -n 1)
+          MANIFEST_PATH="$(git ls-tree -r --name-only FETCH_HEAD -- horse-pages/ | grep -E '^horse-pages/manifest-[0-9]{8}T[0-9]{6}Z\.json$' | sort | tail -n 1)"
           test -n "$MANIFEST_PATH" || { echo "No horse-pages manifest found on b2-data"; exit 1; }
           STAMP="${MANIFEST_PATH#horse-pages/manifest-}"
           STAMP="${STAMP%.json}"
@@ -93,9 +69,14 @@ jobs:
             research/factor-validation/months.json
             research/factor-validation/crawl_status.json
             research/factor-validation/ses/
+            research/factor-validation/b2_venue_aliases.json
+            research/factor-validation/b2_venue_aliases.sha256
             reports/b2-race-dataset-audit.json
             reports/b2-race-dataset-reconciliation.json
+            reports/b2-horse-pages-manifest.json
+            reports/b2-horse-pages-audit.json
+            reports/b2-horse-pages.json.gz
             reports/b2-prepared-races.json
-            reports/b2-preliminary-eval.json
+            reports/b2-candidate-validation.json
           if-no-files-found: warn
           retention-days: 14
