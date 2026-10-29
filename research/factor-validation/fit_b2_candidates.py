@@ -376,7 +376,8 @@ def evaluate_split(train, test, split_name):
     }
     b0_ll = None
     staged = {}
-    for name, spec in all_specs.items():
+    for candidate_index, (name, spec) in enumerate(all_specs.items(), start=1):
+        print(f"[B2-progress] {split_name}: candidate {candidate_index}/{len(all_specs)} start: {name}", flush=True)
         if name == "B0-original":
             params = {"l2": None, "k": 0, "tau": FIXED_B0_TAU, "theta": [], "inner_months": []}
             scorer = b0_score
