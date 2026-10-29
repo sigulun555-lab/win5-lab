@@ -25,6 +25,8 @@ def main():
     actual_horses = len(horses)
     actual_runs = 0
     zero_runs = 0
+    exactly_four_runs = 0
+    one_to_four_runs = 0
     invalid = []
     for hid, horse in horses.items():
         runs = horse.get("runs") if isinstance(horse, dict) else None
@@ -33,6 +35,8 @@ def main():
             continue
         actual_runs += len(runs)
         zero_runs += int(len(runs) == 0)
+        exactly_four_runs += int(len(runs) == 4)
+        one_to_four_runs += int(1 <= len(runs) <= 4)
     requested = int(manifest.get("requested", -1))
     succeeded = int(manifest.get("succeeded", -1))
     missing = int(manifest.get("missing", -1))
@@ -56,7 +60,11 @@ def main():
         "uncompressed_sha256": sha_bytes(raw),
         "requested": requested, "succeeded": succeeded, "missing": missing,
         "output_horse_count": actual_horses, "total_runs": actual_runs,
-        "zero_run_horses": zero_runs, "invalid_horse_records_first_100": invalid[:100],
+        "zero_run_horses": zero_runs,
+        "horses_with_exactly_four_runs_potentially_limited": exactly_four_runs,
+        "horses_with_one_to_four_runs": one_to_four_runs,
+        "four_run_limit_note": "Exactly four runs may indicate the known overseas-history page limit, but is not sufficient to identify foreign horses; treat as a potential coverage limit only.",
+        "invalid_horse_records_first_100": invalid[:100],
         "checks": checks,
         "retrieval": {k: manifest.get(k) for k in ("started_at_jst", "finished_at_jst", "workers", "passes", "cnames_sha256", "script_sha256")},
     }
