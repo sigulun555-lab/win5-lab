@@ -132,20 +132,21 @@ def candidate_feature_summary(runs: Iterable[dict[str,Any]], target_date, *, ali
             class_sums[category] = class_sums.get(category, 0.0) + weight * centered
         if venue_type == "LOCAL" and local_policy == "downweight":
             local_sum += weight * x
+        rating_value = None
         if venue_type == "JRA":
             jra_count += 1
             raw_rating = str(run.get("rt", run.get("rating", "")) or "").strip()
             import re
             match = re.search(r"[-+]?\d+(?:\.\d+)?", raw_rating)
             if match:
-                rating = float(match.group(0))
-                rating_sum += weight * rating
+                rating_value = float(match.group(0))
+                rating_sum += weight * rating_value
                 rating_weight += weight
                 rating_runs += 1
         details.append({"date": run["_parsed_date"], "venue": str(run.get("venue") or ""),
                         "venue_type": venue_type, "class_category": category,
                         "place": int(str(run["place"]).strip()), "field": int(str(run["field"]).strip()),
-                        "weight": weight, "percentile": p, "rating": rating if venue_type == "JRA" and 'rating' in locals() else None})
+                        "weight": weight, "percentile": p, "rating": rating_value})
     return {
         "base_score": base_sum / denominator,
         "class_features": {k: v / denominator for k, v in class_sums.items()},
