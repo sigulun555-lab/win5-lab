@@ -1,0 +1,18 @@
+{
+  "source": "JRA公式 競走馬情報（https://www.jra.go.jp/JRADB/accessU.html）",
+  "started_at_jst": "2026-10-29T18:22:00+09:00",
+  "finished_at_jst": "2026-10-29T18:22:06+09:00",
+  "requested": 20,
+  "succeeded": 20,
+  "missing": 0,
+  "missing_horses": [],
+  "passes": 3,
+  "workers": 5,
+  "horses_with_zero_runs": 0,
+  "total_runs": 451,
+  "cnames_file": "research/factor-validation/data/horse_cnames.json.gz",
+  "cnames_sha256": "aef82672f1876be48e59bd4b4543658787b8173c32d62c67ce24da855d61ab6a",
+  "horses_json_sha256": "8051fbc7863b8b5a300fd8f43e94437f968b35b95281616163e07f06f9c3c65a",
+  "horses_json_gz_sha256": "6066d654760fdf379fa0824c0dc2e68ef4dcf65e9e840559d8598aed1a22abfb",
+  "script_sha256": "27f8245fed535c1bb70a9fed051ce38ac4cbd857b5f32f00e88d4eff3150b670"
+}
