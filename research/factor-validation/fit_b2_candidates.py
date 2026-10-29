@@ -203,7 +203,7 @@ def fit_theta(races, spec, l2, k, tau=1.0):
         )
     return result.x
 
-def tune_candidate(train, spec, is_b0=False):
+def tune_candidate(train, spec, is_b0=False, progress_label=None):
     if not train:
         raise ValueError("empty training split")
     last = train[-1]["_day"]
@@ -215,10 +215,19 @@ def tune_candidate(train, spec, is_b0=False):
     has_coefficients = bool(spec.get("class") or spec.get("local") or spec.get("rating"))
     l2_values = L2_GRID if has_coefficients and not is_b0 else (0.01,)
     k_values = K_GRID if spec.get("shrink") and not is_b0 else (0,)
-    tau_values = TAU_GRID if not is_b0 else TAU_GRID
+    tau_values = TAU_GRID
+    total_combos = len(l2_values) * len(k_values) * len(tau_values)
+    combo_index = 0
     for l2 in l2_values:
         for k in k_values:
             for tau in tau_values:
+                combo_index += 1
+                if progress_label and (combo_index == 1 or combo_index % 8 == 0 or combo_index == total_combos):
+                    print(
+                        f"[B2-progress] {progress_label}: grid {combo_index}/{total_combos} "
+                        f"(l2={l2}, k={k}, tau={tau})",
+                        flush=True,
+                    )
                 block_means = []
                 for year, month in months:
                     start = dt.date(year, month, 1)
@@ -414,10 +423,10 @@ def evaluate_split(train, test, split_name):
             params = {"l2": None, "k": 0, "tau": FIXED_B0_TAU, "theta": [], "inner_months": []}
             scorer = b0_score
         elif name == "B0-refit":
-            params = tune_candidate(train, {"policy": "all", "class": False, "shrink": False, "local": False, "rating": False}, is_b0=True)
+            params = tune_candidate(train, {"policy": "all", "class": False, "shrink": False, "local": False, "rating": False}, is_b0=True, progress_label=f"{split_name}/{name}")
             scorer = b0_score
         else:
-            params = tune_candidate(train, spec)
+            params = tune_candidate(train, spec, progress_label=f"{split_name}/{name}")
             theta = np.asarray(params["theta"], dtype=float)
             k = params["k"]
             scorer = lambda row, s=spec, t=theta, kk=k: raw_score(row, s, t, kk)
