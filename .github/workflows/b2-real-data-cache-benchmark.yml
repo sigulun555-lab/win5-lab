@@ -2,6 +2,9 @@ name: B2 real-data cache benchmark
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - optimize-b2-cache-progress
 
 permissions:
   actions: read
