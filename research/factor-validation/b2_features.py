@@ -104,6 +104,60 @@ def b_score(runs: Iterable[dict[str,Any]], target_date, *, local_policy="downwei
     shrink=jra_count/(jra_count+shrink_k) if jra_count+shrink_k else 0.0
     return {"score":base*shrink,"base_score":base,"shrink_factor":shrink,"selected_runs":len(selected),"jra_runs_selected":jra_count,"local_policy":local_policy,"local_eta":local_eta,"shrink_k":shrink_k,"details":details}
 
+def candidate_feature_summary(runs: Iterable[dict[str,Any]], target_date, *, aliases=None, local_policy="downweight", max_runs=6):
+    """Return fixed sufficient statistics for the preregistered conditional-logit candidates."""
+    selected = eligible_prior_runs(runs, target_date, local_policy=local_policy, max_runs=max_runs, aliases=aliases)
+    denominator = sum(0.78 ** i for i in range(len(selected)))
+    if denominator <= 0:
+        return {"base_score": 0.0, "class_features": {}, "local_feature": 0.0,
+                "jra_runs_selected": 0, "rating_delta": 0.0, "rating_runs": 0,
+                "selected_runs": 0, "selected": []}
+    base_sum = 0.0
+    class_sums = {}
+    local_sum = 0.0
+    jra_count = 0
+    rating_sum = 0.0
+    rating_weight = 0.0
+    rating_runs = 0
+    details = []
+    for i, run in enumerate(selected):
+        weight = 0.78 ** i
+        p = percentile_score(run)
+        centered = p - 0.5
+        x = 2.1 * centered
+        venue_type = run["_venue_type"]
+        category = run["_class_category"]
+        base_sum += weight * x
+        if category != "DEBUT" and category in CLASS_CATEGORIES and category not in {"LOCAL", "OVERSEAS", "UNCLASSIFIABLE"}:
+            class_sums[category] = class_sums.get(category, 0.0) + weight * centered
+        if venue_type == "LOCAL" and local_policy == "downweight":
+            local_sum += weight * x
+        if venue_type == "JRA":
+            jra_count += 1
+            raw_rating = str(run.get("rt", run.get("rating", "")) or "").strip()
+            import re
+            match = re.search(r"[-+]?\d+(?:\.\d+)?", raw_rating)
+            if match:
+                rating = float(match.group(0))
+                rating_sum += weight * rating
+                rating_weight += weight
+                rating_runs += 1
+        details.append({"date": run["_parsed_date"], "venue": str(run.get("venue") or ""),
+                        "venue_type": venue_type, "class_category": category,
+                        "place": int(str(run["place"]).strip()), "field": int(str(run["field"]).strip()),
+                        "weight": weight, "percentile": p, "rating": rating if venue_type == "JRA" and 'rating' in locals() else None})
+    return {
+        "base_score": base_sum / denominator,
+        "class_features": {k: v / denominator for k, v in class_sums.items()},
+        "local_feature": local_sum / denominator,
+        "jra_runs_selected": jra_count,
+        "rating_delta": (rating_sum / rating_weight - 90.0) if rating_weight else 0.0,
+        "rating_runs": rating_runs,
+        "selected_runs": len(selected),
+        "selected": details,
+    }
+
+
 def history_runs_for_horse(bundle: dict[str,Any], hid: str):
     horses=bundle.get("horses",{}) if isinstance(bundle,dict) else {}
     horse=horses.get(hid,{}) if isinstance(horses,dict) else {}
