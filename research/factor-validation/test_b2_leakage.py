@@ -57,7 +57,7 @@ class B2LeakageTests(unittest.TestCase):
 
 from b2_class_lookup import build_prior_class_lookup, lookup_prior_class
 from b2_dataset_prep import _history_seed, prepare
-from fit_b2_candidates import candidate_design, fit_theta
+from fit_b2_candidates import candidate_design, fit_theta, tune_candidate, TAU_GRID
 
 
 class B2PriorClassLookupTests(unittest.TestCase):
@@ -194,6 +194,27 @@ class B2CandidateFitSmokeTests(unittest.TestCase):
         theta = fit_theta(races, spec, 0.01, 0, 0.75)
         self.assertEqual(len(theta), 7)
         self.assertTrue(all(__import__("math").isfinite(float(x)) for x in theta))
+
+    def test_hyperparameter_tuning_uses_all_three_recent_expanding_months(self):
+        races = []
+        for month in range(1, 7):
+            day = __import__("datetime").date(2026, month, 15)
+            rows = []
+            for h in range(5):
+                rows.append({
+                    "winner_share": 1.0 if h == 0 else 0.0,
+                    "candidate_features": {"all": {
+                        "base_score": (4-h) * 0.1,
+                        "class_features": {}, "local_feature": 0.0,
+                        "jra_runs_selected": 2, "rating_delta": 0.0
+                    }}
+                })
+            races.append({"_day": day, "date": day.isoformat(), "rows": rows})
+        spec = {"policy": "all", "class": False, "shrink": False, "local": False, "rating": False}
+        params = tune_candidate(races, spec)
+        self.assertEqual(params["inner_months"], ["2026-04", "2026-05", "2026-06"])
+        self.assertIn(params["tau"], TAU_GRID)
+        self.assertIsNone(params["l2"])
 
 
 if __name__ == "__main__":
