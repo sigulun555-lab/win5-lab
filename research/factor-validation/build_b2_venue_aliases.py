@@ -38,12 +38,26 @@ def classify(label: str) -> str:
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("input", type=Path, help="parsed race JSON, e.g. research/factor-validation/races.json")
+    ap.add_argument("--horse-history", type=Path, help="Optional decoded horse-pages JSON bundle")
     ap.add_argument("--out", type=Path, default=Path("research/factor-validation/b2_venue_aliases.json"))
     args = ap.parse_args()
     races = json.loads(args.input.read_text(encoding="utf-8"))
     if not isinstance(races, list):
         raise ValueError("input must be a top-level race list")
-    labels = sorted({str(r.get("venue") or "").strip() for r in races if isinstance(r, dict)})
+    labels_set = {str(r.get("venue") or "").strip() for r in races if isinstance(r, dict)}
+    history_run_count = 0
+    if args.horse_history:
+        bundle = json.loads(args.horse_history.read_text(encoding="utf-8"))
+        horses = bundle.get("horses", {}) if isinstance(bundle, dict) and isinstance(bundle.get("horses"), dict) else bundle
+        if not isinstance(horses, dict):
+            raise ValueError("horse-history input must be a horse-ID mapping or a {horses: ...} bundle")
+        for horse in horses.values():
+            runs = horse.get("runs", []) if isinstance(horse, dict) else []
+            for run in runs if isinstance(runs, list) else []:
+                if isinstance(run, dict):
+                    labels_set.add(str(run.get("venue") or "").strip())
+                    history_run_count += 1
+    labels = sorted(labels_set)
     mapping = {label: classify(label) for label in labels}
     payload = (json.dumps(mapping, ensure_ascii=False, indent=2, sort_keys=True) + "\n").encode("utf-8")
     args.out.parent.mkdir(parents=True, exist_ok=True)
@@ -55,6 +69,10 @@ def main() -> None:
     print(json.dumps({
         "status": "dictionary_built_before_fitting",
         "input": str(args.input), "input_races": len(races),
+        "input_sha256": hashlib.sha256(args.input.read_bytes()).hexdigest(),
+        "horse_history_input": str(args.horse_history) if args.horse_history else None,
+        "horse_history_sha256": hashlib.sha256(args.horse_history.read_bytes()).hexdigest() if args.horse_history else None,
+        "horse_history_runs_scanned": history_run_count,
         "distinct_venue_labels": len(labels), "classification_counts": counts,
         "blank_label_present": "" in mapping,
         "dictionary_path": str(args.out), "sha256": digest,
