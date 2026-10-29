@@ -85,16 +85,28 @@ def prepare(races, aliases=None, horse_history=None):
         date=iso(race.get("date"))
         if date is None: continue
         rows=race.get("rows",[])
+        # Field size includes starters with nonnumeric finishes; those runners themselves
+        # are excluded from model rows and historical percentile features.
+        race_field_size=sum(
+            1 for x in rows if isinstance(x,dict) and
+            str(x.get("num","")).strip().isdigit() and int(str(x.get("num","")).strip()) > 0
+        ) if isinstance(rows,list) else 0
         valid=[]
         for row in rows if isinstance(rows,list) else []:
             if not isinstance(row,dict) or not row.get("hid"): continue
             try:
                 num=int(row["num"]); pop=int(row["pop"]) if row.get("pop") not in (None,"") else None
-            except (TypeError,ValueError): continue
+            except (TypeError,ValueError):
+                try:
+                    num=int(row["num"])
+                except (TypeError,ValueError):
+                    continue
+                pop=None
             if num<1: continue
             place=row.get("place")
             try: place=int(place) if place not in (None,"") else None
             except (TypeError,ValueError): place=None
+            if place is None or place < 1: continue
             valid.append((row,num,pop,place))
         winners=[x for x in valid if x[3]==1]
         # Preregistered eligibility requires exactly one recorded first-place runner.
@@ -104,14 +116,13 @@ def prepare(races, aliases=None, horse_history=None):
         rid=f"{date.isoformat()}|{race.get('venue')}|{race.get('rn')}"
         out=[]
         for row,num,pop,place in valid:
-            if pop is None or pop<1: continue
             hist=by_horse.get(str(row["hid"]),[])
             # b_score independently enforces strict date < target date.
             features=b_score(hist,date.isoformat(),aliases=aliases)
             all_features=candidate_feature_summary(hist,date.isoformat(),aliases=aliases,local_policy="downweight")
             no_local_features=candidate_feature_summary(hist,date.isoformat(),aliases=aliases,local_policy="exclude")
             out.append({
-                "hid":str(row["hid"]), "num":num, "pop":min(pop,18),
+                "hid":str(row["hid"]), "num":num, "pop":min(pop,18) if pop is not None and pop >= 1 else None,
                 "place":place, "winner_share":(1.0 if place==1 else 0.0),
                 "b2_score":features["score"], "prior_runs":features["selected_runs"],
                 "jra_prior_runs":features["jra_runs_selected"],
@@ -128,7 +139,7 @@ def prepare(races, aliases=None, horse_history=None):
             if place is None: continue
             by_horse[str(row["hid"])].append({
                 "date":date.isoformat(),"venue":race.get("venue"),"class":race.get("cls",""),
-                "field":len(valid),"place":place
+                "field":race_field_size,"place":place
             })
     return cleaned
 
