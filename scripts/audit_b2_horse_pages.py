@@ -14,10 +14,14 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--gzip", type=Path, required=True)
     ap.add_argument("--manifest", type=Path, required=True)
+    ap.add_argument("--cnames", type=Path, required=True, help="Original gzip input mapping used by the collector")
     ap.add_argument("--out", type=Path, required=True)
     args = ap.parse_args()
     compressed = args.gzip.read_bytes()
     raw = gzip.decompress(compressed)
+    cnames_compressed = args.cnames.read_bytes()
+    cnames_raw = gzip.decompress(cnames_compressed)
+    cnames = json.loads(cnames_raw.decode("utf-8"))
     manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
     horses = json.loads(raw.decode("utf-8"))
     if not isinstance(horses, dict):
@@ -41,6 +45,9 @@ def main():
     succeeded = int(manifest.get("succeeded", -1))
     missing = int(manifest.get("missing", -1))
     missing_ids = manifest.get("missing_horses", [])
+    input_ids = set(str(h) for h in cnames) if isinstance(cnames, dict) else set()
+    output_ids = set(str(h) for h in horses)
+    missing_id_set = set(str(h) for h in missing_ids) if isinstance(missing_ids, list) else set()
     checks = {
         "compressed_sha_matches": sha_bytes(compressed) == manifest.get("horses_json_gz_sha256"),
         "uncompressed_sha_matches": sha_bytes(raw) == manifest.get("horses_json_sha256"),
@@ -50,11 +57,18 @@ def main():
         "all_horses_have_runs_list": not invalid,
         "total_runs_matches_manifest": actual_runs == int(manifest.get("total_runs", -1)),
         "zero_run_horses_matches_manifest": zero_runs == int(manifest.get("horses_with_zero_runs", -1)),
+        "cnames_sha_matches_manifest": sha_bytes(cnames_raw) == manifest.get("cnames_sha256"),
+        "requested_count_matches_cnames": requested == len(input_ids),
+        "output_and_missing_ids_partition_input": output_ids.isdisjoint(missing_id_set) and output_ids | missing_id_set == input_ids,
     }
     report = {
         "status": "pass" if all(checks.values()) else "fail",
         "manifest": str(args.manifest),
         "manifest_sha256": sha_bytes(args.manifest.read_bytes()),
+        "cnames_input": str(args.cnames),
+        "cnames_compressed_sha256": sha_bytes(cnames_compressed),
+        "cnames_decompressed_sha256": sha_bytes(cnames_raw),
+        "cnames_count": len(input_ids),
         "gzip": str(args.gzip),
         "compressed_sha256": sha_bytes(compressed),
         "uncompressed_sha256": sha_bytes(raw),
