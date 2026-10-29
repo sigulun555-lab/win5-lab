@@ -15,6 +15,7 @@ import math
 from pathlib import Path
 import numpy as np
 from scipy.optimize import minimize
+from scipy.special import logsumexp
 
 L2_GRID = (0.001, 0.01, 0.1)
 K_GRID = (0, 1, 2, 3, 5, 8)
@@ -137,18 +138,37 @@ def fit_theta(races, spec, l2, k, tau=1.0):
         matrix = np.vstack([x[1] for x in designs])
         prepared.append((base, matrix, target_vec(race)))
     def objective(theta):
+        # Stable conditional-logit objective. Avoid clipped log(probability), whose
+        # gradient can disagree with the objective in extreme-score races.
         loss = l2 * float(theta @ theta)
         grad = 2.0 * l2 * theta
         for base, matrix, y in prepared:
             scores = base + matrix @ theta
+            z = scores / float(tau)
+            loss += float(logsumexp(z) - y @ z)
             p = softmax(scores, tau)
-            loss -= float(y @ np.log(np.clip(p, 1e-15, 1.0)))
-            grad += matrix.T @ (p - y) / tau
+            grad += matrix.T @ (p - y) / float(tau)
         return loss, grad
-    result = minimize(objective, np.zeros(len(names)), jac=True, method="L-BFGS-B", bounds=bounds,
-                      options={"maxiter": 500, "ftol": 1e-10})
+    initial = np.zeros(len(names), dtype=float)
+    result = minimize(
+        objective, initial, jac=True, method="L-BFGS-B", bounds=bounds,
+        options={"maxiter": 2000, "maxls": 50, "maxcor": 20, "ftol": 1e-12, "gtol": 1e-7},
+    )
     if not result.success or not np.isfinite(result.fun):
-        raise RuntimeError("coefficient fit did not converge: " + str(result.message))
+        # Retry from the first solution (if finite) with a more conservative line search.
+        retry_start = result.x if np.all(np.isfinite(result.x)) else initial
+        retry = minimize(
+            objective, retry_start, jac=True, method="L-BFGS-B", bounds=bounds,
+            options={"maxiter": 4000, "maxls": 100, "maxcor": 10, "ftol": 1e-10, "gtol": 1e-6},
+        )
+        result = retry
+    if not result.success or not np.isfinite(result.fun):
+        grad = objective(result.x)[1] if np.all(np.isfinite(result.x)) else np.asarray([float("inf")])
+        grad_norm = float(np.max(np.abs(grad))) if grad.size else 0.0
+        raise RuntimeError(
+            "coefficient fit did not converge: " + str(result.message)
+            + f"; objective={result.fun}; projected_gradient_inf={grad_norm}"
+        )
     return result.x
 
 def tune_candidate(train, spec, is_b0=False):
