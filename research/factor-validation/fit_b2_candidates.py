@@ -27,6 +27,7 @@ CANDIDATES = {
     "B2-b1": {"policy": "local_excluded", "class": False, "shrink": False, "local": False, "rating": False},
     "B2-b2": {"policy": "all", "class": False, "shrink": False, "local": True, "rating": False},
     "B2-c": {"policy": "all", "class": False, "shrink": True, "local": False, "rating": False},
+    "B2-d-no-rating": {"policy": "all", "class": False, "shrink": False, "local": False, "rating": False},
     "B2-d": {"policy": "all", "class": False, "shrink": False, "local": False, "rating": True},
     "B2-full-b1-no-rating": {"policy": "local_excluded", "class": True, "shrink": True, "local": False, "rating": False},
     "B2-full-b1-rating": {"policy": "local_excluded", "class": True, "shrink": True, "local": False, "rating": True},
