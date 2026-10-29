@@ -213,19 +213,56 @@ def bootstrap_ci(delta, seed=7, n_boot=4000):
     means = np.mean(delta[ix], axis=1)
     return [float(x) for x in np.percentile(means, [2.5, 97.5])]
 
+def race_brier(race, probabilities):
+    y = target_vec(race)
+    p = np.asarray(probabilities, dtype=float)
+    return float(np.sum((p - y) ** 2))
+
+def score_summary(races, scorer, tau):
+    ll = []
+    brier = []
+    top1 = []
+    top3 = []
+    for race in races:
+        scores = [scorer(row) for row in race["rows"]]
+        p = softmax(scores, tau)
+        y = target_vec(race)
+        ll.append(float(y @ np.log(np.clip(p, 1e-15, 1.0))))
+        brier.append(race_brier(race, p))
+        winner = int(np.argmax(y))
+        order = np.argsort(-p)
+        top1.append(float(order[0] == winner))
+        top3.append(float(winner in order[:min(3, len(order))]))
+    return {
+        "mean_log_likelihood": float(np.mean(ll)) if ll else None,
+        "mean_brier": float(np.mean(brier)) if brier else None,
+        "top1_rate": float(np.mean(top1)) if top1 else None,
+        "top3_rate": float(np.mean(top3)) if top3 else None,
+        "_ll": np.asarray(ll, dtype=float),
+    }
+
 def evaluate_split(train, test, split_name):
     report = {"split": split_name, "train_races": len(train), "test_races": len(test), "candidates": {}}
-    all_specs = {
-        "B0-original": None,
-        "B0-refit": None,
-        **CANDIDATES,
-    }
+    all_specs = {"B0-original": None, "B0-refit": None, **CANDIDATES}
+    if not train or not test:
+        report["status"] = "insufficient_train_or_test_races"
+        return report
+
     pop_theta = fit_popularity(train)
     pop_test_ll = popularity_ll(test, pop_theta)
-    report["popularity_only"] = {"mean_log_likelihood": float(pop_test_ll.mean()) if len(test) else None}
+    report["popularity_only"] = {
+        "mean_log_likelihood": float(pop_test_ll.mean()),
+        "delta_vs_uniform_95_ci": bootstrap_ci(pop_test_ll - np.asarray([-math.log(len(r['rows'])) for r in test])),
+    }
+    uniform_ll = np.asarray([-math.log(len(r["rows"])) for r in test], dtype=float)
+    uniform_brier = np.asarray([1.0 - 1.0 / len(r["rows"]) for r in test], dtype=float)
+    report["uniform_all_horses_equal"] = {
+        "mean_log_likelihood": float(uniform_ll.mean()),
+        "mean_brier": float(uniform_brier.mean()),
+    }
+    b0_ll = None
+    staged = {}
     for name, spec in all_specs.items():
-        if not test:
-            continue
         if name == "B0-original":
             params = {"l2": None, "k": 0, "tau": FIXED_B0_TAU, "theta": [], "inner_months": []}
             scorer = b0_score
@@ -237,22 +274,29 @@ def evaluate_split(train, test, split_name):
             theta = np.asarray(params["theta"], dtype=float)
             k = params["k"]
             scorer = lambda row, s=spec, t=theta, kk=k: raw_score(row, s, t, kk)
-        ll = model_ll(test, scorer, params["tau"])
+
+        summary = score_summary(test, scorer, params["tau"])
+        ll = summary.pop("_ll")
+        if name == "B0-original":
+            b0_ll = ll
         scores = [[scorer(row) for row in race["rows"]] for race in test]
         probs = [softmax(s, params["tau"]).tolist() for s in scores]
-        # Retrospective benchmark: final popularity is used only for comparison, never described as pre-off data.
+        # Final popularity is a retrospective benchmark only; it is not treated as pre-off information.
         extra_train = [[scorer(row) for row in race["rows"]] for race in train]
         combined_theta = fit_popularity(train, extra_train, l2=0.01)
         combined_ll = popularity_ll(test, combined_theta, scores)
-        delta = ll - pop_test_ll
         combined_delta = combined_ll - pop_test_ll
-        report["candidates"][name] = {
+        delta_pop = ll - pop_test_ll
+        delta_uniform = ll - uniform_ll
+        staged[name] = {
             "params": {k: v for k, v in params.items() if k != "theta"},
             "coefficients": params.get("theta", []),
-            "mean_log_likelihood": float(ll.mean()),
-            "delta_vs_popularity_only": float(delta.mean()),
-            "delta_vs_popularity_only_95_ci": bootstrap_ci(delta),
+            **summary,
+            "delta_vs_popularity_only": float(delta_pop.mean()),
+            "delta_vs_popularity_only_95_ci": bootstrap_ci(delta_pop),
+            "delta_vs_uniform_95_ci": bootstrap_ci(delta_uniform),
             "popularity_plus_candidate_mean_log_likelihood": float(combined_ll.mean()),
+            "popularity_plus_candidate_delta_vs_popularity_only": float(combined_delta.mean()),
             "popularity_plus_candidate_delta_95_ci": bootstrap_ci(combined_delta),
             "predictions": [
                 {"race_id": race.get("race_id"), "date": race["date"],
@@ -261,6 +305,32 @@ def evaluate_split(train, test, split_name):
                 for i, race in enumerate(test)
             ],
         }
+
+    for name, record in staged.items():
+        ll = score_summary(test, b0_score, FIXED_B0_TAU)["_ll"]
+        candidate_ll = np.asarray([
+            sum(float(h.get("winner_share", 0.0)) * math.log(max(h.get("probability", 0.0), 1e-15))
+                for h in race["rows"])
+            for race in test
+        ]) if False else None
+        if name == "B0-original":
+            record["delta_vs_B0_original"] = 0.0
+            record["delta_vs_B0_original_95_ci"] = [0.0, 0.0]
+        else:
+            # Recover this candidate's per-race log likelihood from the reported probabilities.
+            pred_by_race = {p["race_id"]: p for p in record["predictions"]}
+            cand_ll = []
+            for race in test:
+                pred = pred_by_race.get(race.get("race_id"))
+                if pred is None:
+                    cand_ll.append(float("nan"))
+                    continue
+                prob_by_hid = {str(h["hid"]): h["probability"] for h in pred["horses"]}
+                cand_ll.append(sum(float(row.get("winner_share", 0.0)) * math.log(max(prob_by_hid.get(str(row.get("hid")), 0.0), 1e-15)) for row in race["rows"]))
+            d = np.asarray(cand_ll, dtype=float) - b0_ll
+            record["delta_vs_B0_original"] = float(np.nanmean(d))
+            record["delta_vs_B0_original_95_ci"] = bootstrap_ci(d[np.isfinite(d)])
+        report["candidates"][name] = record
     return report
 
 def main():
