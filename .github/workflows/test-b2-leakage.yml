@@ -8,6 +8,11 @@ on:
       - "research/factor-validation/b2_class_lookup.py"
       - "research/factor-validation/fit_b2_candidates.py"
       - "research/factor-validation/test_b2_leakage.py"
+      - "research/factor-validation/compare_b2_race_datasets.py"
+      - "research/factor-validation/build_b2_venue_aliases.py"
+      - "scripts/audit_race_dataset.py"
+      - "scripts/audit_b2_horse_pages.py"
+      - ".github/workflows/rebuild-b2-historical-data.yml"
       - ".github/workflows/test-b2-leakage.yml"
   workflow_dispatch:
 
