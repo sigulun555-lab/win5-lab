@@ -299,7 +299,14 @@ def candidate_data_coverage(runner_rows, policy):
 
 
 def evaluate_split(train, test, split_name):
-    report = {"split": split_name, "train_races": len(train), "test_races": len(test), "candidates": {}}
+    report = {
+        "split": split_name,
+        "train_races": len(train),
+        "test_races": len(test),
+        "train_runner_rows": sum(len(r["rows"]) for r in train),
+        "test_runner_rows": sum(len(r["rows"]) for r in test),
+        "candidates": {},
+    }
     all_specs = {"B0-original": None, "B0-refit": None, **CANDIDATES}
     if not train or not test:
         report["status"] = "insufficient_train_or_test_races"
