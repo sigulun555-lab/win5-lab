@@ -55,6 +55,7 @@ jobs:
             reports/b2-preliminary-eval.json
             reports/b2-candidate-validation.json
             reports/b2-horse-pages-manifest.json
+            reports/b2-horse-pages-audit.json
             reports/b2-horse-pages.json.gz
             reports/b2-horse-pages.json
             research/factor-validation/b2_venue_aliases.json
@@ -72,6 +73,8 @@ jobs:
           echo "manifest=$MANIFEST_PATH"
           echo "horse_pages=$HORSE_PATH"
           sha256sum reports/b2-horse-pages-manifest.json reports/b2-horse-pages.json.gz reports/b2-horse-pages.json
+      - name: Audit pinned horse-pages snapshot and manifest
+        run: python scripts/audit_b2_horse_pages.py --gzip reports/b2-horse-pages.json.gz --manifest reports/b2-horse-pages-manifest.json --out reports/b2-horse-pages-audit.json
       - name: Build and hash venue aliases from race results and all horse histories
         run: python research/factor-validation/build_b2_venue_aliases.py research/factor-validation/races.json --horse-history reports/b2-horse-pages.json --out research/factor-validation/b2_venue_aliases.json
       - name: Test B2 leakage and fitting safeguards
