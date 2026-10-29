@@ -3,7 +3,7 @@
 
 This script deliberately does not fit coefficients or make adoption claims.
 Historical runs are joined by horse ID; only strictly earlier dates are eligible.
-Races with dead-heat winners are retained with fractional winner labels.
+Races with multiple recorded winners are excluded per preregistered eligibility.
 """
 from __future__ import annotations
 import argparse, collections, datetime as dt, hashlib, json, sys
@@ -44,7 +44,7 @@ def _prior_result_class_map(result_races, cutoff):
 def _history_seed(bundle, cutoff, result_races=None):
     """Return numeric prior runs; attach class only from a unique earlier result race."""
     horses=bundle.get("horses",{}) if isinstance(bundle,dict) and isinstance(bundle.get("horses"),dict) else (bundle if isinstance(bundle,dict) else {})
-    class_map=_prior_result_class_map(result_races or [], cutoff) if cutoff else {}
+    class_map=_prior_result_class_map(result_races or [], None) if result_races else {}
     seeded=collections.defaultdict(list)
     if not isinstance(horses,dict):
         return seeded
