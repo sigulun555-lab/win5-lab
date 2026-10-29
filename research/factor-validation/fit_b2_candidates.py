@@ -271,6 +271,32 @@ def score_summary(races, scorer, tau):
         "_ll": np.asarray(ll, dtype=float),
     }
 
+def candidate_data_coverage(runner_rows, policy):
+    key = "local_excluded" if policy == "local_excluded" else "all"
+    selected = [
+        run
+        for row in runner_rows
+        for run in row.get("candidate_features", {}).get(key, {}).get("selected", [])
+    ]
+    jra = [run for run in selected if run.get("venue_type") == "JRA"]
+    numeric_rating = sum(run.get("rating") is not None for run in jra)
+    unknown_class = sum(run.get("class_category") == "UNKNOWN_JRA" for run in jra)
+    return {
+        "feature_runner_observations": len(runner_rows),
+        "selected_history_run_observations": len(selected),
+        "selected_jra_run_observations": len(jra),
+        "selected_jra_numeric_rating_runs": numeric_rating,
+        "selected_jra_rating_coverage": numeric_rating / len(jra) if jra else None,
+        "selected_jra_unknown_class_runs": unknown_class,
+        "selected_jra_unknown_class_rate": unknown_class / len(jra) if jra else None,
+        "selected_unclassifiable_venue_runs": sum(run.get("venue_type") == "UNCLASSIFIABLE" for run in selected),
+        "runner_observations_with_no_selected_prior_runs": sum(
+            not row.get("candidate_features", {}).get(key, {}).get("selected_runs", 0)
+            for row in runner_rows
+        ),
+    }
+
+
 def evaluate_split(train, test, split_name):
     report = {"split": split_name, "train_races": len(train), "test_races": len(test), "candidates": {}}
     all_specs = {"B0-original": None, "B0-refit": None, **CANDIDATES}
@@ -330,9 +356,14 @@ def evaluate_split(train, test, split_name):
         combined_delta = combined_ll - pop_test_ll
         delta_pop = ll - pop_test_ll
         delta_uniform = ll - uniform_ll
+        policy = spec.get("policy", "all") if isinstance(spec, dict) else "all"
         staged[name] = {
             "params": {k: v for k, v in params.items() if k != "theta"},
             "coefficients": params.get("theta", []),
+            "data_coverage": candidate_data_coverage(
+                runner_rows if "runner_rows" in locals() else [row for race in train + test for row in race["rows"]],
+                policy
+            ),
             **summary,
             "delta_vs_popularity_only": float(delta_pop.mean()),
             "delta_vs_popularity_only_95_ci": bootstrap_ci(delta_pop),
