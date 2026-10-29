@@ -114,7 +114,7 @@ def prepare(races, aliases=None, horse_history=None):
             place=row.get("place")
             try: place=int(place) if place not in (None,"") else None
             except (TypeError,ValueError): place=None
-            if place is None or place < 1: continue
+            if place is None or place < 1 or place > race_field_size: continue
             valid.append((row,num,pop,place))
         winners=[x for x in valid if x[3]==1]
         # Preregistered eligibility requires exactly one recorded first-place runner.
