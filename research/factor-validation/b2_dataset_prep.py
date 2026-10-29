@@ -164,7 +164,11 @@ def main():
     deduped={}
     duplicate_keys=[]
     def race_key(r):
-        return (str(iso(r.get("date")) or r.get("date","")),str(r.get("venue","")).strip(),str(r.get("rn",r.get("race_no",""))))
+        try:
+            race_no = str(int(r.get("rn", r.get("race_no", ""))))
+        except (TypeError,ValueError):
+            race_no = str(r.get("rn",r.get("race_no",""))).strip()
+        return (str(iso(r.get("date")) or r.get("date","")),str(r.get("venue","")).strip(),race_no)
     def completeness(r):
         rows=r.get("rows",[])
         if not isinstance(rows,list):
