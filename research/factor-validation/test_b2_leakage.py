@@ -142,6 +142,21 @@ class B2RaceEligibilityTests(unittest.TestCase):
         self.assertEqual(prepared[0]["winner_count"], 1)
         self.assertEqual(sum(x["winner_share"] for x in prepared[0]["rows"]), 1.0)
 
+    def test_missing_popularity_does_not_remove_a_numeric_finisher(self):
+        race = {
+            "date": "2026-01-01", "venue": "東京", "rn": 9,
+            "surface": "ダート", "dist": 1400, "cls": "1勝クラス",
+            "rows": [
+                {"hid": f"h{i}", "num": i, "pop": None if i == 3 else i, "place": 1 if i == 1 else i}
+                for i in range(1, 7)
+            ],
+        }
+        prepared = prepare([race])
+        self.assertEqual(len(prepared), 1)
+        self.assertEqual(len(prepared[0]["rows"]), 6)
+        self.assertIsNone(next(x["pop"] for x in prepared[0]["rows"] if x["hid"] == "h3"))
+        self.assertEqual(sum(x["winner_share"] for x in prepared[0]["rows"]), 1.0)
+
 
 
 class B2CandidateFitSmokeTests(unittest.TestCase):
