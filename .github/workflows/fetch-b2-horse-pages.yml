@@ -24,6 +24,13 @@ jobs:
           python collector/fetch_horse_pages.py \
             --cnames research/factor-validation/data/horse_cnames.json.gz \
             --out-dir out --workers 5 --passes 3
+      - name: 取得結果を、念のため workflow artifact にも保存（保存先ブランチへの保存が失敗しても失われないように）
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b2-horse-pages
+          path: out/
+          retention-days: 30
       - name: 結果を b2-data ブランチに保存
         if: always()
         run: |
@@ -33,15 +40,20 @@ jobs:
           git config --global user.name "fetch-b2-horse-pages"
           git config --global user.email "fetch-b2-horse-pages@users.noreply.github.com"
           if git ls-remote --exit-code --heads "$REMOTE" b2-data >/dev/null 2>&1; then
-            git clone --depth 1 --branch b2-data "$REMOTE" data
+            git clone --depth 1 --branch b2-data "$REMOTE" b2data_work
           else
-            mkdir data && cd data && git init -q -b b2-data && git remote add origin "$REMOTE" && cd ..
+            mkdir b2data_work && cd b2data_work && git init -q -b b2-data && git remote add origin "$REMOTE" && cd ..
           fi
           STAMP=$(date -u +%Y%m%dT%H%M%SZ)
-          mkdir -p data/horse-pages
-          cp out/horses.json.gz "data/horse-pages/horses-$STAMP.json.gz"
-          cp out/manifest.json "data/horse-pages/manifest-$STAMP.json"
-          cd data
+          mkdir -p b2data_work/horse-pages
+          cp out/horses.json.gz "b2data_work/horse-pages/horses-$STAMP.json.gz"
+          cp out/manifest.json "b2data_work/horse-pages/manifest-$STAMP.json"
+          cd b2data_work
           git add horse-pages
           git commit -q -m "B2 horse pages $STAMP"
-          for i in 1 2 3; do git push origin b2-data && break || sleep 5; done
+          ok=0
+          for i in 1 2 3; do
+            if git push origin b2-data; then ok=1; break; fi
+            sleep 5
+          done
+          test "$ok" = 1 || { echo "b2-data への保存に失敗しました"; exit 1; }
