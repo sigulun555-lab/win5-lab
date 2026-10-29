@@ -146,8 +146,8 @@ def fit_theta(races, spec, l2, k, tau=1.0):
         return loss, grad
     result = minimize(objective, np.zeros(len(names)), jac=True, method="L-BFGS-B", bounds=bounds,
                       options={"maxiter": 500, "ftol": 1e-10})
-    if not np.isfinite(result.fun):
-        raise RuntimeError("non-finite coefficient fit: " + str(result.message))
+    if not result.success or not np.isfinite(result.fun):
+        raise RuntimeError("coefficient fit did not converge: " + str(result.message))
     return result.x
 
 def tune_candidate(train, spec, is_b0=False):
@@ -222,8 +222,8 @@ def fit_popularity(races, extra_scores=None, l2=0.01):
         return loss, grad
     d = 18 + (1 if extra_scores is not None else 0)
     res = minimize(objective, np.zeros(d), jac=True, method="L-BFGS-B", options={"maxiter": 500, "ftol": 1e-10})
-    if not np.isfinite(res.fun):
-        raise RuntimeError("popularity model fit failed: " + str(res.message))
+    if not res.success or not np.isfinite(res.fun):
+        raise RuntimeError("popularity model fit did not converge: " + str(res.message))
     return res.x
 
 def popularity_ll(races, theta, extra_scores=None):
