@@ -488,7 +488,7 @@ def main():
         "history_manifest_sha256": sha(args.history_manifest) if args.history_manifest else None,
         "history_audit": str(args.history_audit) if args.history_audit else None,
         "history_audit_sha256": sha(args.history_audit) if args.history_audit else None,
-        "history_audit_summary": ({k: history_audit.get(k) for k in ("status", "output_horse_count", "total_runs", "zero_run_horses", "horses_with_exactly_four_runs_potentially_limited", "horses_with_one_to_four_runs", "compressed_sha256", "uncompressed_sha256")} if history_audit else None),
+        "history_audit_summary": ({k: history_audit.get(k) for k in ("status", "requested", "succeeded", "missing", "success_rate", "missing_rate", "output_horse_count", "total_runs", "zero_run_horses", "zero_run_horse_rate", "horses_with_exactly_four_runs_potentially_limited", "horses_with_one_to_four_runs", "compressed_sha256", "uncompressed_sha256")} if history_audit else None),
         "history_manifest_summary": ({k: history_manifest.get(k) for k in ("started_at_jst", "finished_at_jst", "requested", "succeeded", "missing", "horses_with_zero_runs", "total_runs", "cnames_sha256", "horses_json_sha256", "horses_json_gz_sha256", "script_sha256")} if history_manifest else None),
         "race_reconciliation": str(args.race_reconciliation) if args.race_reconciliation else None,
         "race_reconciliation_sha256": sha(args.race_reconciliation) if args.race_reconciliation else None,
