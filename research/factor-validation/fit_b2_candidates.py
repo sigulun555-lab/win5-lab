@@ -193,9 +193,15 @@ def tune_candidate(train, spec, is_b0=False):
             "tau": best[3], "theta": theta.tolist(), "inner_months": [f"{y:04d}-{m:02d}" for y, m in months]}
 
 def popularity_matrix(race):
-    pop = np.asarray([min(max(int(row.get("pop", 18)), 1), 18) for row in race["rows"]], dtype=int)
-    matrix = np.zeros((len(pop), 18), dtype=float)
-    matrix[np.arange(len(pop)), pop - 1] = 1.0
+    # Missing final popularity contributes no popularity feature; do not invent a rank.
+    matrix = np.zeros((len(race["rows"]), 18), dtype=float)
+    for i, row in enumerate(race["rows"]):
+        try:
+            value = int(row.get("pop"))
+        except (TypeError, ValueError):
+            continue
+        if value >= 1:
+            matrix[i, min(value, 18) - 1] = 1.0
     return matrix
 
 def fit_popularity(races, extra_scores=None, l2=0.01):
@@ -373,6 +379,7 @@ def main():
     unknown_jra = sum(run.get("class_category") == "UNKNOWN_JRA" for run in jra_selected)
     unclassifiable_venues = sum(run.get("venue_type") == "UNCLASSIFIABLE" for run in selected_runs)
     no_prior_history_rows = sum(int(row.get("prior_runs", 0) or 0) == 0 for row in runner_rows)
+    missing_popularity_rows = sum(row.get("pop") in (None, "") for row in runner_rows)
     history_manifest = json.loads(args.history_manifest.read_text(encoding="utf-8")) if args.history_manifest else None
     def between(lo, hi):
         return [r for r in races if dt.date.fromisoformat(lo) <= r["_day"] <= dt.date.fromisoformat(hi)]
@@ -408,6 +415,8 @@ def main():
         "runner_rows_loaded": len(runner_rows),
         "runner_rows_with_no_usable_prior_history": no_prior_history_rows,
         "runner_rows_with_no_usable_prior_history_rate": no_prior_history_rows / len(runner_rows) if runner_rows else None,
+        "runner_rows_missing_final_popularity": missing_popularity_rows,
+        "runner_rows_missing_final_popularity_rate": missing_popularity_rows / len(runner_rows) if runner_rows else None,
         "selected_history_run_observations": len(selected_runs),
         "selected_jra_run_observations": len(jra_selected),
         "selected_jra_runs_with_numeric_rating": rating_observed,
