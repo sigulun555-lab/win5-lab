@@ -21,7 +21,8 @@ def classify_venue(value: Any, aliases: dict[str,str] | None = None) -> str:
         return aliases[label] if aliases[label] in {"JRA","LOCAL","OVERSEAS","UNCLASSIFIABLE"} else "UNCLASSIFIABLE"
     if label in JRA_VENUES: return "JRA"
     if label in LOCAL_VENUES: return "LOCAL"
-    overseas = ("海外","アメリカ","英国","イギリス","フランス","香港","豪州","オーストラリア","ドバイ","サウジ","韓国","UAE")
+    if label in {"サウ", "サウジ"}: return "OVERSEAS"
+    overseas = ("海外","アメリカ","米国","英国","イギリス","フランス","香港","豪州","オーストラリア","ドバイ","サウジ","韓国","UAE","カナダ","ドイツ","イタリア","シンガポール","ニュージーランド")
     if any(t in label for t in overseas): return "OVERSEAS"
     return "UNCLASSIFIABLE"
 
