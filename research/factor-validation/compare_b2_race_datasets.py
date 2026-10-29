@@ -92,6 +92,23 @@ def main():
     cdict={key(r):r for r in current}; rdict={key(r):r for r in reference}
     ckeys,rkeys=set(cdict),set(rdict)
     only_c=sorted(ckeys-rkeys); only_r=sorted(rkeys-ckeys)
+    def describe_record(record):
+        if record is None:
+            return None
+        n,w=row_count_and_winners(record)
+        return {
+            "key": key(record), "surface": record.get("surface"), "dist": record.get("dist"),
+            "numeric_finishers": n, "winner_count": w, "eligibility_reasons": reason(record),
+            "missing_popularity_rows": missing_popularity_count(record),
+        }
+    test_difference_details = []
+    for side, keys, source in (("current_only", only_c, cdict), ("reference_only", only_r, rdict)):
+        for k in keys:
+            if "2026-08-01" <= k[0] <= "2026-10-24":
+                test_difference_details.append({
+                    "side": side, "key": k,
+                    "record": describe_record(source.get(k)),
+                })
     report={
       "status":"comparison_only_not_model_validation",
       "current":{"path":a.current,"total_races_raw":len(current_raw),"total_races_deduplicated":len(current),"duplicate_race_key_count":len(current_duplicates),"duplicate_race_keys_first_100":current_duplicates[:100],
@@ -103,6 +120,11 @@ def main():
         "test_2026-08_to_2026-10-24":summarize(reference,"2026-08-01","2026-10-24"),
         "race_keys_only_here_count":len(only_r),"race_keys_only_here_first_100":only_r[:100]},
       "same_race_key_count":len(ckeys&rkeys),
+      "test_period_key_difference_counts":{
+        "current_only":sum(1 for k in only_c if "2026-08-01" <= k[0] <= "2026-10-24"),
+        "reference_only":sum(1 for k in only_r if "2026-08-01" <= k[0] <= "2026-10-24"),
+      },
+      "test_period_key_difference_details":test_difference_details,
       "warning":"Race-key matching is by date, venue, and race number. Eligibility counts require numeric positive place/num, at least 5 numeric finishers, distance, surface turf/dirt, and exactly one recorded first-place runner. Missing final popularity is retained for B2 and counted separately; it is not an exclusion reason."
     }
     out=Path(a.out); out.parent.mkdir(parents=True,exist_ok=True)
