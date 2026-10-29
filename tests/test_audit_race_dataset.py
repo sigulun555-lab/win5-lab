@@ -20,13 +20,17 @@ class TestRaceDatasetAudit(unittest.TestCase):
     def test_valid_race_passes_basic_integrity(self):
         report = MODULE.audit([race()])
         self.assertEqual(report["status"], "pass_basic_integrity_not_leakage_validation")
-        self.assertEqual(report["eligible_for_existing_model_filter"], 1)
+        self.assertEqual(report["eligible_for_preregistered_b2_filter"], 1)
         self.assertEqual(report["races_with_exactly_one_valid_first_place"], 1)
 
-    def test_duplicate_race_key_blocks(self):
+    def test_duplicate_race_key_is_a_reported_warning_not_a_blocker(self):
+        # Duplicates are deduplicated deterministically downstream (b2_dataset_prep / reconciliation);
+        # the audit must still report them and must not pass silently.
         report = MODULE.audit([race(), race()])
-        self.assertEqual(report["status"], "blocked_integrity_issues")
+        self.assertEqual(report["status"], "pass_basic_integrity_with_warnings")
         self.assertIn("duplicate_race_key", report["issue_counts"])
+        self.assertTrue(report["duplicate_race_keys_first_100"])
+        self.assertTrue(any("Duplicate" in w for w in report["warnings"]))
 
     def test_invalid_date_and_missing_winner_are_reported(self):
         item = race(date="not-a-date")

@@ -22,11 +22,17 @@ class TestB2DatasetPrep(unittest.TestCase):
         self.assertAlmostEqual(h1["b2_score"],1.05) # percentile score remains; debut class effect is the reference
         self.assertEqual(target["class"],"未勝利")
 
-    def test_dead_heat_is_retained_fractionally(self):
+    def test_multi_winner_race_is_excluded_not_fractionally_labelled(self):
+        # preregistered eligibility: exactly one first-place finisher; dead heats are excluded
         rows=[{"hid":f"h{i}","num":i,"pop":i,"place":1 if i in (1,2) else i} for i in range(1,7)]
         out=M.prepare([race("2026-01-01",1,rows)])
+        self.assertEqual(out,[])
+
+    def test_single_winner_race_is_kept_with_a_one_hot_label(self):
+        rows=[{"hid":f"h{i}","num":i,"pop":i,"place":i} for i in range(1,7)]
+        out=M.prepare([race("2026-01-01",1,rows)])
         self.assertEqual(len(out),1)
-        self.assertEqual(out[0]["winner_count"],2)
-        self.assertAlmostEqual(sum(x["winner_share"] for x in out[0]["rows"]),1.0)
+        self.assertEqual(out[0]["winner_count"],1)
+        self.assertEqual([x["winner_share"] for x in out[0]["rows"]],[1.0,0.0,0.0,0.0,0.0,0.0])
 
 if __name__=="__main__": unittest.main()
