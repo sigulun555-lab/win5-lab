@@ -1,6 +1,12 @@
 name: B2 real-data cache benchmark
 
 on:
+  push:
+    branches:
+      - optimize-b2-cache-progress
+    paths:
+      - "research/factor-validation/benchmark_b2_cache.py"
+      - ".github/workflows/b2-cache-benchmark.yml"
   workflow_dispatch:
     inputs:
       source_run_id:
