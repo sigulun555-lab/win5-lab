@@ -2,6 +2,11 @@ name: fetch-b2-horse-pages
 
 on:
   workflow_dispatch:
+    inputs:
+      limit:
+        description: "動作確認用：先頭からN頭だけ取得（空欄なら全頭）。この場合のファイル名は検証用の規則に合わず、rebuildでは使われない"
+        required: false
+        default: ""
 
 permissions:
   contents: write
@@ -21,9 +26,11 @@ jobs:
           python-version: "3.12"
       - name: 馬ごとの競走馬情報ページを取得（B2の検証用の入力）
         run: |
+          LIMIT_ARG=""
+          if [ -n "${{ github.event.inputs.limit }}" ]; then LIMIT_ARG="--limit ${{ github.event.inputs.limit }}"; fi
           python collector/fetch_horse_pages.py \
             --cnames research/factor-validation/data/horse_cnames.json.gz \
-            --out-dir out --workers 5 --passes 3
+            --out-dir out --workers 5 --passes 3 $LIMIT_ARG
       - name: 取得結果を、念のため workflow artifact にも保存（保存先ブランチへの保存が失敗しても失われないように）
         if: always()
         uses: actions/upload-artifact@v4
@@ -45,6 +52,7 @@ jobs:
             mkdir b2data_work && cd b2data_work && git init -q -b b2-data && git remote add origin "$REMOTE" && cd ..
           fi
           STAMP=$(date -u +%Y%m%dT%H%M%SZ)
+          if [ -n "${{ github.event.inputs.limit }}" ]; then STAMP="${STAMP}-limit${{ github.event.inputs.limit }}"; fi
           mkdir -p b2data_work/horse-pages
           cp out/horses.json.gz "b2data_work/horse-pages/horses-$STAMP.json.gz"
           cp out/manifest.json "b2data_work/horse-pages/manifest-$STAMP.json"
