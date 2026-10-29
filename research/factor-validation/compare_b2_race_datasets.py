@@ -89,7 +89,18 @@ def main():
                 # Keep the record with more populated result rows, deterministically.
                 def completeness(x):
                     rows=x.get("rows",x.get("runners",[]))
-                    return sum(1 for z in rows if isinstance(z,dict) and z.get("place") not in (None,"") and z.get("pop") not in (None,"")) if isinstance(rows,list) else 0
+                    if not isinstance(rows,list):
+                        return (0,0,0)
+                    numeric_finishers = sum(
+                        1 for z in rows if isinstance(z,dict) and z.get("hid") not in (None,"")
+                        and str(z.get("num","")).strip().isdigit() and int(str(z.get("num","")).strip()) > 0
+                        and str(z.get("place","")).strip().isdigit() and int(str(z.get("place","")).strip()) > 0
+                    )
+                    populated_popularity = sum(
+                        1 for z in rows if isinstance(z,dict) and z.get("pop") not in (None,"")
+                        and str(z.get("pop","")).strip().isdigit() and int(str(z.get("pop","")).strip()) > 0
+                    )
+                    return (numeric_finishers, populated_popularity, len(rows))
                 if completeness(r)>completeness(out[k]): out[k]=r
             else: out[k]=r
         return list(out.values()),duplicates
