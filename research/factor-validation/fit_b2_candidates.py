@@ -102,6 +102,22 @@ def model_ll(races, score_fn, tau=1.0):
         vals.append(float(np.sum(y * np.log(np.clip(p, 1e-15, 1.0)))))
     return np.asarray(vals)
 
+def candidate_design(row, spec, k):
+    f = feat(row, spec["policy"])
+    base = float(f.get("base_score", 0.0))
+    cols = []
+    if spec["class"]:
+        cols.extend(float(f.get("class_features", {}).get(cat, 0.0)) for cat in GAMMA_CATS)
+    if spec["local"]:
+        cols.append(float(f.get("local_feature", 0.0)))
+    shrink = (int(f.get("jra_runs_selected", 0)) / (int(f.get("jra_runs_selected", 0)) + k)
+              if spec["shrink"] and int(f.get("jra_runs_selected", 0)) + k else (0.0 if spec["shrink"] else 1.0))
+    base *= shrink
+    cols = [x * shrink for x in cols]
+    if spec["rating"]:
+        cols.append(float(f.get("rating_delta", 0.0)))
+    return base, np.asarray(cols, dtype=float)
+
 def fit_theta(races, spec, l2, k, tau=1.0):
     names = []
     if spec["class"]:
@@ -113,17 +129,22 @@ def fit_theta(races, spec, l2, k, tau=1.0):
     if not names:
         return np.zeros(0, dtype=float)
     bounds = [(-1.0, 0.0) if name == "eta_LOCAL" else (None, None) for name in names]
+    prepared = []
+    for race in races:
+        designs = [candidate_design(row, spec, k) for row in race["rows"]]
+        base = np.asarray([x[0] for x in designs], dtype=float)
+        matrix = np.vstack([x[1] for x in designs])
+        prepared.append((base, matrix, target_vec(race)))
     def objective(theta):
         loss = l2 * float(theta @ theta)
         grad = 2.0 * l2 * theta
-        for race in races:
-            scores = np.asarray([raw_score(row, spec, theta, k) for row in race["rows"]], dtype=float)
+        for base, matrix, y in prepared:
+            scores = base + matrix @ theta
             p = softmax(scores, tau)
-            y = target_vec(race)
             loss -= float(y @ np.log(np.clip(p, 1e-15, 1.0)))
-            # Numerical gradient is used below because features include candidate-specific shrinkage.
-        return loss
-    result = minimize(objective, np.zeros(len(names)), method="L-BFGS-B", bounds=bounds,
+            grad += matrix.T @ (p - y) / tau
+        return loss, grad
+    result = minimize(objective, np.zeros(len(names)), jac=True, method="L-BFGS-B", bounds=bounds,
                       options={"maxiter": 500, "ftol": 1e-10})
     if not np.isfinite(result.fun):
         raise RuntimeError("non-finite coefficient fit: " + str(result.message))
