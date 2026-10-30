@@ -2,6 +2,11 @@ name: B2 full historical cache comparison (manual)
 
 on:
   workflow_dispatch:
+    inputs:
+      source_run_id:
+        description: "Successful historical data run ID containing the pinned audit artifact"
+        required: true
+        default: "40882658354"
 
 permissions:
   actions: read
@@ -24,7 +29,7 @@ jobs:
         with:
           name: b2-historical-data-audit
           repository: sigulun555-lab/win5-lab
-          run-id: 40882658354
+          run-id: ${{ inputs.source_run_id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path: baseline-artifact
       - name: Prepare identical input and reference output
