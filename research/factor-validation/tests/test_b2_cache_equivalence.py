@@ -74,13 +74,47 @@ class FitDesignCacheEquivalenceTests(unittest.TestCase):
             return calls
 
         uncached = run_with_cache(cache_max=0, repeat=1)[0]
-        cached_calls = run_with_cache(cache_max=6, repeat=2)
+        cached_calls = run_with_cache(cache_max=24, repeat=2)
         self.assertEqual(len(cached_calls), 2)
         # First cached call builds arrays; second call must reuse the same arrays.
         np.testing.assert_allclose(cached_calls[0][0], cached_calls[1][0], rtol=0, atol=1e-12)
         np.testing.assert_allclose(cached_calls[0][1], cached_calls[1][1], rtol=0, atol=1e-12)
         np.testing.assert_allclose(uncached[0], cached_calls[1][0], rtol=0, atol=1e-12)
         np.testing.assert_allclose(uncached[1], cached_calls[1][1], rtol=0, atol=1e-12)
+
+    def test_cache_key_changes_for_k_race_content_and_candidate_spec(self):
+        races = synthetic_races()
+        spec = {
+            "policy": "all", "class": True, "shrink": True,
+            "local": True, "rating": True,
+        }
+        base = FIT._fit_design_cache_key(races, spec, 2)
+        self.assertNotEqual(base, FIT._fit_design_cache_key(races, spec, 3))
+        changed_races = synthetic_races()
+        changed_races[0]["rows"][0]["candidate_features"]["all"]["base_score"] += 0.01
+        self.assertNotEqual(base, FIT._fit_design_cache_key(changed_races, spec, 2))
+        changed_spec = {**spec, "policy": "local_excluded"}
+        self.assertNotEqual(base, FIT._fit_design_cache_key(races, changed_spec, 2))
+
+    def test_cached_design_arrays_are_read_only(self):
+        races = synthetic_races()
+        model_spec = {
+            "policy": "all", "class": True, "shrink": True,
+            "local": True, "rating": True,
+        }
+
+        def fake_minimize(fun, x0, **kwargs):
+            loss, grad = fun(np.zeros_like(x0))
+            return SimpleNamespace(x=np.zeros_like(x0), success=True, fun=loss, message="test stub")
+
+        with patch.object(FIT, "minimize", side_effect=fake_minimize):
+            FIT.fit_theta(races, model_spec, 0.01, 2, 0.75)
+        self.assertEqual(len(FIT._FIT_DESIGN_CACHE), 1)
+        arrays = next(iter(FIT._FIT_DESIGN_CACHE.values()))
+        for array in arrays:
+            self.assertFalse(array.flags.writeable)
+            with self.assertRaises(ValueError):
+                array.flat[0] = array.flat[0]
 
 
 if __name__ == "__main__":
