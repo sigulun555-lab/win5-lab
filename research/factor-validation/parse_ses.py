@@ -13,6 +13,13 @@ def parse_file(fn):
         surface=txt(dur.group(1)) if dur else None; going=txt(dur.group(2)) if dur else None
         cat=re.search(r'class="cell category">(.*?)</div>',b,re.S); cls=re.search(r'class="cell class">(.*?)</div>',b,re.S)
         rname=re.search(r'class="race_name">(.*?)</span>',b,re.S)
+        # Explicit grade icon in the race title (e.g. icon_grade_g1.png). The class cell says only
+        # "オープン" for graded, listed and open races, so the icon is the only explicit grade source.
+        h2=re.search(r'<h2>(.*?)</h2>',b,re.S)
+        gi=re.search(r'<span class="grade_icon[^"]*">\s*<img[^>]*src="[^"]*icon_grade_([A-Za-z0-9_]+)\.png"[^>]*alt="([^"]*)"',h2.group(1),re.S) if h2 else None
+        grade_icon=gi.group(1) if gi else ''
+        grade_alt=H.unescape(gi.group(2)) if gi else ''
+        grade={'g1':'G1','g2':'G2','g3':'G3'}.get(grade_icon.lower(),'')
         cd=re.search(r'class="cell course">.*?</span>([\d,]+)<span class="unit">メートル</span><span class="detail">（(.*?)）',b,re.S)
         dist=int(cd.group(1).replace(',','')) if cd else None; detail=cd.group(2) if cd else ''
         rows=[]
@@ -33,7 +40,7 @@ def parse_file(fn):
             rows.append(dict(f3=float(ft.group(0)) if ft else None,jockey=jk,trainer=tr_,c3=cor.get(3),c4=cor.get(4),c1=cor.get(1),c2=cor.get(2),place=int(place) if place.isdigit() else None,place_raw=place,num=int(num) if num.isdigit() else None,hid=hid,name=name,age=txt(cell('age')),
                 wt=float(wt.group(0)) if wt else None,pop=int(pop.group(0)) if pop else None,bw=int(hw.group(1)) if hw else None,time=txt(cell('time'))))
         out.append(dict(date=str(date),venue=venue,rn=rn,surface=surface,going=going,weather=txt(wx.group(1)) if wx else None,cat=txt(cat.group(1)) if cat else '',cls=txt(cls.group(1)) if cls else '',
-                        name=txt(rname.group(1)) if rname else '',dist=dist,detail=detail,rows=rows))
+                        name=txt(rname.group(1)) if rname else '',grade=grade,grade_icon=grade_icon,grade_alt=grade_alt,dist=dist,detail=detail,rows=rows))
     return out
 if __name__=='__main__':
     races=[]

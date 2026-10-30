@@ -1,0 +1,114 @@
+name: b2-1-class-labeling (audit, optional fit)
+
+# B2.1 = B2 candidates with class-labeling v2 (explicit G1/G2/G3 icon on オープン races). Read-only audit first;
+# the fit job runs only when the pushed commit message contains [run-fit]. Nothing is written to main or to saved predictions.
+on:
+  push:
+    branches: [claude/b2-1-grade-class]
+    paths:
+      - ".github/workflows/b2-1-class-labeling.yml"
+      - "scripts/audit_b2_class_labeling.py"
+      - "scripts/compare_b2_class_labeling.py"
+      - "research/factor-validation/parse_ses.py"
+      - "research/factor-validation/b2_dataset_prep.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install --disable-pip-version-check numpy scipy
+      - name: Unit tests (all)
+        run: |
+          python -m unittest discover -s tests -q
+          python -m unittest discover -s research/factor-validation -p 'test_b2_leakage.py' -q
+      - name: Prepare directories
+        run: mkdir -p research/factor-validation/ses reports
+      - name: Collect JRA result pages
+        working-directory: research/factor-validation
+        run: python crawl.py
+      - name: Parse collected pages (now with grade icon)
+        working-directory: research/factor-validation
+        run: python parse_ses.py
+      - name: Retrieve pinned horse-pages snapshot from b2-data
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin b2-data
+          MANIFEST_PATH="$(git ls-tree -r --name-only FETCH_HEAD -- horse-pages/ | grep -E '^horse-pages/manifest-[0-9]{8}T[0-9]{6}Z\.json$' | sort | tail -n 1)"
+          STAMP="${MANIFEST_PATH#horse-pages/manifest-}"; STAMP="${STAMP%.json}"
+          git show "FETCH_HEAD:$MANIFEST_PATH" > reports/b2-horse-pages-manifest.json
+          git show "FETCH_HEAD:horse-pages/horses-$STAMP.json.gz" > reports/b2-horse-pages.json.gz
+          gzip -dc reports/b2-horse-pages.json.gz > reports/b2-horse-pages.json
+          sha256sum reports/b2-horse-pages-manifest.json reports/b2-horse-pages.json.gz reports/b2-horse-pages.json
+      - name: Build venue aliases (unchanged builder)
+        run: python research/factor-validation/build_b2_venue_aliases.py research/factor-validation/races.json --horse-history reports/b2-horse-pages.json --out research/factor-validation/b2_venue_aliases.json
+      - name: Audit labeling v1 vs v2 and write both prepared datasets
+        run: python scripts/audit_b2_class_labeling.py research/factor-validation/races.json --aliases research/factor-validation/b2_venue_aliases.json --horse-history reports/b2-horse-pages.json --prepared-v1 reports/b2-prepared-races-v1.json --prepared-v2 reports/b2-prepared-races-v2.json
+      - name: Hashes and regression check against the Run #25 prepared dataset
+        run: |
+          sha256sum research/factor-validation/races.json research/factor-validation/b2_venue_aliases.json reports/b2-prepared-races-v1.json reports/b2-prepared-races-v2.json research/factor-validation/parse_ses.py research/factor-validation/b2_dataset_prep.py research/factor-validation/b2_features.py research/factor-validation/fit_b2_candidates.py
+          echo "Run #25 prepared sha256 was 767614f0ed1bca5609ca531fdd4958912d598a14167a376a0e459bf696b7f0f5"
+          python - <<'PY'
+          import hashlib
+          h = hashlib.sha256(open('reports/b2-prepared-races-v1.json','rb').read()).hexdigest()
+          print('v1 prepared equals Run #25 prepared:', h == '767614f0ed1bca5609ca531fdd4958912d598a14167a376a0e459bf696b7f0f5')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: b2-1-class-labeling-data
+          retention-days: 14
+          path: |
+            research/factor-validation/races.json
+            research/factor-validation/b2_venue_aliases.json
+            reports/b2-horse-pages-manifest.json
+            reports/b2-prepared-races-v1.json
+            reports/b2-prepared-races-v2.json
+
+  fit:
+    needs: audit
+    if: contains(github.event.head_commit.message, '[run-fit]') || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install --disable-pip-version-check numpy scipy
+      - uses: actions/download-artifact@v4
+        with:
+          name: b2-1-class-labeling-data
+          path: data-v2
+      - uses: actions/download-artifact@v4
+        with:
+          name: b2-historical-data-audit
+          repository: ${{ github.repository }}
+          run-id: "40887458111"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: data-v1
+      - name: Fit all registered candidates on labeling v2 (same fit code as Run #25)
+        run: |
+          mkdir -p reports
+          python research/factor-validation/fit_b2_candidates.py data-v2/reports/b2-prepared-races-v2.json --out reports/b2-1-candidate-validation.json --history-manifest data-v2/reports/b2-horse-pages-manifest.json --history-audit data-v1/reports/b2-horse-pages-audit.json --race-reconciliation data-v1/reports/b2-race-dataset-reconciliation.json
+      - name: Compare v2 against the existing v1 result
+        run: python scripts/compare_b2_class_labeling.py data-v1/reports/b2-candidate-validation.json reports/b2-1-candidate-validation.json data-v2/reports/b2-prepared-races-v2.json
+      - name: Hashes
+        run: sha256sum reports/b2-1-candidate-validation.json reports/b2-1-candidate-validation.sha256 research/factor-validation/fit_b2_candidates.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: b2-1-candidate-validation
+          retention-days: 14
+          path: |
+            reports/b2-1-candidate-validation.json
+            reports/b2-1-candidate-validation.sha256

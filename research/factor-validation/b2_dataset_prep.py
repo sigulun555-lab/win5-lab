@@ -19,7 +19,21 @@ def iso(value):
         except (TypeError,ValueError): pass
     return None
 
-def _prior_result_class_map(result_races, cutoff):
+GRADE_LABELS={"G1","G2","G3"}
+
+def race_class_label(race, labeling="v1"):
+    """Class text used for class joins and history.
+
+    v1 (default, unchanged): the result page's class cell as-is, where graded, listed and open races are all "オープン".
+    v2: only when the page shows an explicit G1/G2/G3 grade icon on an "オープン" race, use that grade text.
+    Race names are never used; a missing or unrecognised icon leaves the class unchanged.
+    """
+    cls=str(race.get("cls") or race.get("class") or "").strip()
+    if labeling == "v2" and cls == "オープン" and str(race.get("grade") or "").strip() in GRADE_LABELS:
+        return str(race["grade"]).strip()
+    return cls
+
+def _prior_result_class_map(result_races, cutoff, labeling="v1"):
     """Map runners to class only from unique, single-winner races strictly before cutoff."""
     matches=collections.defaultdict(list)
     for race in result_races if isinstance(result_races,list) else []:
@@ -29,7 +43,7 @@ def _prior_result_class_map(result_races, cutoff):
         if day is None or (cutoff is not None and day >= cutoff):
             continue
         venue=str(race.get("venue") or "").strip()
-        cls=str(race.get("cls") or race.get("class") or "").strip()
+        cls=race_class_label(race,labeling)
         rows=race.get("rows",[])
         winners=[x for x in rows if isinstance(x,dict) and str(x.get("place","")).strip()=="1" and x.get("hid")] if isinstance(rows,list) else []
         if not venue or not cls or len(winners)!=1:
@@ -41,10 +55,10 @@ def _prior_result_class_map(result_races, cutoff):
     return {key:vals[0] for key,vals in matches.items() if len(vals)==1}
 
 
-def _history_seed(bundle, cutoff, result_races=None):
+def _history_seed(bundle, cutoff, result_races=None, labeling="v1"):
     """Return numeric prior runs; attach class only from a unique earlier result race."""
     horses=bundle.get("horses",{}) if isinstance(bundle,dict) and isinstance(bundle.get("horses"),dict) else (bundle if isinstance(bundle,dict) else {})
-    class_map=_prior_result_class_map(result_races or [], None) if result_races else {}
+    class_map=_prior_result_class_map(result_races or [], None, labeling) if result_races else {}
     seeded=collections.defaultdict(list)
     if not isinstance(horses,dict):
         return seeded
@@ -108,9 +122,9 @@ def supported_history_schema(bundle):
     return any(isinstance(v,dict) and isinstance(v.get("runs"),list) for v in bundle.values())
 
 
-def prepare(races, aliases=None, horse_history=None):
+def prepare(races, aliases=None, horse_history=None, class_labeling="v1"):
     first_date=min((d for d in (iso(r.get("date")) for r in races) if d), default=None)
-    by_horse=_history_seed(horse_history or {}, first_date, races) if first_date else collections.defaultdict(list)
+    by_horse=_history_seed(horse_history or {}, first_date, races, class_labeling) if first_date else collections.defaultdict(list)
     cleaned=[]
     for race in sorted(races, key=lambda r:(str(r.get("date","")),str(r.get("venue","")),int(r.get("rn") or 0))):
         date=iso(race.get("date"))
@@ -158,18 +172,18 @@ def prepare(races, aliases=None, horse_history=None):
                 "b2_score":features["score"], "prior_runs":features["selected_runs"],
                 "jra_prior_runs":features["jra_runs_selected"],
                 "candidate_features":{"all":all_features,"local_excluded":no_local_features},
-                "class":race.get("cls",""), "race_id":rid
+                "class":race_class_label(race,class_labeling), "race_id":rid
             })
         if len(out)<5: continue
         cleaned.append({"race_id":rid,"date":date.isoformat(),"venue":race.get("venue"),
                         "rn":race.get("rn"),"surface":race.get("surface"),"dist":race.get("dist"),
-                        "class":race.get("cls",""),"rows":out,"winner_count":len(winners)})
+                        "class":race_class_label(race,class_labeling),"rows":out,"winner_count":len(winners)})
         # Add today's run to horse history only after all horses in today's race have been scored.
         # Features on the same date never use same-day runs.
         for row,num,pop,place in valid:
             if place is None: continue
             by_horse[str(row["hid"])].append({
-                "date":date.isoformat(),"venue":race.get("venue"),"class":race.get("cls",""),
+                "date":date.isoformat(),"venue":race.get("venue"),"class":race_class_label(race,class_labeling),
                 "field":race_field_size,"place":place
             })
     return cleaned
@@ -180,6 +194,7 @@ def main():
     ap.add_argument("--out",type=Path,required=True)
     ap.add_argument("--aliases",type=Path)
     ap.add_argument("--horse-history",type=Path, help="Optional JRA horse-history snapshot; only runs before the earliest race date are used as seed history.")
+    ap.add_argument("--class-labeling",choices=("v1","v2"),default="v1",help="v1 (default) keeps the class text as-is; v2 uses an explicit G1/G2/G3 grade icon for races whose class text is オープン (candidate B2.1).")
     args=ap.parse_args()
     races_raw=json.loads(args.input.read_text(encoding="utf-8"))
     # The collector can emit duplicate records for the same race. Prevent duplicate
@@ -217,7 +232,7 @@ def main():
     races=list(deduped.values())
     aliases=json.loads(args.aliases.read_text(encoding="utf-8")) if args.aliases else None
     horse_history=json.loads(args.horse_history.read_text(encoding="utf-8")) if args.horse_history else None
-    prepared=prepare(races,aliases,horse_history)
+    prepared=prepare(races,aliases,horse_history,args.class_labeling)
     args.out.parent.mkdir(parents=True,exist_ok=True)
     payload=json.dumps(prepared,ensure_ascii=False,indent=2)+"\n"
     args.out.write_text(payload,encoding="utf-8")
@@ -229,7 +244,8 @@ def main():
             if numeric_finisher_stats(r)[0] >= 5 and numeric_finisher_stats(r)[1] > 1
             and str(r.get("surface","")).strip() in ("芝","ダート") and r.get("dist")
         ),
-        "seed_history_horses":len(_history_seed(horse_history or {}, min((d for d in (iso(r.get("date")) for r in races) if d), default=dt.date.max), races)) if horse_history else 0,
+        "class_labeling":args.class_labeling,
+        "seed_history_horses":len(_history_seed(horse_history or {}, min((d for d in (iso(r.get("date")) for r in races) if d), default=dt.date.max), races, args.class_labeling)) if horse_history else 0,
         "horse_history_schema_supported":supported_history_schema(horse_history) if horse_history else False,
         "horse_history_warning":"Horse-history input is not a supported horse-ID to {profile,runs} mapping; no prior race history can be seeded from this file." if horse_history and not supported_history_schema(horse_history) else None,
         "seed_class_join":"strictly-prior result race by date+venue+runner ID; ambiguous/missing classes remain unknown",
