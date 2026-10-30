@@ -48,7 +48,7 @@ jobs:
           /usr/bin/time -f 'CACHED_FIT_ELAPSED_SECONDS=%e' -o reports/b2-cached-fit-time.txt python research/factor-validation/fit_b2_candidates.py reports/b2-prepared-races.json --out reports/b2-cached-candidate-validation.json --history-manifest reports/b2-horse-pages-manifest.json --history-audit reports/b2-horse-pages-audit.json --race-reconciliation reports/b2-race-dataset-reconciliation.json 2>&1 | tee reports/b2-cached-fit.log
           cat reports/b2-cached-fit-time.txt
       - name: Compare all numeric results to baseline
-        run: python scripts/compare_b2_benchmark_outputs.py reports/b2-baseline-candidate-validation.json reports/b2-cached-candidate-validation.json --out reports/b2-cache-benchmark-comparison.json
+        run: python scripts/compare_b2_benchmark_outputs.py reports/b2-baseline-candidate-validation.json reports/b2-cached-candidate-validation.json --tolerance 1e-8 --out reports/b2-cache-benchmark-comparison.json
       - name: Upload benchmark report
         if: always()
         uses: actions/upload-artifact@v4
