@@ -1,0 +1,31 @@
+name: B2 artifact summary (read-only, manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_run_id:
+        description: "Run ID that produced the b2-historical-data-audit artifact"
+        required: true
+        default: "40887458111"
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  summarize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: b2-historical-data-audit
+          repository: ${{ github.repository }}
+          run-id: ${{ inputs.source_run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: artifact
+      - name: Hashes of the downloaded files
+        run: sha256sum artifact/reports/b2-candidate-validation.json artifact/reports/b2-prepared-races.json artifact/reports/b2-race-dataset-reconciliation.json
+      - name: Summarize (read-only)
+        run: python3 scripts/summarize_b2_validation.py artifact
