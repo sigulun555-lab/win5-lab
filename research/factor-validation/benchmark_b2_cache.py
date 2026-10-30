@@ -53,7 +53,7 @@ def main():
     # Run uncached first, then cached, using exactly the same race objects and
     # candidate configuration. A short one-time benchmark, not the full suite.
     uncached, uncached_seconds = run(races, model_spec, 0, "uncached")
-    cached, cached_seconds = run(races, model_spec, 6, "cached")
+    cached, cached_seconds = run(races, model_spec, 24, "cached")
     np.testing.assert_allclose(
         np.asarray(uncached["theta"]), np.asarray(cached["theta"]),
         rtol=0, atol=1e-8,
