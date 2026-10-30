@@ -116,6 +116,26 @@ class FitDesignCacheEquivalenceTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 array.flat[0] = array.flat[0]
 
+    def test_candidate_coverage_uses_nested_selected_runs_not_top_level_prior_runs(self):
+        rows = [{
+            "prior_runs": 99,
+            "candidate_features": {
+                "all": {
+                    "selected_runs": 1,
+                    "selected": [{
+                        "venue_type": "JRA",
+                        "rating": 88.0,
+                        "class_category": "MAIDEN",
+                    }],
+                },
+                "local_excluded": {"selected_runs": 0, "selected": []},
+            },
+        }]
+        coverage = FIT.candidate_data_coverage(rows, "all")
+        self.assertEqual(coverage["selected_history_run_observations"], 1)
+        self.assertEqual(coverage["runner_observations_with_no_selected_prior_runs"], 0)
+        self.assertEqual(coverage["selected_jra_numeric_rating_runs"], 1)
+
 
 if __name__ == "__main__":
     unittest.main()
