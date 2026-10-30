@@ -104,3 +104,43 @@ for r in val["folds"]:
         d = np.asarray([race_ll(p) - base[p["race_id"]] for p in c["predictions"]], dtype=float)
         lo, hi = boot(d)
         print(f"{name}\tmean {d.mean():+.5f} [{lo:+.5f},{hi:+.5f}] races {len(d)}")
+
+print("== TABLE5 variability and day-clustering of the primary difference (B2-full-b1-rating - B0-refit), per split")
+primary = "B2-full-b1-rating"
+date_of = {r["race_id"]: r["date"] for r in prep}
+
+def anova_icc(values, groups):
+    """One-way random-effects ICC(1) with unbalanced groups (Wu/Fleiss-Cuzick style n0)."""
+    vals = np.asarray(values, dtype=float); g = np.asarray(groups)
+    labels, inv = np.unique(g, return_inverse=True)
+    k = len(labels); n = len(vals)
+    ni = np.bincount(inv).astype(float)
+    means = np.bincount(inv, weights=vals) / ni
+    grand = vals.mean()
+    msb = (ni * (means - grand) ** 2).sum() / (k - 1)
+    msw = ((vals - means[inv]) ** 2).sum() / (n - k)
+    n0 = (n - (ni ** 2).sum() / n) / (k - 1)
+    return float((msb - msw) / (msb + (n0 - 1) * msw)), k, float(ni.mean())
+
+def boot_by_day(d, days, seed=7, n=4000):
+    labels, inv = np.unique(days, return_inverse=True)
+    idx = [np.where(inv == i)[0] for i in range(len(labels))]
+    rng = np.random.default_rng(seed)
+    means = np.empty(n)
+    for b in range(n):
+        pick = rng.integers(0, len(labels), size=len(labels))
+        means[b] = np.concatenate([d[idx[i]] for i in pick]).mean()
+    return [float(x) for x in np.percentile(means, [2.5, 97.5])]
+
+for r in val["folds"]:
+    base = {p["race_id"]: race_ll(p) for p in r["candidates"]["B0-refit"]["predictions"]}
+    c = r["candidates"][primary]
+    ids = [p["race_id"] for p in c["predictions"]]
+    d = np.asarray([race_ll(p) - base[p["race_id"]] for p in c["predictions"]], dtype=float)
+    days = [date_of[i] for i in ids]
+    icc, k, m = anova_icc(d, days)
+    deff = 1 + (m - 1) * max(icc, 0.0)
+    se_ind = d.std(ddof=1) / math.sqrt(len(d))
+    lo, hi = boot(d); dlo, dhi = boot_by_day(d, days)
+    print(f"{r['split']}: races {len(d)} days {k} mean_per_day {m:.1f} mean {d.mean():+.5f} sd {d.std(ddof=1):.4f} icc_by_day {icc:+.4f} design_effect {deff:.3f} "
+          f"se_indep {se_ind:.5f} se_cluster_approx {se_ind*math.sqrt(deff):.5f} race_boot [{lo:+.4f},{hi:+.4f}] day_boot [{dlo:+.4f},{dhi:+.4f}]")
