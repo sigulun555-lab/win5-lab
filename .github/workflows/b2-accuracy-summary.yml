@@ -1,0 +1,45 @@
+name: B2 accuracy summary (read-only)
+
+on:
+  push:
+    branches: [claude/sweet-mendel-d6quhn]
+    paths:
+      - "scripts/summarize_b2_accuracy.py"
+      - ".github/workflows/b2-accuracy-summary.yml"
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  summarize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: b2-historical-data-audit
+          repository: ${{ github.repository }}
+          run-id: "40887458111"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: v1
+      - uses: actions/download-artifact@v4
+        with:
+          name: b2-1-candidate-validation
+          repository: ${{ github.repository }}
+          run-id: "41027123761"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: v2
+      - uses: actions/download-artifact@v4
+        with:
+          name: b2-1-class-labeling-data
+          repository: ${{ github.repository }}
+          run-id: "41027123761"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: v2data
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python scripts/summarize_b2_accuracy.py v1/reports/b2-candidate-validation.json v2/b2-1-candidate-validation.json v2data/reports/b2-prepared-races-v2.json
