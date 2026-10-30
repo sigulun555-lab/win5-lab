@@ -314,12 +314,14 @@ def run_session(opts, source, store, sink, clock):
     except SourceError as e:
         log["issues"].append(f"レース一覧を取得できない：{e}")
         log["exit_code"] = 1
+        log["requests"] = getattr(source, "calls", None)
         log["ended_at"] = clock.now().isoformat(timespec="seconds")
         store.log(log)
         return 1, log
     if not all_races:
         log["issues"].append("対象日のレースが見つからない（開催なし、または出馬表が未掲載）。成功扱いにしない")
         log["exit_code"] = 1
+        log["requests"] = getattr(source, "calls", None)
         log["ended_at"] = clock.now().isoformat(timespec="seconds")
         store.log(log)
         return 1, log

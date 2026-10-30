@@ -9,6 +9,7 @@ on:
     paths:
       - "collector/odds_t10.py"
       - "tests/test_odds_t10.py"
+      - "collector/odds_t10_live_marker.txt"
       - ".github/workflows/odds-t10-check.yml"
   workflow_dispatch:
 
@@ -44,3 +45,29 @@ jobs:
           git fetch origin main --depth=1
           git diff --stat origin/main -- collector/jra_odds_snapshot.py .github/workflows/odds-snapshot.yml tests/test_collector.py
           test -z "$(git diff origin/main -- collector/jra_odds_snapshot.py .github/workflows/odds-snapshot.yml)"
+
+  live-dry-run:
+    # 開催日に、実ページで1セッション分を保存なし(dry-run)で動かして確認する。コミットメッセージに [live-dry-run am] または [live-dry-run pm] を含めたときだけ。
+    if: contains(github.event.head_commit.message, '[live-dry-run')
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: 実ページで1セッション（保存は artifact のみ）
+        env:
+          MSG: ${{ github.event.head_commit.message }}
+        run: |
+          set -o pipefail
+          S=am; if echo "$MSG" | grep -q '\[live-dry-run pm\]'; then S=pm; fi
+          python collector/odds_t10.py --session "$S" --dry-run --out live-out --max-run-min 320 2>&1 | tee live-run.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: odds-t10-live-dry-run-${{ github.run_id }}
+          retention-days: 14
+          path: |
+            live-run.log
+            live-out/
