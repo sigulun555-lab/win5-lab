@@ -33,5 +33,9 @@ jobs:
           path: artifact
       - name: Hashes of the downloaded files
         run: sha256sum artifact/reports/b2-candidate-validation.json artifact/reports/b2-prepared-races.json artifact/reports/b2-race-dataset-reconciliation.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install --disable-pip-version-check numpy
       - name: Summarize (read-only)
         run: python3 scripts/summarize_b2_validation.py artifact
