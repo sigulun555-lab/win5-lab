@@ -9,7 +9,7 @@ candidate set, evaluation windows, or adoption criteria.
 | Historical validation result | Workflow run `40882658354` (baseline, before cache optimization) |
 | Historical `implementation_sha256` | `fb71ad51…` (prefix as retained in the review record; the complete digest is not available in the retained summary) |
 | Cache-optimized implementation | `research/factor-validation/fit_b2_candidates.py` at PR #2 head after review fixes |
-| Cache-optimized implementation SHA256 | `2fb1037a95dd78a665c904802e884558be74b25411d77ddfd219bcc3f64238c9` |
+| Cache-optimized implementation SHA256 | `0bab8e06710b13e3c911727b43df49468acceec83ca2d6fd370a81f9cfdab97c` |
 | PR | [#2](https://github.com/sigulun555-lab/win5-lab/pull/2) |
 
 The old historical result must continue to be attributed to the old implementation
