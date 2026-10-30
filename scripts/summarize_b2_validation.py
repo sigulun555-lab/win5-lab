@@ -67,3 +67,40 @@ print("== RACE RECONCILIATION JSON (truncated)")
 rec = json.loads((root / "reports/b2-race-dataset-reconciliation.json").read_text())
 print("keys", list(rec.keys()))
 print(json.dumps(rec, ensure_ascii=False)[:7000])
+
+print("== RACE RECONCILIATION: date counts of keys present only in current data")
+cur = rec.get("current", {})
+only = cur.get("race_keys_only_here_first_100", [])
+print("only_here_count", cur.get("race_keys_only_here_count"), "listed", len(only))
+print("by date", dict(Counter(k[0] for k in only)))
+print("test_period_key_difference_counts", json.dumps(rec.get("test_period_key_difference_counts"), ensure_ascii=False))
+print("test_period_key_difference_details", json.dumps(rec.get("test_period_key_difference_details"), ensure_ascii=False)[:3000])
+print("same_race_key_count", rec.get("same_race_key_count"))
+print("reference", json.dumps({k: v for k, v in (rec.get("reference") or {}).items() if "first_100" not in k and "examples" not in k}, ensure_ascii=False)[:2500])
+
+print("== TABLE4 candidate minus B0-refit, per-race log-likelihood difference, bootstrap 95% CI (seed 7, 4000; from stored predictions)")
+import math
+import numpy as np
+label = {}
+for race in prep:
+    label[race.get("race_id")] = {str(r.get("hid")): float(r.get("winner_share", 0.0)) for r in race.get("rows", [])}
+
+def race_ll(pred):
+    y = label.get(pred.get("race_id"), {})
+    return sum(y.get(str(h["hid"]), 0.0) * math.log(max(h["probability"], 1e-15)) for h in pred["horses"])
+
+def boot(d, seed=7, n=4000):
+    rng = np.random.default_rng(seed)
+    ix = rng.integers(0, len(d), size=(n, len(d)))
+    m = d[ix].mean(axis=1)
+    return [float(x) for x in np.percentile(m, [2.5, 97.5])]
+
+for r in val["folds"]:
+    base = {p["race_id"]: race_ll(p) for p in r["candidates"]["B0-refit"]["predictions"]}
+    print(f"## {r['split']} (difference = candidate - B0-refit; positive = candidate better)")
+    for name, c in r["candidates"].items():
+        if name in ("B0-original", "B0-refit"):
+            continue
+        d = np.asarray([race_ll(p) - base[p["race_id"]] for p in c["predictions"]], dtype=float)
+        lo, hi = boot(d)
+        print(f"{name}\tmean {d.mean():+.5f} [{lo:+.5f},{hi:+.5f}] races {len(d)}")
