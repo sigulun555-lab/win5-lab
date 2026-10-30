@@ -1,10 +1,7 @@
-name: B2 real-data cache benchmark
+name: B2 full historical cache comparison (manual)
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - optimize-b2-cache-progress
 
 permissions:
   actions: read
@@ -17,7 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: optimize-b2-cache-progress
+          ref: ${{ github.ref }}
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
