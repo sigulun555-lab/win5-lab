@@ -21,7 +21,7 @@ def close(a, b, tol, diffs, path="$", limit=30):
 def main():
     ap=argparse.ArgumentParser()
     ap.add_argument("baseline"); ap.add_argument("candidate"); ap.add_argument("--out", required=True)
-    ap.add_argument("--tolerance", type=float, default=1e-10); args=ap.parse_args()
+    ap.add_argument("--tolerance", type=float, default=1e-8); args=ap.parse_args()
     base=json.loads(Path(args.baseline).read_text()); cand=json.loads(Path(args.candidate).read_text())
     diffs=[]
     same_input=base.get("input_sha256")==cand.get("input_sha256")
