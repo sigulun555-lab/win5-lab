@@ -37,7 +37,7 @@ def synthetic_races():
                 "winner_share": 1.0 if j == (ri % 5) else 0.0,
                 "candidate_features": {"all": base, "local_excluded": base},
             })
-        races.append({"rows": rows})
+        races.append({"race_id": f"synthetic-{ri}", "rows": rows})
     return races
 
 
@@ -91,7 +91,7 @@ class FitDesignCacheEquivalenceTests(unittest.TestCase):
         base = FIT._fit_design_cache_key(races, spec, 2)
         self.assertNotEqual(base, FIT._fit_design_cache_key(races, spec, 3))
         changed_races = synthetic_races()
-        changed_races[0]["rows"][0]["candidate_features"]["all"]["base_score"] += 0.01
+        changed_races[0]["race_id"] += "-different"
         self.assertNotEqual(base, FIT._fit_design_cache_key(changed_races, spec, 2))
         changed_spec = {**spec, "policy": "local_excluded"}
         self.assertNotEqual(base, FIT._fit_design_cache_key(races, changed_spec, 2))
