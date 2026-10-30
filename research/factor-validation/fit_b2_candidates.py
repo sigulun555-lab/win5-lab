@@ -123,7 +123,18 @@ def candidate_design(row, spec, k):
 
 # Bounded cache for fit designs reused across the L2/tau search grid.
 _FIT_DESIGN_CACHE = OrderedDict()
-_FIT_DESIGN_CACHE_MAX = 6
+_FIT_DESIGN_CACHE_MAX = 24
+
+
+def _fit_design_cache_key(races, spec, k):
+    """Content-address the exact race payload and design-affecting spec/k."""
+    race_payload = json.dumps(races, sort_keys=True, separators=(",", ":"), default=str)
+    race_digest = hashlib.sha256(race_payload.encode("utf-8")).hexdigest()
+    spec_key = (
+        spec.get("policy", "all"), bool(spec.get("class")), bool(spec.get("local")),
+        bool(spec.get("shrink")), bool(spec.get("rating")), int(k),
+    )
+    return (race_digest, *spec_key)
 
 
 def fit_theta(races, spec, l2, k, tau=1.0):
@@ -138,11 +149,7 @@ def fit_theta(races, spec, l2, k, tau=1.0):
         return np.zeros(0, dtype=float)
     bounds = [(-1.0, 0.0) if name == "eta_LOCAL" else (None, None) for name in names]
     # The design arrays depend on races/spec/k, but not on L2 or tau.
-    cache_key = (
-        tuple(id(race) for race in races),
-        spec.get("policy", "all"), bool(spec.get("class")), bool(spec.get("local")),
-        bool(spec.get("shrink")), bool(spec.get("rating")), int(k),
-    )
+    cache_key = _fit_design_cache_key(races, spec, k)
     cached = _FIT_DESIGN_CACHE.get(cache_key)
     if cached is not None:
         _FIT_DESIGN_CACHE.move_to_end(cache_key)
@@ -162,6 +169,10 @@ def fit_theta(races, spec, l2, k, tau=1.0):
             matrices[i, :n, :] = np.vstack([x[1] for x in designs])
             targets[i, :n] = target_vec(race)
             mask[i, :n] = True
+        # Cached design arrays are shared across optimizer calls; make accidental
+        # in-place mutation fail immediately instead of corrupting later fits.
+        for array in (bases, matrices, targets, mask):
+            array.setflags(write=False)
         _FIT_DESIGN_CACHE[cache_key] = (bases, matrices, targets, mask)
         _FIT_DESIGN_CACHE.move_to_end(cache_key)
         while len(_FIT_DESIGN_CACHE) > _FIT_DESIGN_CACHE_MAX:
