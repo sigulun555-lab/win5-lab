@@ -1,12 +1,6 @@
-name: B2 real-data cache benchmark
+name: B2 cache microbenchmark (manual)
 
 on:
-  push:
-    branches:
-      - optimize-b2-cache-progress
-    paths:
-      - "research/factor-validation/benchmark_b2_cache.py"
-      - ".github/workflows/b2-cache-benchmark.yml"
   workflow_dispatch:
     inputs:
       source_run_id:
@@ -25,7 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: optimize-b2-cache-progress
+          ref: ${{ github.ref }}
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
