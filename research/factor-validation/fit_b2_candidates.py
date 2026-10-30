@@ -128,8 +128,15 @@ _FIT_DESIGN_CACHE_MAX = 24
 
 def _fit_design_cache_key(races, spec, k):
     """Content-address the exact race payload and design-affecting spec/k."""
-    race_payload = json.dumps(races, sort_keys=True, separators=(",", ":"), default=str)
-    race_digest = hashlib.sha256(race_payload.encode("utf-8")).hexdigest()
+    race_ids = [race.get("race_id") for race in races]
+    if all(race_id not in (None, "") for race_id in race_ids):
+        # Prepared production datasets have stable unique race IDs. Hashing this
+        # ordered identity column avoids serializing all runner features per fit.
+        identity_payload = json.dumps(race_ids, separators=(",", ":"), ensure_ascii=False)
+    else:
+        # Synthetic/minimal callers without IDs get a full content-addressed key.
+        identity_payload = json.dumps(races, sort_keys=True, separators=(",", ":"), default=str)
+    race_digest = hashlib.sha256(identity_payload.encode("utf-8")).hexdigest()
     spec_key = (
         spec.get("policy", "all"), bool(spec.get("class")), bool(spec.get("local")),
         bool(spec.get("shrink")), bool(spec.get("rating")), int(k),
