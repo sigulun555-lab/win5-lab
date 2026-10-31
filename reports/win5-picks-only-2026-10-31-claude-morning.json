@@ -1,0 +1,85 @@
+{
+  "date": "2026-10-31",
+  "picks_file": "data/win5_joint/2026-10-31/claude-morning-marks.csv",
+  "top1_hits": 0,
+  "legs": 5,
+  "marks_complete": true,
+  "top3_marks_hits": 4,
+  "details": [
+    {
+      "leg": 1,
+      "honmei_no": 8,
+      "honmei_name": "スカイスプレンダー",
+      "winner_no": 7,
+      "hit": false,
+      "marks": {
+        "◎": 8,
+        "○": 7,
+        "▲": 6
+      },
+      "winner_in_marks": true,
+      "honmei_scratched": false
+    },
+    {
+      "leg": 2,
+      "honmei_no": 3,
+      "honmei_name": "シャンソンドール",
+      "winner_no": 7,
+      "hit": false,
+      "marks": {
+        "◎": 3,
+        "○": 7,
+        "▲": 4
+      },
+      "winner_in_marks": true,
+      "honmei_scratched": false
+    },
+    {
+      "leg": 3,
+      "honmei_no": 9,
+      "honmei_name": "システマソラー",
+      "winner_no": 3,
+      "hit": false,
+      "marks": {
+        "◎": 9,
+        "○": 11,
+        "▲": 14
+      },
+      "winner_in_marks": false,
+      "honmei_scratched": false
+    },
+    {
+      "leg": 4,
+      "honmei_no": 16,
+      "honmei_name": "ピエマンソン",
+      "winner_no": 6,
+      "hit": false,
+      "marks": {
+        "◎": 16,
+        "○": 12,
+        "▲": 6
+      },
+      "winner_in_marks": true,
+      "honmei_scratched": false
+    },
+    {
+      "leg": 5,
+      "honmei_no": 8,
+      "honmei_name": "ブライトスクリプト",
+      "winner_no": 4,
+      "hit": false,
+      "marks": {
+        "◎": 8,
+        "○": 6,
+        "▲": 4
+      },
+      "winner_in_marks": true,
+      "honmei_scratched": false
+    }
+  ],
+  "cautions": [
+    "Log loss / Brier are not computed here (use evaluate_win5_model_comparison.py for full-field models).",
+    "Do not mix picks-only results with full-probability model results.",
+    "Five legs are too few to judge a model."
+  ]
+}
