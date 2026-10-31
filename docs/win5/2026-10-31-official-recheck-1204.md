@@ -48,3 +48,13 @@
 - JRA公式 東京11R：https://www.jra.go.jp/JRADB/accessD.html?CNAME=pw01dde0105202604101120261031%2FC6
 - JRA公式 京都11R：https://www.jra.go.jp/JRADB/accessD.html?CNAME=pw01dde0108202604101120261031%2FA4
 - JRA-VAN 今週のWIN5：https://app.jra-van.jp/PCWeb/WinFive0002.do?kbn=2&service=next
+
+## JRA公式出馬表に表示された各ページのオッズ更新時刻（12:06 JST再確認）
+
+- 京都9R：09:58現在
+- 東京10R：11:55現在
+- 京都10R：11:51現在
+- 東京11R：11:57現在
+- 京都11R：11:55現在
+
+各ページの更新時刻が揃っていないため、JRA公式ページの表示オッズをそのまま全頭同時点の市場スナップショットとして混在させない。京都9Rは特にページ表示が古いため、JRA-VAN 12:03 JSTの上位人気値は参考情報として別記し、完全な全馬市場確率には使わない。
