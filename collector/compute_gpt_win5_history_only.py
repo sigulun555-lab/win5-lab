@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Create GPT's exploratory history-only WIN5 probabilities and ◎○▲ marks."""
-import csv, json, math, os, re, sys
+import csv, json, math, os, re
 from datetime import datetime, timezone
 
 DATE = "2026-11-07"
@@ -14,6 +14,14 @@ def num(x):
     m = re.search(r"-?\d+(?:\.\d+)?", str(x).replace(",", ""))
     return float(m.group()) if m else None
 
+def run_date_key(run):
+    raw = str(run.get("date", ""))
+    m = re.search(r"(\d{4})年(\d{1,2})月(\d{1,2})日", raw)
+    if m: return f"{int(m.group(1)):04d}-{int(m.group(2)):02d}-{int(m.group(3)):02d}"
+    m = re.search(r"(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})", raw)
+    if m: return f"{int(m.group(1)):04d}-{int(m.group(2)):02d}-{int(m.group(3)):02d}"
+    return None
+
 def main():
     with open(SRC, encoding="utf-8") as f: doc = json.load(f)
     rows = []
@@ -22,8 +30,11 @@ def main():
         leg = int(race["win5_leg"])
         for h in race.get("runners", []):
             hist = doc.get("horses", {}).get(h.get("hid"), {})
+            eligible = [(r, run_date_key(r)) for r in hist.get("runs", [])]
+            eligible = [(r, d) for r, d in eligible if d and d < DATE]
+            eligible.sort(key=lambda item: item[1], reverse=True)
             valid = []
-            for run in hist.get("runs", []):
+            for run, _ in eligible:
                 place, field = num(run.get("place")), num(run.get("field"))
                 if place is None or field is None or field <= 1 or place < 1 or place > field: continue
                 valid.append((run, place, field))
@@ -61,7 +72,8 @@ def main():
     md=[f"# GPT WIN5 {DATE} — exploratory history-only marks","",
         "**Status:** exploratory / uncalibrated; not a calibrated true win probability.",
         "**Market odds used:** no. **Claude predictions used:** no.",
-        f"**Generated:** {datetime.now(timezone.utc).isoformat()}","",
+        f"**Generated:** {datetime.now(timezone.utc).isoformat()}",
+        f"**History cutoff:** strictly before {DATE}; records sorted newest-first before selecting six.","",
         "| Leg | Race | Mark | Horse | Probability | Valid runs |","|---:|---|---|---|---:|---:|"]
     for x in sorted(rows,key=lambda x:(x["leg"],-x["probability_pct"],x["horse_no"])):
         if x.get("mark"):
@@ -72,7 +84,9 @@ def main():
         "Each leg is softmax-normalized to 100%. The score follows the documented 2026-10-25 v0 exploratory method. No course/class/distance/jockey/odds adjustment."]
     with open(f"{OUT}/gpt-exploratory-marks.md","w",encoding="utf-8") as f:f.write("\n".join(md)+"\n")
     meta={"date":DATE,"model":"gpt-exploratory-history-only-v0","market_odds_used":False,
-      "claude_predictions_used":False,"formula":"weighted rank percentile (0.78^i), weighted numeric rating, score=(P-.5)*2.1+(T-90)*.025; softmax temperature 1.35",
+      "claude_predictions_used":False,"history_cutoff_exclusive":DATE,
+      "history_order":"parsed dates descending; invalid dates excluded",
+      "formula":"weighted rank percentile (0.78^i), weighted numeric rating, score=(P-.5)*2.1+(T-90)*.025; softmax temperature 1.35",
       "runners":len(rows),"legs":{str(i):{"runners":sum(x["leg"]==i for x in rows),
       "probability_sum":round(sum(x["probability_pct"] for x in rows if x["leg"]==i),8)} for i in range(1,6)},
       "missing_history_records":missing,"no_valid_runs":no_runs,"created_at_utc":datetime.now(timezone.utc).isoformat()}
