@@ -12,6 +12,7 @@ import datetime as dt
 import hashlib
 import json
 import math
+from collections import OrderedDict
 from pathlib import Path
 import numpy as np
 from scipy.optimize import minimize
@@ -120,6 +121,29 @@ def candidate_design(row, spec, k):
         cols.append(float(f.get("rating_delta", 0.0)))
     return base, np.asarray(cols, dtype=float)
 
+# Bounded cache for fit designs reused across the L2/tau search grid.
+_FIT_DESIGN_CACHE = OrderedDict()
+_FIT_DESIGN_CACHE_MAX = 24
+
+
+def _fit_design_cache_key(races, spec, k):
+    """Content-address the exact race payload and design-affecting spec/k."""
+    race_ids = [race.get("race_id") for race in races]
+    if all(race_id not in (None, "") for race_id in race_ids):
+        # Prepared production datasets have stable unique race IDs. Hashing this
+        # ordered identity column avoids serializing all runner features per fit.
+        identity_payload = json.dumps(race_ids, separators=(",", ":"), ensure_ascii=False)
+    else:
+        # Synthetic/minimal callers without IDs get a full content-addressed key.
+        identity_payload = json.dumps(races, sort_keys=True, separators=(",", ":"), default=str)
+    race_digest = hashlib.sha256(identity_payload.encode("utf-8")).hexdigest()
+    spec_key = (
+        spec.get("policy", "all"), bool(spec.get("class")), bool(spec.get("local")),
+        bool(spec.get("shrink")), bool(spec.get("rating")), int(k),
+    )
+    return (race_digest, *spec_key)
+
+
 def fit_theta(races, spec, l2, k, tau=1.0):
     names = []
     if spec["class"]:
@@ -131,25 +155,35 @@ def fit_theta(races, spec, l2, k, tau=1.0):
     if not names:
         return np.zeros(0, dtype=float)
     bounds = [(-1.0, 0.0) if name == "eta_LOCAL" else (None, None) for name in names]
-    # Vectorize the conditional-logit objective across races. The previous
-    # implementation looped over every race on every optimizer iteration; the
-    # nested grid search invokes hundreds of fits, making that Python loop the
-    # dominant runtime cost. Padding is masked with -inf only for logsumexp;
-    # target values at padded positions remain zero.
-    n_races = len(races)
-    max_field = max(len(race["rows"]) for race in races)
-    n_features = len(names)
-    bases = np.zeros((n_races, max_field), dtype=float)
-    matrices = np.zeros((n_races, max_field, n_features), dtype=float)
-    targets = np.zeros((n_races, max_field), dtype=float)
-    mask = np.zeros((n_races, max_field), dtype=bool)
-    for i, race in enumerate(races):
-        designs = [candidate_design(row, spec, k) for row in race["rows"]]
-        n = len(designs)
-        bases[i, :n] = [x[0] for x in designs]
-        matrices[i, :n, :] = np.vstack([x[1] for x in designs])
-        targets[i, :n] = target_vec(race)
-        mask[i, :n] = True
+    # The design arrays depend on races/spec/k, but not on L2 or tau.
+    cache_key = _fit_design_cache_key(races, spec, k)
+    cached = _FIT_DESIGN_CACHE.get(cache_key)
+    if cached is not None:
+        _FIT_DESIGN_CACHE.move_to_end(cache_key)
+        bases, matrices, targets, mask = cached
+    else:
+        n_races = len(races)
+        max_field = max(len(race["rows"]) for race in races)
+        n_features = len(names)
+        bases = np.zeros((n_races, max_field), dtype=float)
+        matrices = np.zeros((n_races, max_field, n_features), dtype=float)
+        targets = np.zeros((n_races, max_field), dtype=float)
+        mask = np.zeros((n_races, max_field), dtype=bool)
+        for i, race in enumerate(races):
+            designs = [candidate_design(row, spec, k) for row in race["rows"]]
+            n = len(designs)
+            bases[i, :n] = [x[0] for x in designs]
+            matrices[i, :n, :] = np.vstack([x[1] for x in designs])
+            targets[i, :n] = target_vec(race)
+            mask[i, :n] = True
+        # Cached design arrays are shared across optimizer calls; make accidental
+        # in-place mutation fail immediately instead of corrupting later fits.
+        for array in (bases, matrices, targets, mask):
+            array.setflags(write=False)
+        _FIT_DESIGN_CACHE[cache_key] = (bases, matrices, targets, mask)
+        _FIT_DESIGN_CACHE.move_to_end(cache_key)
+        while len(_FIT_DESIGN_CACHE) > _FIT_DESIGN_CACHE_MAX:
+            _FIT_DESIGN_CACHE.popitem(last=False)
 
     def objective(theta):
         # Stable, vectorized conditional-logit objective and exact gradient.
@@ -187,7 +221,7 @@ def fit_theta(races, spec, l2, k, tau=1.0):
         )
     return result.x
 
-def tune_candidate(train, spec, is_b0=False):
+def tune_candidate(train, spec, is_b0=False, progress_label=None):
     if not train:
         raise ValueError("empty training split")
     last = train[-1]["_day"]
@@ -199,10 +233,19 @@ def tune_candidate(train, spec, is_b0=False):
     has_coefficients = bool(spec.get("class") or spec.get("local") or spec.get("rating"))
     l2_values = L2_GRID if has_coefficients and not is_b0 else (0.01,)
     k_values = K_GRID if spec.get("shrink") and not is_b0 else (0,)
-    tau_values = TAU_GRID if not is_b0 else TAU_GRID
+    tau_values = TAU_GRID
+    total_combos = len(l2_values) * len(k_values) * len(tau_values)
+    combo_index = 0
     for l2 in l2_values:
         for k in k_values:
             for tau in tau_values:
+                combo_index += 1
+                if progress_label and (combo_index == 1 or combo_index % 8 == 0 or combo_index == total_combos):
+                    print(
+                        f"[B2-progress] {progress_label}: grid {combo_index}/{total_combos} "
+                        f"(l2={l2}, k={k}, tau={tau})",
+                        flush=True,
+                    )
                 block_means = []
                 for year, month in months:
                     start = dt.date(year, month, 1)
@@ -398,10 +441,10 @@ def evaluate_split(train, test, split_name):
             params = {"l2": None, "k": 0, "tau": FIXED_B0_TAU, "theta": [], "inner_months": []}
             scorer = b0_score
         elif name == "B0-refit":
-            params = tune_candidate(train, {"policy": "all", "class": False, "shrink": False, "local": False, "rating": False}, is_b0=True)
+            params = tune_candidate(train, {"policy": "all", "class": False, "shrink": False, "local": False, "rating": False}, is_b0=True, progress_label=f"{split_name}/{name}")
             scorer = b0_score
         else:
-            params = tune_candidate(train, spec)
+            params = tune_candidate(train, spec, progress_label=f"{split_name}/{name}")
             theta = np.asarray(params["theta"], dtype=float)
             k = params["k"]
             scorer = lambda row, s=spec, t=theta, kk=k: raw_score(row, s, t, kk)
