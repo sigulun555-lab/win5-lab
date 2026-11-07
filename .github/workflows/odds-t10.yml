@@ -1,0 +1,89 @@
+name: odds-t10 (manual all-race T-10 odds capture)
+
+# 全レースの「発走10分前以前の最新」単勝オッズを、午前・午後の2セッションで保存する（手動起動のみ）。
+# 既存の odds-snapshot.yml とは別。保存先は odds-data ブランチの odds_t10/ 配下の新しいファイルだけ（追記のみ）。
+# schedule は付けない。開催日の朝に、session=am で起動し、昼前に session=pm で起動する。
+#   dry_run=true : odds-data へは書かず、取得結果を artifact として残す（動作確認用）。
+on:
+  workflow_dispatch:
+    inputs:
+      date:
+        description: "開催日 YYYY-MM-DD（空なら今日のJST）"
+        required: false
+        default: ""
+      session:
+        description: "am=発走12:30より前 / pm=12:30以降 / all=すべて"
+        required: true
+        default: "am"
+        type: choice
+        options: [am, pm, all]
+      split_time:
+        description: "午前/午後の境（HH:MM）"
+        required: false
+        default: "12:30"
+      dry_run:
+        description: "true なら odds-data へ保存しない"
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+
+concurrency:
+  group: odds-t10-${{ inputs.session }}
+  cancel-in-progress: false
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: main
+      - name: odds-data ブランチを用意
+        run: |
+          set -e
+          REMOTE="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          if git ls-remote --exit-code --heads "$REMOTE" odds-data >/dev/null 2>&1; then
+            git clone --depth 1 --branch odds-data "$REMOTE" data
+          else
+            mkdir data && cd data && git init -q -b odds-data && git remote add origin "$REMOTE"
+          fi
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: テスト（収集コード）
+        run: python -m unittest discover -s main/tests -p "test_*.py" -q
+      - name: 全レースの発走10分前オッズを取得して記録
+        env:
+          INPUT_DATE: ${{ inputs.date }}
+          INPUT_SESSION: ${{ inputs.session }}
+          INPUT_SPLIT: ${{ inputs.split_time }}
+          INPUT_DRY: ${{ inputs.dry_run }}
+        run: |
+          set -o pipefail
+          ARGS=(--session "$INPUT_SESSION" --split "$INPUT_SPLIT" --out data --max-run-min 345)
+          if [ -n "$INPUT_DATE" ]; then ARGS+=(--date "$INPUT_DATE"); fi
+          if [ "$INPUT_DRY" = "true" ]; then ARGS+=(--dry-run); else ARGS+=(--git-dir data); fi
+          python main/collector/odds_t10.py "${ARGS[@]}" 2>&1 | tee t10-run.log
+      - name: 残りがあればコミットして追記（途中で終わった場合の保険）
+        if: always() && inputs.dry_run != true
+        run: |
+          cd data
+          git config user.name "odds-t10"
+          git config user.email "odds-t10@users.noreply.github.com"
+          git add odds_t10
+          if git diff --cached --quiet; then echo "新しい記録はありません。"; exit 0; fi
+          git commit -q -m "odds t10 final flush $(TZ=Asia/Tokyo date '+%Y-%m-%d %H:%M JST')"
+          for i in 1 2 3 4; do git push origin odds-data && break || { git pull --rebase origin odds-data; sleep $((3*i)); }; done
+      - name: 結果を artifact に残す
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: odds-t10-${{ inputs.session }}-${{ github.run_id }}
+          retention-days: 14
+          path: |
+            t10-run.log
+            data/odds_t10/

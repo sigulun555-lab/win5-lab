@@ -1,0 +1,73 @@
+name: odds-t10-check (branch-only, read-only)
+
+# 新しい収集コードの確認用。このブランチへの push でだけ動く。odds-data へは書かない。
+#  1) 実ページ（JRA公式）で、明日以降の開催日のレース一覧と取得予定を確認する（--list-only）
+#  2) 開催のない日を指定して、成功扱いにならない（終了コード1）ことを確認する
+on:
+  push:
+    branches: [claude/odds-t10-capture]
+    paths:
+      - "collector/odds_t10.py"
+      - "tests/test_odds_t10.py"
+      - "collector/odds_t10_live_marker.txt"
+      - ".github/workflows/odds-t10-check.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Unit tests
+        run: python -m unittest discover -s tests -q
+      - name: 実ページでレース一覧と取得予定（取得も保存もしない）
+        run: |
+          for d in 2026-10-31 2026-11-01; do
+            echo "== $d"; python collector/odds_t10.py --session all --date $d --list-only || echo "(exit $?)"
+          done
+      - name: 開催のない日は成功扱いにならない
+        run: |
+          set +e
+          python collector/odds_t10.py --session all --date 2026-10-30 --dry-run --out /tmp/t10-neg
+          code=$?
+          echo "exit code: $code"
+          test "$code" = "1"
+          ls /tmp/t10-neg/odds_t10/selected 2>/dev/null && echo "selected files exist (unexpected)" && exit 1 || true
+      - name: 既存の収集コードとワークフローが変わっていないこと
+        run: |
+          git fetch origin main --depth=1
+          git diff --stat origin/main -- collector/jra_odds_snapshot.py .github/workflows/odds-snapshot.yml tests/test_collector.py
+          test -z "$(git diff origin/main -- collector/jra_odds_snapshot.py .github/workflows/odds-snapshot.yml)"
+
+  live-dry-run:
+    # 開催日に、実ページで1セッション分を保存なし(dry-run)で動かして確認する。コミットメッセージに [live-dry-run am] または [live-dry-run pm] を含めたときだけ。
+    if: contains(github.event.head_commit.message, '[live-dry-run')
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: 実ページで1セッション（保存は artifact のみ）
+        env:
+          MSG: ${{ github.event.head_commit.message }}
+        run: |
+          set -o pipefail
+          S=am; if echo "$MSG" | grep -q '\[live-dry-run pm\]'; then S=pm; fi
+          python collector/odds_t10.py --session "$S" --dry-run --out live-out --max-run-min 320 2>&1 | tee live-run.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: odds-t10-live-dry-run-${{ github.run_id }}
+          retention-days: 14
+          path: |
+            live-run.log
+            live-out/
