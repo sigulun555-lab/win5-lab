@@ -3,6 +3,8 @@
   "model": "gpt-exploratory-history-only-v0",
   "market_odds_used": false,
   "claude_predictions_used": false,
+  "history_cutoff_exclusive": "2026-11-07",
+  "history_order": "parsed dates descending; invalid dates excluded",
   "formula": "weighted rank percentile (0.78^i), weighted numeric rating, score=(P-.5)*2.1+(T-90)*.025; softmax temperature 1.35",
   "runners": 67,
   "legs": {
@@ -29,5 +31,5 @@
   },
   "missing_history_records": 0,
   "no_valid_runs": 0,
-  "created_at_utc": "2026-11-07T05:06:40.684035+00:00"
+  "created_at_utc": "2026-11-07T05:11:06.078089+00:00"
 }

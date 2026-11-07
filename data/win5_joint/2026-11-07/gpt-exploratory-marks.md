@@ -2,7 +2,8 @@
 
 **Status:** exploratory / uncalibrated; not a calibrated true win probability.
 **Market odds used:** no. **Claude predictions used:** no.
-**Generated:** 2026-11-07T05:06:40.683870+00:00
+**Generated:** 2026-11-07T05:11:06.077859+00:00
+**History cutoff:** strictly before 2026-11-07; records sorted newest-first before selecting six.
 
 | Leg | Race | Mark | Horse | Probability | Valid runs |
 |---:|---|---|---|---:|---:|
