@@ -47,6 +47,7 @@
   "files": [
     "gpt-full-field-probabilities.csv",
     "gpt-full-field-forecast.md",
-    "gpt-full-field-metadata.json"
+    "gpt-full-field-metadata.json",
+    "gpt-full-field-marks.csv"
   ]
 }
