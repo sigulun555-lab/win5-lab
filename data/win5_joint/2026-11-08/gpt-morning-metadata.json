@@ -1,0 +1,15 @@
+{
+  "date": "2026-11-08",
+  "model": "GPT-independent-qualitative-morning-shortlist-v0.1",
+  "createdAt": "2026-11-08T12:17:00+09:00",
+  "status": "provisional_top3_only",
+  "races": 5,
+  "runnersTotalExpected": 71,
+  "candidates": 15,
+  "fullFieldProbabilities": false,
+  "probabilitiesNormalized": false,
+  "oddsUsed": false,
+  "claudeUsed": false,
+  "productionSettingsChanged": false,
+  "note": "Top-three subjective candidate estimates only; not a full-field probability distribution. Requires complete runner-level forecast before finalization."
+}
