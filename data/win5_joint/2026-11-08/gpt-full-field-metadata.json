@@ -1,0 +1,53 @@
+{
+  "date": "2026-11-08",
+  "model": "GPT-independent-qualitative-full-field-v1.0",
+  "createdAt": "2026-11-08 13:17 JST",
+  "status": "full_field_qualitative_estimates",
+  "races": 5,
+  "runners": 71,
+  "perLegSums": [
+    {
+      "leg": 1,
+      "count": 11,
+      "sum": 100
+    },
+    {
+      "leg": 2,
+      "count": 10,
+      "sum": 99.99999999999999
+    },
+    {
+      "leg": 3,
+      "count": 16,
+      "sum": 100.00000000000001
+    },
+    {
+      "leg": 4,
+      "count": 18,
+      "sum": 100
+    },
+    {
+      "leg": 5,
+      "count": 16,
+      "sum": 99.99999999999999
+    }
+  ],
+  "probabilitiesNormalized": true,
+  "marketOddsUsedForGPT": false,
+  "claudeUsed": false,
+  "marketOddsReference": "JRA official racecards; separate column only",
+  "calibrated": false,
+  "reliability": "low_to_medium",
+  "ruleVersion": "WIN5-JOINT-v1.5",
+  "limitations": [
+    "Not a fitted or backtested model",
+    "Qualitative score normalization; not calibrated",
+    "Market odds not used to derive GPT estimates"
+  ],
+  "files": [
+    "gpt-full-field-probabilities.csv",
+    "gpt-full-field-forecast.md",
+    "gpt-full-field-metadata.json",
+    "gpt-full-field-marks.csv"
+  ]
+}
