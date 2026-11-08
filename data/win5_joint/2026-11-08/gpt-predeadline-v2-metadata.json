@@ -1,0 +1,45 @@
+{
+  "date": "2026-11-08",
+  "snapshotVersion": "v2",
+  "createdAtJST": "2026-11-08 13:52:32 JST",
+  "baseline": "gpt-full-field-probabilities.csv (v1; immutable)",
+  "races": 5,
+  "runners": 71,
+  "probabilityPolicy": "GPT independent win probabilities are copied unchanged from v1; no odds were used to recalculate GPT estimates.",
+  "marketProbabilityMethod": "Within each race, normalize inverse JRA win odds: (1/odds)/sum(1/odds)*100. This is a market-share reference, not a calibrated true probability.",
+  "officialJraOddsSnapshotTimesJST": {
+    "1": "13:23 JST",
+    "2": "13:36 JST",
+    "3": "13:43 JST",
+    "4": "13:44 JST",
+    "5": "13:30 JST"
+  },
+  "trackConditions": {
+    "1": "東京10R ダート稍重 (v1 良から更新)",
+    "2": "京都10R 芝良",
+    "3": "福島11R 芝稍重",
+    "4": "東京11R 芝良",
+    "5": "京都11R ダート良"
+  },
+  "perLegCounts": {
+    "1": 11,
+    "2": 10,
+    "3": 16,
+    "4": 18,
+    "5": 16
+  },
+  "perLegMarketProbabilitySums": {
+    "1": 100,
+    "2": 100,
+    "3": 100,
+    "4": 100,
+    "5": 100
+  },
+  "claudeIndependentForecast": "not received/verified; not included",
+  "reliability": "low_to_medium",
+  "limitations": [
+    "GPT probabilities are qualitative score-normalized estimates, not fitted or backtested/calibrated model probabilities.",
+    "Race-day body weights/scratch status should be checked again before WIN5 deadline.",
+    "JRA odds timestamps differ by race; they are not a simultaneous snapshot."
+  ]
+}
